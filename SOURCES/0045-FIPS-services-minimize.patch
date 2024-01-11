@@ -434,9 +434,9 @@ diff -up openssl-3.0.1/test/recipes/30-test_evp.t.fipsmin3 openssl-3.0.1/test/re
 +                evpkdf_x942_des.txt
 +                evpmac_cmac_des.txt
 +               ) unless $no_des;
+ push @defltfiles, qw(evppkey_brainpool.txt) unless $no_ec;
  push @defltfiles, qw(evppkey_sm2.txt) unless $no_sm2;
  
- plan tests =>
 diff -up openssl-3.0.1/test/recipes/30-test_evp_data/evpmac_common.txt.fipsmin3 openssl-3.0.1/test/recipes/30-test_evp_data/evpmac_common.txt
 --- openssl-3.0.1/test/recipes/30-test_evp_data/evpmac_common.txt.fipsmin3	2022-05-05 14:46:32.721700697 +0200
 +++ openssl-3.0.1/test/recipes/30-test_evp_data/evpmac_common.txt	2022-05-05 14:51:40.205418897 +0200
@@ -737,3 +737,19 @@ diff -up openssl-3.0.1/providers/implementations/signature/rsa_sig.c.fipskeylen 
  
      if (!ossl_prov_is_running())
          return 0;
+diff -up openssl-3.0.7/apps/ecparam.c.minfips openssl-3.0.7/apps/ecparam.c
+--- openssl-3.0.7/apps/ecparam.c.minfips	2023-06-24 09:58:57.773344910 +0200
++++ openssl-3.0.7/apps/ecparam.c	2023-06-26 09:18:06.843859405 +0200
+@@ -79,7 +79,11 @@ static int list_builtin_curves(BIO *out)
+         const char *comment = curves[n].comment;
+         const char *sname = OBJ_nid2sn(curves[n].nid);
+ 
+-        if ((curves[n].nid == NID_secp256k1) && EVP_default_properties_is_fips_enabled(NULL))
++        if (((curves[n].nid == NID_secp256k1) || (curves[n].nid == NID_brainpoolP256r1)
++            || (curves[n].nid == NID_brainpoolP256t1) || (curves[n].nid == NID_brainpoolP320r1)
++            || (curves[n].nid == NID_brainpoolP320t1) || (curves[n].nid == NID_brainpoolP384r1)
++            || (curves[n].nid == NID_brainpoolP384t1) || (curves[n].nid == NID_brainpoolP512r1)
++            || (curves[n].nid == NID_brainpoolP512t1)) && EVP_default_properties_is_fips_enabled(NULL))
+             continue;
+ 
+         if (comment == NULL)

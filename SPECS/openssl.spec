@@ -29,21 +29,18 @@ print(string.sub(hash, 0, 16))
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 3.0.7
-Release: 17%{?dist}
+Release: 24%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
 # The original openssl upstream tarball cannot be shipped in the .src.rpm.
-Source: openssl-%{version}-hobbled.tar.gz
-Source1: hobble-openssl
+Source: openssl-%{version}.tar.gz
 Source2: Makefile.certificate
 Source3: genpatches
 Source6: make-dummy-cert
 Source7: renew-dummy-cert
 Source9: configuration-switch.h
 Source10: configuration-prefix.h
-Source12: ec_curve.c
-Source13: ectest.c
 Source14: 0025-for-tests.patch
 
 # Patches exported from source git
@@ -65,11 +62,16 @@ Patch7: 0007-Add-support-for-PROFILE-SYSTEM-system-default-cipher.patch
 Patch8: 0008-Add-FIPS_mode-compatibility-macro.patch
 # Add check to see if fips flag is enabled in kernel
 Patch9: 0009-Add-Kernel-FIPS-mode-flag-support.patch
+# Instead of replacing ectest.c and ec_curve.c, add the changes as a patch so
+# that new modifications made to these files by upstream are not lost. 
+Patch10: 0010-Add-changes-to-ectest-and-eccurve.patch
 # remove unsupported EC curves
 Patch11: 0011-Remove-EC-curves.patch
 # Disable explicit EC curves
 # https://bugzilla.redhat.com/show_bug.cgi?id=2066412
 Patch12: 0012-Disable-explicit-ec.patch
+#Skipped tests from former 0011-Remove-EC-curves.patch
+Patch13: 0013-skipped-tests-EC-curves.patch
 # Instructions to load legacy provider in openssl.cnf
 Patch24: 0024-load-legacy-prov.patch
 # Tmp: test name change
@@ -186,7 +188,12 @@ Patch116: 0116-CVE-2023-0465.patch
 Patch117: 0117-CVE-2023-0466.patch
 # AES-XTS CVE
 Patch118: 0118-CVE-2023-1255.patch
-# ASN.1 OID parse CVE
+
+#https://github.com/openssl/openssl/pull/13817
+#https://bugzilla.redhat.com/show_bug.cgi?id=2153471
+Patch120: 0120-RSA-PKCS15-implicit-rejection.patch
+# https://bugzilla.redhat.com/show_bug.cgi?id=2160797
+Patch121: 0121-FIPS-cms-defaults.patch
 Patch122: 0122-CVE-2023-2650.patch
 # https://github.com/openssl/openssl/pull/19386
 Patch123: 0123-ibmca-atexit-crash.patch
@@ -245,13 +252,6 @@ from other formats to the formats used by the OpenSSL toolkit.
 
 %prep
 %autosetup -S git -n %{name}-%{version}
-
-# The hobble_openssl is called here redundantly, just to be sure.
-# The tarball has already the sources removed.
-%{SOURCE1} > /dev/null
-
-cp %{SOURCE12} crypto/ec/
-cp %{SOURCE13} test/
 
 %build
 # Figure out which flags we want to use.
@@ -522,23 +522,57 @@ ln -s /etc/crypto-policies/back-ends/openssl_fips.config $RPM_BUILD_ROOT%{_sysco
 %ldconfig_scriptlets libs
 
 %changelog
-* Thu Jul 13 2023 Dmitry Belyavskiy <dbelyavs@redhat.com> - 1:3.0.7-17
-- Add a workaround for lack of EMS in FIPS mode
-  Resolves: rhbz#2222593
+* Wed Jul 12 2023 Dmitry Belyavskiy <dbelyavs@redhat.com> - 1:3.0.7-24
+- Make FIPS module configuration more crypto-policies friendly
+  Related: rhbz#2216256
 
-* Wed May 31 2023 Dmitry Belyavskiy <dbelyavs@redhat.com> - 1:3.0.7-16
+* Tue Jul 11 2023 Dmitry Belyavskiy <dbelyavs@redhat.com> - 1:3.0.7-23
+- Add a workaround for lack of EMS in FIPS mode
+  Resolves: rhbz#2216256
+
+* Thu Jul 06 2023 Sahana Prasad <sahana@redhat.com> - 1:3.0.7-22
+- Remove unsupported curves from nist_curves.
+  Resolves: rhbz#2069336
+
+* Mon Jun 26 2023 Sahana Prasad <sahana@redhat.com> - 1:3.0.7-21
+- Remove the listing of brainpool curves in FIPS mode.
+  Related: rhbz#2188180
+
+* Tue May 30 2023 Dmitry Belyavskiy <dbelyavs@redhat.com> - 1:3.0.7-20
 - Fix possible DoS translating ASN.1 object identifiers
   Resolves: CVE-2023-2650
 - Release the DRBG in global default libctx early
-  Resolves: rhbz#2211396
+  Resolves: rhbz#2211340
 
-* Tue May 23 2023 Clemens Lang <cllang@redhat.com> - 1:3.0.7-15.1
+* Mon May 22 2023 Clemens Lang <cllang@redhat.com> - 1:3.0.7-19
 - Re-enable DHX keys in FIPS mode, disable FIPS 186-4 parameter validation and generation in FIPS mode
-  Resolves: rhbz#2178030
+  Resolves: rhbz#2169757
 
-* Fri May 05 2023 Dmitry Belyavskiy <dbelyavs@redhat.com> - 1:3.0.7-15
-- Enforce using EMS in FIPS mode - alerts tuning
+* Thu May 18 2023 Dmitry Belyavskiy <dbelyavs@redhat.com> - 1:3.0.7-18
+- Use OAEP padding and aes-128-cbc by default in cms command in FIPS mode
+  Resolves: rhbz#2160797
+
+* Tue May 09 2023 Dmitry Belyavskiy <dbelyavs@redhat.com> - 1:3.0.7-17
+- Enforce using EMS in FIPS mode - better alerts
   Related: rhbz#2157951
+
+* Tue May 02 2023 Sahana Prasad <sahana@redhat.com> - 1:3.0.7-16
+- Upload new upstream sources without manually hobbling them.
+- Remove the hobbling script as it is redundant. It is now allowed to ship
+  the sources of patented EC curves, however it is still made unavailable to use
+  by compiling with the 'no-ec2m' Configure option. The additional forbidden
+  curves such as P-160, P-192, wap-tls curves are manually removed by updating
+  0011-Remove-EC-curves.patch.
+- Enable Brainpool curves.
+- Apply the changes to ec_curve.c and  ectest.c as a new patch
+  0010-Add-changes-to-ectest-and-eccurve.patch instead of replacing them.
+- Modify 0011-Remove-EC-curves.patch to allow Brainpool curves.
+- Modify 0011-Remove-EC-curves.patch to allow code under macro OPENSSL_NO_EC2M.
+  Resolves: rhbz#2130618, rhbz#2188180
+
+* Fri Apr 28 2023 Dmitry Belyavskiy <dbelyavs@redhat.com> - 1:3.0.7-15
+- Backport implicit rejection for RSA PKCS#1 v1.5 encryption
+  Resolves: rhbz#2153471
 
 * Fri Apr 21 2023 Dmitry Belyavskiy <dbelyavs@redhat.com> - 1:3.0.7-14
 - Input buffer over-read in AES-XTS implementation on 64 bit ARM
