@@ -22,7 +22,7 @@
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.1.1k
-Release: 9%{?dist}
+Release: 12%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -92,6 +92,13 @@ Patch101: openssl-1.1.1-cve-2022-4304-RSA-oracle.patch
 Patch102: openssl-1.1.1-cve-2022-4450-PEM-bio.patch
 Patch103: openssl-1.1.1-cve-2023-0215-BIO-UAF.patch
 Patch104: openssl-1.1.1-cve-2023-0286-X400.patch
+# OpenSSL 1.1.1v CVEs
+Patch105: openssl-1.1.1-cve-2023-3446.patch
+Patch106: openssl-1.1.1-cve-2023-3817.patch
+Patch107: openssl-1.1.1-cve-2023-5678.patch
+# Backport from OpenSSL 3.2/RHEL 9
+# Proper fix for CVE-2020-25659
+Patch108: openssl-1.1.1-pkcs1-implicit-rejection.patch
 
 License: OpenSSL and ASL 2.0
 URL: http://www.openssl.org/
@@ -221,6 +228,10 @@ cp %{SOURCE13} test/
 %patch102 -p1 -b .cve-2022-4450
 %patch103 -p1 -b .cve-2023-0215
 %patch104 -p1 -b .cve-2023-0286
+%patch105 -p1 -b .cve-2023-3446
+%patch106 -p1 -b .cve-2023-3817
+%patch107 -p1 -b .cve-2023-5678
+%patch108 -p1 -b .pkcs15imprejection
 
 %build
 # Figure out which flags we want to use.
@@ -504,6 +515,22 @@ export LD_LIBRARY_PATH
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Thu Nov 30 2023 Dmitry Belyavskiy <dbelyavs@redhat.com> - 1:1.1.1k-12
+- Backport implicit rejection mechanism for RSA PKCS#1 v1.5 to RHEL-8 series
+  (a proper fix for CVE-2020-25659)
+  Resolves: RHEL-17696
+
+* Wed Nov 15 2023 Clemens Lang <cllang@redhat.com> - 1:1.1.1k-11
+- Fix CVE-2023-5678: Generating excessively long X9.42 DH keys or checking
+  excessively long X9.42 DH keys or parameters may be very slow
+  Resolves: RHEL-16538
+
+* Thu Oct 19 2023 Clemens Lang <cllang@redhat.com> - 1:1.1.1k-10
+- Fix CVE-2023-3446: Excessive time spent checking DH keys and parameters
+  Resolves: RHEL-14245
+- Fix CVE-2023-3817: Excessive time spent checking DH q parameter value
+  Resolves: RHEL-14239
+
 * Wed Feb 08 2023 Dmitry Belyavskiy <dbelyavs@redhat.com> - 1:1.1.1k-9
 - Fixed Timing Oracle in RSA Decryption
   Resolves: CVE-2022-4304
