@@ -57,7 +57,21 @@ diff -up openssl-3.0.1/crypto/dh/dh_key.c.fips3 openssl-3.0.1/crypto/dh/dh_key.c
      dh->dirty_cnt++;
      ok = 1;
   err:
-diff -up openssl-3.0.1/crypto/ec/ec_key.c.fips3 openssl-3.0.1/crypto/ec/ec_key.c
+diff -up openssl-3.0.7/crypto/ec/ec_key.c.f188 openssl-3.0.7/crypto/ec/ec_key.c
+--- openssl-3.0.7/crypto/ec/ec_key.c.f188	2023-11-08 10:58:05.910031253 +0100
++++ openssl-3.0.7/crypto/ec/ec_key.c	2023-11-08 10:59:42.338526883 +0100
+@@ -326,6 +326,11 @@ static int ec_generate_key(EC_KEY *eckey
+     eckey->dirty_cnt++;
+ 
+ #ifdef FIPS_MODULE
++    if (ossl_ec_key_public_check(eckey, ctx) <= 0) {
++        ERR_raise(ERR_LIB_EC, EC_R_INVALID_KEY);
++        goto err;
++    }
++
+     pairwise_test = 1;
+ #endif /* FIPS_MODULE */
+ 
 diff -up openssl-3.0.1/providers/implementations/exchange/ecdh_exch.c.fips3 openssl-3.0.1/providers/implementations/exchange/ecdh_exch.c
 --- openssl-3.0.1/providers/implementations/exchange/ecdh_exch.c.fips3	2022-07-25 13:42:46.814952053 +0200
 +++ openssl-3.0.1/providers/implementations/exchange/ecdh_exch.c	2022-07-25 13:52:12.292065706 +0200
@@ -360,3 +374,17 @@ diff -up openssl-3.0.7/providers/implementations/signature/rsa_sig.c.pairwise op
  const OSSL_DISPATCH ossl_rsa_signature_functions[] = {
      { OSSL_FUNC_SIGNATURE_NEWCTX, (void (*)(void))rsa_newctx },
      { OSSL_FUNC_SIGNATURE_SIGN_INIT, (void (*)(void))rsa_sign_init },
+diff --git a/crypto/rsa/rsa_gen.c b/crypto/rsa/rsa_gen.c
+index e0d139d..35f23b2 100644
+--- a/crypto/rsa/rsa_gen.c
++++ b/crypto/rsa/rsa_gen.c
+@@ -463,6 +463,9 @@ static int rsa_keygen(OSSL_LIB_CTX *libctx, RSA *rsa, int bits, int primes,
+             rsa->dmp1 = NULL;
+             rsa->dmq1 = NULL;
+             rsa->iqmp = NULL;
++#ifdef FIPS_MODULE
++            abort();
++#endif /* defined(FIPS_MODULE) */
+         }
+     }
+     return ok;
