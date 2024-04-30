@@ -7,10 +7,11 @@
 diff -up openssl-3.0.1/crypto/provider_conf.c.fipsact openssl-3.0.1/crypto/provider_conf.c
 --- openssl-3.0.1/crypto/provider_conf.c.fipsact	2022-05-12 12:44:31.199034948 +0200
 +++ openssl-3.0.1/crypto/provider_conf.c	2022-05-12 12:49:17.468318373 +0200
-@@ -36,6 +36,7 @@ static int prov_already_activated(const
+@@ -36,6 +36,8 @@ static int prov_already_activated(const
  #include <string.h>
  #include <openssl/trace.h>
  #include <openssl/err.h>
++#include <openssl/evp.h>
 +#include <unistd.h>
  #include <openssl/conf.h>
  #include <openssl/safestack.h>
@@ -151,7 +152,7 @@ diff -up openssl-3.0.1/crypto/provider_conf.c.fipsact openssl-3.0.1/crypto/provi
      } else {
          OSSL_PROVIDER_INFO entry;
  
-@@ -306,6 +317,30 @@ static int provider_conf_init(CONF_IMODU
+@@ -306,6 +317,33 @@ static int provider_conf_init(CONF_IMODU
              return 0;
      }
  
@@ -173,6 +174,9 @@ diff -up openssl-3.0.1/crypto/provider_conf.c.fipsact openssl-3.0.1/crypto/provi
 +            if (provider_conf_activate(libctx, "fips", NULL, NULL, 0, NULL) != 1)
 +                return 0;
 +        }
++        /* provider_conf_load can return 1 even wwhen the test is failed so check explicitly */
++        if (OSSL_PROVIDER_available(libctx, "fips") != 1)
++            return 0;
 +        if (provider_conf_activate(libctx, "base", NULL, NULL, 0, NULL) != 1)
 +            return 0;
 +        if (EVP_default_properties_enable_fips(libctx, 1) != 1)

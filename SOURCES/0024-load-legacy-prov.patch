@@ -1,7 +1,7 @@
 diff -up openssl-3.0.0/apps/openssl.cnf.legacy-prov openssl-3.0.0/apps/openssl.cnf
 --- openssl-3.0.0/apps/openssl.cnf.legacy-prov	2021-09-09 12:06:40.895793297 +0200
 +++ openssl-3.0.0/apps/openssl.cnf	2021-09-09 12:12:33.947482500 +0200
-@@ -42,36 +42,29 @@ tsa_policy1 = 1.2.3.4.1
+@@ -42,14 +42,6 @@ tsa_policy1 = 1.2.3.4.1
  tsa_policy2 = 1.2.3.4.5.6
  tsa_policy3 = 1.2.3.4.5.7
  
@@ -16,7 +16,9 @@ diff -up openssl-3.0.0/apps/openssl.cnf.legacy-prov openssl-3.0.0/apps/openssl.c
  [openssl_init]
  providers = provider_sect
  # Load default TLS policy configuration
- ssl_conf = ssl_module
+@@ -42,23 +42,27 @@ [ evp_properties ]
+ #This section is intentionally added empty here
+ #to be tuned on particular systems
  
 -# List of providers to load
 -[provider_sect]
@@ -52,6 +54,9 @@ diff -up openssl-3.0.0/apps/openssl.cnf.legacy-prov openssl-3.0.0/apps/openssl.c
 +
 +##[legacy_sect]
 +##activate = 1
++
++#Place the third party provider configuration files into this folder
++.include /etc/pki/tls/openssl.d
  
  [ ssl_module ]
  

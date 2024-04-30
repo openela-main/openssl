@@ -29,7 +29,7 @@ print(string.sub(hash, 0, 16))
 Summary:              Utilities from the general purpose cryptography library with TLS implementation
 Name:                 openssl
 Version:              3.0.7
-Release:              25%{?dist}.openela.0.1
+Release:              27%{?dist}.openela.0.1
 Epoch:                1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -197,10 +197,24 @@ Patch121:             0121-FIPS-cms-defaults.patch
 Patch122:             0122-CVE-2023-2650.patch
 # https://github.com/openssl/openssl/pull/19386
 Patch123:             0123-ibmca-atexit-crash.patch
+Patch125:             0125-CVE-2023-2975.patch
+Patch126:             0126-CVE-2023-3446.patch
+Patch127:             0127-CVE-2023-3817.patch
 Patch128:             0128-CVE-2023-5363.patch
 # https://github.com/openssl/openssl/pull/22403
 Patch129:             0129-rsa-Add-SP800-56Br2-6.4.1.2.1-3.c-check.patch
-Patch130:             0001-remove-rhel-reference.patch
+Patch130:             0130-CVE-2023-5678.patch
+# https://github.com/openssl/openssl/pull/20317
+Patch131:             0131-sslgroups-memleak.patch
+# https://github.com/openssl/openssl/commit/050d26383d4e264966fb83428e72d5d48f402d35
+Patch132:             0132-CVE-2023-6129.patch
+# https://github.com/openssl/openssl/commit/18c02492138d1eb8b6548cb26e7b625fb2414a2a
+Patch133:             0133-CVE-2023-6237.patch
+# https://github.com/openssl/openssl/pull/20780
+Patch134:             0134-engine-based-ECDHE-kex.patch
+# https://github.com/openssl/openssl/pull/23362
+Patch135:             0135-CVE-2024-0727.patch
+Patch136:             0001-remove-rhel-reference.patch
 
 License:              ASL 2.0
 URL:                  http://www.openssl.org/
@@ -228,6 +242,9 @@ protocols.
 Summary:              A general purpose cryptography library with TLS implementation
 Requires:             ca-certificates >= 2008-5
 Requires:             crypto-policies >= 20180730
+%if ( %{defined rhel} && (! %{defined centos}) )
+Requires:             openssl-fips-provider
+%endif
 
 %description libs
 OpenSSL is a toolkit for supporting cryptography. The openssl-libs
@@ -380,6 +397,14 @@ make test HARNESS_JOBS=8
 # Add generation of HMAC checksum of the final stripped library
 # We manually copy standard definition of __spec_install_post
 # and add hmac calculation/embedding to fips.so
+%if ( %{defined rhel} && (! %{defined centos}) )
+%define __spec_install_post \
+    rm -rf $RPM_BUILD_ROOT/%{_libdir}/ossl-modules/fips.so \
+    %{?__debug_package:%{__debug_install_post}} \
+    %{__arch_install_post} \
+    %{__os_install_post} \
+%{nil}
+%else
 %define __spec_install_post \
     %{?__debug_package:%{__debug_install_post}} \
     %{__arch_install_post} \
@@ -389,6 +414,7 @@ make test HARNESS_JOBS=8
     mv $RPM_BUILD_ROOT%{_libdir}/ossl-modules/fips.so.mac $RPM_BUILD_ROOT%{_libdir}/ossl-modules/fips.so \
     rm $RPM_BUILD_ROOT%{_libdir}/ossl-modules/fips.so.hmac \
 %{nil}
+%endif
 
 %define __provides_exclude_from %{_libdir}/openssl
 
@@ -412,6 +438,7 @@ done
 # Install a makefile for generating keys and self-signed certs, and a script
 # for generating them on the fly.
 mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/pki/tls/certs
+mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/pki/tls/openssl.d
 install -m644 %{SOURCE2} $RPM_BUILD_ROOT%{_pkgdocdir}/Makefile.certificate
 install -m755 %{SOURCE6} $RPM_BUILD_ROOT%{_bindir}/make-dummy-cert
 install -m755 %{SOURCE7} $RPM_BUILD_ROOT%{_bindir}/renew-dummy-cert
@@ -494,6 +521,7 @@ ln -s /etc/crypto-policies/back-ends/openssl_fips.config $RPM_BUILD_ROOT%{_sysco
 %dir %{_sysconfdir}/pki/tls/certs
 %dir %{_sysconfdir}/pki/tls/misc
 %dir %{_sysconfdir}/pki/tls/private
+%dir %{_sysconfdir}/pki/tls/openssl.d
 %config(noreplace) %{_sysconfdir}/pki/tls/openssl.cnf
 %config(noreplace) %{_sysconfdir}/pki/tls/ct_log_list.cnf
 %config %{_sysconfdir}/pki/tls/fips_local.cnf
@@ -526,21 +554,62 @@ ln -s /etc/crypto-policies/back-ends/openssl_fips.config $RPM_BUILD_ROOT%{_sysco
 %ldconfig_scriptlets libs
 
 %changelog
-* Tue Mar 05 2024 Release Engineering <releng@openela.org> - 3.0.7.openela.0.1
+* Tue Apr 30 2024 Release Engineering <releng@openela.org> - 3.0.7.openela.0.1
 - Add OpenELA specific changes
 
-* Wed Oct 25 2023 Dmitry Belyavskiy <dbelyavs@redhat.com> - 1:3.0.7-25
+* Wed Feb 21 2024 Dmitry Belyavskiy <dbelyavs@redhat.com> - 1:3.0.7-27
+- Use certified FIPS module instead of freshly built one in Red Hat distribution
+  Related: RHEL-23474
+
+* Tue Nov 21 2023 Dmitry Belyavskiy <dbelyavs@redhat.com> - 1:3.0.7-26
+- Avoid implicit function declaration when building openssl
+  Related: RHEL-1780
+- In FIPS mode, prevent any other operations when rsa_keygen_pairwise_test fails
+  Resolves: RHEL-17104
+- Add a directory for OpenSSL providers configuration
+  Resolves: RHEL-17193
+- Eliminate memory leak in OpenSSL when setting elliptic curves on SSL context
+  Resolves: RHEL-19515
+- POLY1305 MAC implementation corrupts vector registers on PowerPC (CVE-2023-6129)
+  Resolves: RHEL-21151
+- Excessive time spent checking invalid RSA public keys (CVE-2023-6237)
+  Resolves: RHEL-21654
+- SSL ECDHE Kex fails when pkcs11 engine is set in config file
+  Resolves: RHEL-20249
+- Denial of service via null dereference in PKCS#12
+  Resolves: RHEL-22486
+- Use certified FIPS module instead of freshly built one in Red Hat distribution
+  Resolves: RHEL-23474
+
+* Mon Oct 16 2023 Dmitry Belyavskiy <dbelyavs@redhat.com> - 1:3.0.7-25
+- Provide relevant diagnostics when FIPS checksum is corrupted
+  Resolves: RHEL-5317
+- Don't limit using SHA1 in KDFs in non-FIPS mode.
+  Resolves: RHEL-5295
+- Provide empty evp_properties section in main OpenSSL configuration file
+  Resolves: RHEL-11439
+- Avoid implicit function declaration when building openssl
+  Resolves: RHEL-1780
+- Forbid explicit curves when created via EVP_PKEY_fromdata
+  Resolves: RHEL-5304
+- AES-SIV cipher implementation contains a bug that causes it to ignore empty
+  associated data entries (CVE-2023-2975)
+  Resolves: RHEL-5302
+- Excessive time spent checking DH keys and parameters (CVE-2023-3446)
+  Resolves: RHEL-5306
+- Excessive time spent checking DH q parameter value (CVE-2023-3817)
+  Resolves: RHEL-5308
 - Fix incorrect cipher key and IV length processing (CVE-2023-5363)
-  Resolves: RHEL-13249
+  Resolves: RHEL-13251
 - Switch explicit FIPS indicator for RSA-OAEP to approved following
   clarification with CMVP
-  Resolves: RHEL-14614
+  Resolves: RHEL-14083
 - Backport the check required by SP800-56Br2 6.4.1.2.1 (3.c)
-  Resolves: RHEL-14614
+  Resolves: RHEL-14083
 - Add missing ECDH Public Key Check in FIPS mode
-  Resolves: RHEL-15993
-- In FIPS mode, prevent any other operations when rsa_keygen_pairwise_test fails
-  Resolves: RHEL-17111
+  Resolves: RHEL-15990
+- Excessive time spent in DH check/generation with large Q parameter value (CVE-2023-5678)
+  Resolves: RHEL-15954
 
 * Wed Jul 12 2023 Dmitry Belyavskiy <dbelyavs@redhat.com> - 1:3.0.7-24
 - Make FIPS module configuration more crypto-policies friendly

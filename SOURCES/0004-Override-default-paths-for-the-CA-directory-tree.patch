@@ -30,12 +30,17 @@ index c0afb96716..d6a5fabd16 100644
 diff -up openssl-3.0.0-alpha16/apps/openssl.cnf.default-tls openssl-3.0.0-alpha16/apps/openssl.cnf
 --- openssl-3.0.0-alpha16/apps/openssl.cnf.default-tls	2021-07-06 13:41:39.204978272 +0200
 +++ openssl-3.0.0-alpha16/apps/openssl.cnf	2021-07-06 13:49:50.362857683 +0200
-@@ -53,6 +53,8 @@ tsa_policy3 = 1.2.3.4.5.7
+@@ -53,6 +53,13 @@ tsa_policy3 = 1.2.3.4.5.7
  
  [openssl_init]
  providers = provider_sect
 +# Load default TLS policy configuration
 +ssl_conf = ssl_module
++alg_section = evp_properties
++
++[ evp_properties ]
++#This section is intentionally added empty here
++#to be tuned on particular systems
  
  # List of providers to load
  [provider_sect]
