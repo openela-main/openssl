@@ -29,7 +29,7 @@ print(string.sub(hash, 0, 16))
 Summary:              Utilities from the general purpose cryptography library with TLS implementation
 Name:                 openssl
 Version:              3.0.7
-Release:              27%{?dist}.openela.0.1
+Release:              28%{?dist}.openela.0.1
 Epoch:                1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -214,7 +214,9 @@ Patch133:             0133-CVE-2023-6237.patch
 Patch134:             0134-engine-based-ECDHE-kex.patch
 # https://github.com/openssl/openssl/pull/23362
 Patch135:             0135-CVE-2024-0727.patch
-Patch136:             0001-remove-rhel-reference.patch
+# https://github.com/openssl/openssl/commit/05f360d9e849a1b277db628f1f13083a7f8dd04f
+Patch136:             0136-CVE-2024-6119.patch
+Patch137:             0001-remove-rhel-reference.patch
 
 License:              ASL 2.0
 URL:                  http://www.openssl.org/
@@ -554,8 +556,12 @@ ln -s /etc/crypto-policies/back-ends/openssl_fips.config $RPM_BUILD_ROOT%{_sysco
 %ldconfig_scriptlets libs
 
 %changelog
-* Tue Apr 30 2024 Release Engineering <releng@openela.org> - 3.0.7.openela.0.1
+* Wed Sep 18 2024 Release Engineering <releng@openela.org> - 3.0.7.openela.0.1
 - Add OpenELA specific changes
+
+* Tue Sep 03 2024 Dmitry Belyavskiy <dbelyavs@redhat.com> - 1:3.0.7-28
+- Patch for CVE-2024-6119
+  Resolves: RHEL-55340
 
 * Wed Feb 21 2024 Dmitry Belyavskiy <dbelyavs@redhat.com> - 1:3.0.7-27
 - Use certified FIPS module instead of freshly built one in Red Hat distribution
