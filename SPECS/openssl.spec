@@ -22,7 +22,7 @@
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.1.1k
-Release: 12%{?dist}
+Release: 14%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -99,6 +99,9 @@ Patch107: openssl-1.1.1-cve-2023-5678.patch
 # Backport from OpenSSL 3.2/RHEL 9
 # Proper fix for CVE-2020-25659
 Patch108: openssl-1.1.1-pkcs1-implicit-rejection.patch
+# Backport from OpenSSL 3.2
+# Fix for CVE-2024-5535
+Patch109: openssl-1.1.1-fix-ssl-select-next-proto.patch
 
 License: OpenSSL and ASL 2.0
 URL: http://www.openssl.org/
@@ -232,6 +235,7 @@ cp %{SOURCE13} test/
 %patch106 -p1 -b .cve-2023-3817
 %patch107 -p1 -b .cve-2023-5678
 %patch108 -p1 -b .pkcs15imprejection
+%patch109 -p1 -b .cve-2024-5535
 
 %build
 # Figure out which flags we want to use.
@@ -515,49 +519,52 @@ export LD_LIBRARY_PATH
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Tue Sep 17 2024 Maurizio Barbaro <mbarbaro@redhat.com> - 1:1.1.1k-14
+- Backport fix SSL_select_next proto from OpenSSL 3.2
+  Fix CVE-2024-5535 
+  Resolves: RHEL-45654
+
 * Thu Nov 30 2023 Dmitry Belyavskiy <dbelyavs@redhat.com> - 1:1.1.1k-12
 - Backport implicit rejection mechanism for RSA PKCS#1 v1.5 to RHEL-8 series
   (a proper fix for CVE-2020-25659)
-  Resolves: RHEL-17696
+  Resolves: RHEL-17694
 
 * Wed Nov 15 2023 Clemens Lang <cllang@redhat.com> - 1:1.1.1k-11
 - Fix CVE-2023-5678: Generating excessively long X9.42 DH keys or checking
   excessively long X9.42 DH keys or parameters may be very slow
-  Resolves: RHEL-16538
+  Resolves: RHEL-16536
 
 * Thu Oct 19 2023 Clemens Lang <cllang@redhat.com> - 1:1.1.1k-10
 - Fix CVE-2023-3446: Excessive time spent checking DH keys and parameters
-  Resolves: RHEL-14245
+  Resolves: RHEL-14243
 - Fix CVE-2023-3817: Excessive time spent checking DH q parameter value
-  Resolves: RHEL-14239
+  Resolves: RHEL-14237
 
-* Wed Feb 08 2023 Dmitry Belyavskiy <dbelyavs@redhat.com> - 1:1.1.1k-9
+* Thu May 04 2023 Dmitry Belyavskiy <dbelyavs@redhat.com> - 1:1.1.1k-9
 - Fixed Timing Oracle in RSA Decryption
   Resolves: CVE-2022-4304
 - Fixed Double free after calling PEM_read_bio_ex
   Resolves: CVE-2022-4450
 - Fixed Use-after-free following BIO_new_NDEF
   Resolves: CVE-2023-0215
+
+* Wed Feb 08 2023 Dmitry Belyavskiy <dbelyavs@redhat.com> - 1:1.1.1k-8
 - Fixed X.400 address type confusion in X.509 GeneralName
   Resolves: CVE-2023-0286
-
-* Thu Jul 21 2022 Dmitry Belyavskiy <dbelyavs@redhat.com> - 1:1.1.1k-8
-- Fix no-ec build
-  Resolves: rhbz#2071020
 
 * Tue Jul 05 2022 Clemens Lang <cllang@redhat.com> - 1:1.1.1k-7
 - Fix CVE-2022-2097: AES OCB fails to encrypt some bytes on 32-bit x86
   Resolves: CVE-2022-2097
 - Update expired certificates used in the testsuite
-  Resolves: rhbz#2092462
+  Resolves: rhbz#2100554
 - Fix CVE-2022-1292: openssl: c_rehash script allows command injection
-  Resolves: rhbz#2090372
+  Resolves: rhbz#2090371
 - Fix CVE-2022-2068: the c_rehash script allows command injection
-  Resolves: rhbz#2098279
+  Resolves: rhbz#2098278
 
 * Wed Mar 23 2022 Clemens Lang <cllang@redhat.com> - 1:1.1.1k-6
 - Fixes CVE-2022-0778 openssl: Infinite loop in BN_mod_sqrt() reachable when parsing certificates
-- Resolves: rhbz#2067146
+- Resolves: rhbz#2067145
 
 * Tue Nov 16 2021 Sahana Prasad <sahana@redhat.com> - 1:1.1.1k-5
 - Fixes CVE-2021-3712 openssl: Read buffer overruns processing ASN.1 strings
