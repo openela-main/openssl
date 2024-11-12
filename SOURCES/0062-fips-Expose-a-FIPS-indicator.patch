@@ -248,8 +248,8 @@ index de391ce067..1cfd71c5cf 100644
 --- a/providers/fips/fipsprov.c
 +++ b/providers/fips/fipsprov.c
 @@ -23,6 +23,7 @@
- #include "prov/seeding.h"
  #include "self_test.h"
+ #include "crypto/context.h"
  #include "internal/core.h"
 +#include "indicator.h"
  

@@ -1,10 +1,29 @@
-diff -up ./crypto/ec/ec_curve.c.remove-ec ./crypto/ec/ec_curve.c
---- ./crypto/ec/ec_curve.c.remove-ec	2023-03-13 16:50:09.278933578 +0100
-+++ ./crypto/ec/ec_curve.c	2023-03-21 12:38:57.696531941 +0100
-@@ -32,38 +32,6 @@ typedef struct {
+From 37fae351c6fef272baf383469181aecfcac87592 Mon Sep 17 00:00:00 2001
+From: rpm-build <rpm-build>
+Date: Mon, 31 Jul 2023 09:41:27 +0200
+Subject: [PATCH 10/35] 0010-Add-changes-to-ectest-and-eccurve.patch
+
+Patch-name: 0010-Add-changes-to-ectest-and-eccurve.patch
+Patch-id: 10
+Patch-status: |
+    # Instead of replacing ectest.c and ec_curve.c, add the changes as a patch so
+    # that new modifications made to these files by upstream are not lost.
+From-dist-git-commit: 9409bc7044cf4b5773639cce20f51399888c45fd
+---
+ crypto/ec/ec_curve.c | 844 -------------------------------------------
+ test/ectest.c        | 174 +--------
+ 2 files changed, 8 insertions(+), 1010 deletions(-)
+
+diff --git a/crypto/ec/ec_curve.c b/crypto/ec/ec_curve.c
+index b5b2f3342d..d32a768fe6 100644
+--- a/crypto/ec/ec_curve.c
++++ b/crypto/ec/ec_curve.c
+@@ -30,38 +30,6 @@ typedef struct {
+ } EC_CURVE_DATA;
+ 
  /* the nist prime curves */
- static const struct {
-     EC_CURVE_DATA h;
+-static const struct {
+-    EC_CURVE_DATA h;
 -    unsigned char data[20 + 24 * 6];
 -} _EC_NIST_PRIME_192 = {
 -    {
@@ -35,11 +54,9 @@ diff -up ./crypto/ec/ec_curve.c.remove-ec ./crypto/ec/ec_curve.c
 -    }
 -};
 -
--static const struct {
--    EC_CURVE_DATA h;
+ static const struct {
+     EC_CURVE_DATA h;
      unsigned char data[20 + 28 * 6];
- } _EC_NIST_PRIME_224 = {
-     {
 @@ -200,187 +168,6 @@ static const struct {
      }
  };
@@ -228,10 +245,12 @@ diff -up ./crypto/ec/ec_curve.c.remove-ec ./crypto/ec/ec_curve.c
  static const struct {
      EC_CURVE_DATA h;
      unsigned char data[20 + 32 * 6];
-@@ -423,294 +210,6 @@ static const struct {
+@@ -421,294 +208,6 @@ static const struct {
+ 
+ #ifndef FIPS_MODULE
  /* the secg prime curves (minus the nist and x9.62 prime curves) */
- static const struct {
-     EC_CURVE_DATA h;
+-static const struct {
+-    EC_CURVE_DATA h;
 -    unsigned char data[20 + 14 * 6];
 -} _EC_SECG_PRIME_112R1 = {
 -    {
@@ -518,11 +537,9 @@ diff -up ./crypto/ec/ec_curve.c.remove-ec ./crypto/ec/ec_curve.c
 -    }
 -};
 -
--static const struct {
--    EC_CURVE_DATA h;
+ static const struct {
+     EC_CURVE_DATA h;
      unsigned char data[0 + 32 * 6];
- } _EC_SECG_PRIME_256K1 = {
-     {
 @@ -745,102 +244,6 @@ static const struct {
      }
  };
@@ -626,10 +643,12 @@ diff -up ./crypto/ec/ec_curve.c.remove-ec ./crypto/ec/ec_curve.c
  #endif /* FIPS_MODULE */
  
  #ifndef OPENSSL_NO_EC2M
-@@ -2238,198 +1641,6 @@ static const struct {
+@@ -2236,198 +1639,6 @@ static const struct {
+  */
+ 
  #ifndef FIPS_MODULE
- static const struct {
-     EC_CURVE_DATA h;
+-static const struct {
+-    EC_CURVE_DATA h;
 -    unsigned char data[0 + 20 * 6];
 -} _EC_brainpoolP160r1 = {
 -    {
@@ -820,12 +839,10 @@ diff -up ./crypto/ec/ec_curve.c.remove-ec ./crypto/ec/ec_curve.c
 -    }
 -};
 -
--static const struct {
--    EC_CURVE_DATA h;
+ static const struct {
+     EC_CURVE_DATA h;
      unsigned char data[0 + 32 * 6];
- } _EC_brainpoolP256r1 = {
-     {
-@@ -2854,8 +2065,6 @@ static const ec_list_element curve_list[
+@@ -2854,8 +2065,6 @@ static const ec_list_element curve_list[] = {
       "NIST/SECG curve over a 521 bit prime field"},
  
      /* X9.62 curves */
@@ -834,7 +851,7 @@ diff -up ./crypto/ec/ec_curve.c.remove-ec ./crypto/ec/ec_curve.c
      {NID_X9_62_prime256v1, &_EC_X9_62_PRIME_256V1.h,
  # if defined(ECP_NISTZ256_ASM)
       EC_GFp_nistz256_method,
-@@ -2899,25 +2108,6 @@ static const ec_list_element curve_list[
+@@ -2899,25 +2108,6 @@ static const ec_list_element curve_list[] = {
  static const ec_list_element curve_list[] = {
      /* prime field curves */
      /* secg curves */
@@ -860,7 +877,7 @@ diff -up ./crypto/ec/ec_curve.c.remove-ec ./crypto/ec/ec_curve.c
  # ifndef OPENSSL_NO_EC_NISTP_64_GCC_128
      {NID_secp224r1, &_EC_NIST_PRIME_224.h, EC_GFp_nistp224_method,
       "NIST/SECG curve over a 224 bit prime field"},
-@@ -2945,18 +2135,6 @@ static const ec_list_element curve_list[
+@@ -2945,18 +2135,6 @@ static const ec_list_element curve_list[] = {
  # endif
       "NIST/SECG curve over a 521 bit prime field"},
      /* X9.62 curves */
@@ -879,7 +896,7 @@ diff -up ./crypto/ec/ec_curve.c.remove-ec ./crypto/ec/ec_curve.c
      {NID_X9_62_prime256v1, &_EC_X9_62_PRIME_256V1.h,
  # if defined(ECP_NISTZ256_ASM)
       EC_GFp_nistz256_method,
-@@ -3053,22 +2231,12 @@ static const ec_list_element curve_list[
+@@ -3053,22 +2231,12 @@ static const ec_list_element curve_list[] = {
      {NID_wap_wsg_idm_ecid_wtls5, &_EC_X9_62_CHAR2_163V1.h, 0,
       "X9.62 curve over a 163 bit binary field"},
  # endif
@@ -902,7 +919,7 @@ diff -up ./crypto/ec/ec_curve.c.remove-ec ./crypto/ec/ec_curve.c
  # ifndef OPENSSL_NO_EC2M
      /* IPSec curves */
      {NID_ipsec3, &_EC_IPSEC_155_ID3.h, 0,
-@@ -3079,18 +2247,6 @@ static const ec_list_element curve_list[
+@@ -3079,18 +2247,6 @@ static const ec_list_element curve_list[] = {
       "\tNot suitable for ECDSA.\n\tQuestionable extension field!"},
  # endif
      /* brainpool curves */
@@ -921,9 +938,10 @@ diff -up ./crypto/ec/ec_curve.c.remove-ec ./crypto/ec/ec_curve.c
      {NID_brainpoolP256r1, &_EC_brainpoolP256r1.h, 0,
       "RFC 5639 curve over a 256 bit prime field"},
      {NID_brainpoolP256t1, &_EC_brainpoolP256t1.h, 0,
-diff -up ./test/ectest.c.remove-ec ./test/ectest.c
---- ./test/ectest.c.remove-ec	2023-03-13 18:39:30.544642912 +0100
-+++ ./test/ectest.c	2023-03-20 07:27:26.403212965 +0100
+diff --git a/test/ectest.c b/test/ectest.c
+index afef85b0e6..4890b0555e 100644
+--- a/test/ectest.c
++++ b/test/ectest.c
 @@ -175,184 +175,26 @@ static int prime_field_tests(void)
          || !TEST_ptr(p = BN_new())
          || !TEST_ptr(a = BN_new())
@@ -1117,11 +1135,14 @@ diff -up ./test/ectest.c.remove-ec ./test/ectest.c
          || !TEST_int_eq(1, BN_check_prime(p, ctx, NULL))
          || !TEST_true(BN_hex2bn(&a,         "FFFFFFFFFFFFFFFFFFFFFFFF"
 @@ -3015,7 +2857,7 @@ int setup_tests(void)
-         return 0;
  
      ADD_TEST(parameter_test);
+     ADD_TEST(ossl_parameter_test);
 -    ADD_TEST(cofactor_range_test);
 +    /* ADD_TEST(cofactor_range_test); */
      ADD_ALL_TESTS(cardinality_test, crv_len);
      ADD_TEST(prime_field_tests);
  #ifndef OPENSSL_NO_EC2M
+-- 
+2.41.0
+

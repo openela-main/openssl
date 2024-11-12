@@ -12,15 +12,15 @@ diff --git a/Configurations/unix-Makefile.tmpl b/Configurations/unix-Makefile.tm
 index 342e46d24d..9f369edf0e 100644
 --- a/Configurations/unix-Makefile.tmpl
 +++ b/Configurations/unix-Makefile.tmpl
-@@ -554,7 +554,7 @@ install_sw: install_dev install_engines install_modules install_runtime
+@@ -611,7 +611,7 @@ install_sw: install_dev install_engines install_modules install_runtime
  
- uninstall_sw: uninstall_runtime uninstall_modules uninstall_engines uninstall_dev
+ uninstall_sw: uninstall_runtime uninstall_modules uninstall_engines uninstall_dev ## Uninstall the software and libraries
  
--install_docs: install_man_docs install_html_docs
-+install_docs: install_man_docs
+-install_docs: install_man_docs install_html_docs ## Install manpages and HTML documentation
++install_docs: install_man_docs ## Install manpages
  
- uninstall_docs: uninstall_man_docs uninstall_html_docs
- 	$(RM) -r $(DESTDIR)$(DOCDIR)
+ uninstall_docs: uninstall_man_docs uninstall_html_docs ## Uninstall manpages and HTML documentation
+ 	$(RM) -r "$(DESTDIR)$(DOCDIR)"
 -- 
 2.26.2
 

@@ -1,32 +1,25 @@
-From 97ac06e5a8e3a8699279c06eeb64c8e958bad7bd Mon Sep 17 00:00:00 2001
-From: Clemens Lang <cllang@redhat.com>
-Date: Fri, 15 Jul 2022 17:45:40 +0200
-Subject: [PATCH] FIPS: Use digest_sign & digest_verify in self test
+From dc41625dc4a793f0e21188165711181ca085339b Mon Sep 17 00:00:00 2001
+From: rpm-build <rpm-build>
+Date: Wed, 6 Mar 2024 19:17:16 +0100
+Subject: [PATCH 28/49] 
+ 0074-FIPS-Use-digest_sign-digest_verify-in-self-test.patch
 
-In review for FIPS 140-3, the lack of a self-test for the digest_sign
-and digest_verify provider functions was highlighted as a problem. NIST
-no longer provides ACVP tests for the RSA SigVer primitive (see
-https://github.com/usnistgov/ACVP/issues/1347). Because FIPS 140-3
-recommends the use of functions that compute the digest and signature
-within the module, we have been advised in our module review that the
-self tests should also use the combined digest and signature APIs, i.e.
-the digest_sign and digest_verify provider functions.
-
-Modify the signature self-test to use these instead by switching to
-EVP_DigestSign and EVP_DigestVerify. This requires adding more ifdefs to
-crypto/evp/m_sigver.c to make these functions usable in the FIPS module.
-
-Signed-off-by: Clemens Lang <cllang@redhat.com>
+Patch-name: 0074-FIPS-Use-digest_sign-digest_verify-in-self-test.patch
+Patch-id: 74
+Patch-status: |
+    # [PATCH 29/46]
+    # 0074-FIPS-Use-digest_sign-digest_verify-in-self-test.patch
+From-dist-git-commit: 4334bc837fbc64d14890fdc51679a80770d498ce
 ---
- crypto/evp/m_sigver.c           | 43 +++++++++++++++++++++++++++------
- providers/fips/self_test_kats.c | 37 +++++++++++++++-------------
- 2 files changed, 56 insertions(+), 24 deletions(-)
+ crypto/evp/m_sigver.c           | 54 ++++++++++++++++++++++++++++-----
+ providers/fips/self_test_kats.c | 43 +++++++++++++++-----------
+ 2 files changed, 73 insertions(+), 24 deletions(-)
 
 diff --git a/crypto/evp/m_sigver.c b/crypto/evp/m_sigver.c
-index db1a1d7bc3..c94c3c53bd 100644
+index fd3a4b79df..3e9f33c26c 100644
 --- a/crypto/evp/m_sigver.c
 +++ b/crypto/evp/m_sigver.c
-@@ -88,6 +88,7 @@ static int update(EVP_MD_CTX *ctx, const void *data, size_t datalen)
+@@ -90,6 +90,7 @@ static int update(EVP_MD_CTX *ctx, const void *data, size_t datalen)
      ERR_raise(ERR_LIB_EVP, EVP_R_ONLY_ONESHOT_SUPPORTED);
      return 0;
  }
@@ -34,7 +27,7 @@ index db1a1d7bc3..c94c3c53bd 100644
  
  /*
   * If we get the "NULL" md then the name comes back as "UNDEF". We want to use
-@@ -130,8 +131,10 @@ static int do_sigver_init(EVP_MD_CTX *ctx, EVP_PKEY_CTX **pctx,
+@@ -125,8 +126,10 @@ static int do_sigver_init(EVP_MD_CTX *ctx, EVP_PKEY_CTX **pctx,
          reinit = 0;
          if (e == NULL)
              ctx->pctx = EVP_PKEY_CTX_new_from_pkey(libctx, pkey, props);
@@ -45,7 +38,7 @@ index db1a1d7bc3..c94c3c53bd 100644
      }
      if (ctx->pctx == NULL)
          return 0;
-@@ -139,8 +142,10 @@ static int do_sigver_init(EVP_MD_CTX *ctx, EVP_PKEY_CTX **pctx,
+@@ -136,8 +139,10 @@ static int do_sigver_init(EVP_MD_CTX *ctx, EVP_PKEY_CTX **pctx,
      locpctx = ctx->pctx;
      ERR_set_mark();
  
@@ -56,7 +49,7 @@ index db1a1d7bc3..c94c3c53bd 100644
  
      /* do not reinitialize if pkey is set or operation is different */
      if (reinit
-@@ -225,8 +230,10 @@ static int do_sigver_init(EVP_MD_CTX *ctx, EVP_PKEY_CTX **pctx,
+@@ -222,8 +227,10 @@ static int do_sigver_init(EVP_MD_CTX *ctx, EVP_PKEY_CTX **pctx,
              signature =
                  evp_signature_fetch_from_prov((OSSL_PROVIDER *)tmp_prov,
                                                supported_sig, locpctx->propquery);
@@ -67,7 +60,7 @@ index db1a1d7bc3..c94c3c53bd 100644
              break;
          }
          if (signature == NULL)
-@@ -310,6 +317,7 @@ static int do_sigver_init(EVP_MD_CTX *ctx, EVP_PKEY_CTX **pctx,
+@@ -307,6 +314,7 @@ static int do_sigver_init(EVP_MD_CTX *ctx, EVP_PKEY_CTX **pctx,
              ctx->fetched_digest = EVP_MD_fetch(locpctx->libctx, mdname, props);
              if (ctx->fetched_digest != NULL) {
                  ctx->digest = ctx->reqdigest = ctx->fetched_digest;
@@ -75,7 +68,7 @@ index db1a1d7bc3..c94c3c53bd 100644
              } else {
                  /* legacy engine support : remove the mark when this is deleted */
                  ctx->reqdigest = ctx->digest = EVP_get_digestbyname(mdname);
-@@ -318,11 +326,13 @@ static int do_sigver_init(EVP_MD_CTX *ctx, EVP_PKEY_CTX **pctx,
+@@ -315,11 +323,13 @@ static int do_sigver_init(EVP_MD_CTX *ctx, EVP_PKEY_CTX **pctx,
                      ERR_raise(ERR_LIB_EVP, EVP_R_INITIALIZATION_ERROR);
                      goto err;
                  }
@@ -89,7 +82,7 @@ index db1a1d7bc3..c94c3c53bd 100644
      if (ctx->reqdigest != NULL
              && !EVP_PKEY_is_a(locpctx->pkey, SN_hmac)
              && !EVP_PKEY_is_a(locpctx->pkey, SN_tls1_prf)
-@@ -334,6 +344,7 @@ static int do_sigver_init(EVP_MD_CTX *ctx, EVP_PKEY_CTX **pctx,
+@@ -331,6 +341,7 @@ static int do_sigver_init(EVP_MD_CTX *ctx, EVP_PKEY_CTX **pctx,
              goto err;
          }
      }
@@ -97,7 +90,7 @@ index db1a1d7bc3..c94c3c53bd 100644
  
      if (ver) {
          if (signature->digest_verify_init == NULL) {
-@@ -366,6 +377,7 @@ static int do_sigver_init(EVP_MD_CTX *ctx, EVP_PKEY_CTX **pctx,
+@@ -363,6 +374,7 @@ static int do_sigver_init(EVP_MD_CTX *ctx, EVP_PKEY_CTX **pctx,
      EVP_KEYMGMT_free(tmp_keymgmt);
      return 0;
  
@@ -105,7 +98,7 @@ index db1a1d7bc3..c94c3c53bd 100644
   legacy:
      /*
       * If we don't have the full support we need with provided methods,
-@@ -437,6 +449,7 @@ static int do_sigver_init(EVP_MD_CTX *ctx, EVP_PKEY_CTX **pctx,
+@@ -434,6 +446,7 @@ static int do_sigver_init(EVP_MD_CTX *ctx, EVP_PKEY_CTX **pctx,
          ctx->pctx->flag_call_digest_custom = 1;
  
      ret = 1;
@@ -113,7 +106,7 @@ index db1a1d7bc3..c94c3c53bd 100644
  
   end:
  #ifndef FIPS_MODULE
-@@ -479,7 +492,6 @@ int EVP_DigestVerifyInit(EVP_MD_CTX *ctx, EVP_PKEY_CTX **pctx,
+@@ -476,7 +489,6 @@ int EVP_DigestVerifyInit(EVP_MD_CTX *ctx, EVP_PKEY_CTX **pctx,
      return do_sigver_init(ctx, pctx, type, NULL, NULL, NULL, e, pkey, 1,
                            NULL);
  }
@@ -121,7 +114,7 @@ index db1a1d7bc3..c94c3c53bd 100644
  
  int EVP_DigestSignUpdate(EVP_MD_CTX *ctx, const void *data, size_t dsize)
  {
-@@ -541,23 +553,29 @@ int EVP_DigestVerifyUpdate(EVP_MD_CTX *ctx, const void *data, size_t dsize)
+@@ -548,24 +560,31 @@ int EVP_DigestVerifyUpdate(EVP_MD_CTX *ctx, const void *data, size_t dsize)
      return EVP_DigestUpdate(ctx, data, dsize);
  }
  
@@ -130,13 +123,19 @@ index db1a1d7bc3..c94c3c53bd 100644
                          size_t *siglen)
  {
 -    int sctx = 0, r = 0;
--    EVP_PKEY_CTX *dctx, *pctx = ctx->pctx;
+-    EVP_PKEY_CTX *dctx = NULL, *pctx = ctx->pctx;
 +    int r = 0;
 +#ifndef FIPS_MODULE
 +    int sctx = 0;
-+    EVP_PKEY_CTX *dctx;
++    EVP_PKEY_CTX *dctx = NULL;
 +#endif /* !defined(FIPS_MODULE) */
 +    EVP_PKEY_CTX *pctx = ctx->pctx;
++ 
+ 
+     if ((ctx->flags & EVP_MD_CTX_FLAG_FINALISED) != 0) {
+         ERR_raise(ERR_LIB_EVP, EVP_R_FINAL_ERROR);
+         return 0;
+     }
  
 +#ifndef FIPS_MODULE
      if (pctx == NULL
@@ -146,26 +145,26 @@ index db1a1d7bc3..c94c3c53bd 100644
          goto legacy;
 +#endif /* !defined(FIPS_MODULE) */
  
-     if (sigret == NULL || (ctx->flags & EVP_MD_CTX_FLAG_FINALISE) != 0)
-         return pctx->op.sig.signature->digest_sign_final(pctx->op.sig.algctx,
-                                                          sigret, siglen,
-                                                          sigret == NULL ? 0 : *siglen);
 +#ifndef FIPS_MODULE
-     dctx = EVP_PKEY_CTX_dup(pctx);
-     if (dctx == NULL)
-         return 0;
-@@ -566,8 +584,10 @@ int EVP_DigestSignFinal(EVP_MD_CTX *ctx, unsigned char *sigret,
-                                                   sigret, siglen,
-                                                   *siglen);
-     EVP_PKEY_CTX_free(dctx);
-+#endif /* defined(FIPS_MODULE) */
+     if (sigret != NULL && (ctx->flags & EVP_MD_CTX_FLAG_FINALISE) == 0) {
+         /* try dup */
+         dctx = EVP_PKEY_CTX_dup(pctx);
+@@ -580,7 +599,14 @@ int EVP_DigestSignFinal(EVP_MD_CTX *ctx, unsigned char *sigret,
+     else
+         EVP_PKEY_CTX_free(dctx);
      return r;
++#else
++    r = pctx->op.sig.signature->digest_sign_final(pctx->op.sig.algctx,
++                                                  sigret, siglen,
++                                                  sigret == NULL ? 0 : *siglen);
++    return r;
++#endif /* !defined(FIPS_MODULE) */
  
 +#ifndef FIPS_MODULE
   legacy:
      if (pctx == NULL || pctx->pmeth == NULL) {
          ERR_raise(ERR_LIB_EVP, EVP_R_INITIALIZATION_ERROR);
-@@ -639,6 +659,7 @@ int EVP_DigestSignFinal(EVP_MD_CTX *ctx, unsigned char *sigret,
+@@ -653,6 +679,7 @@ int EVP_DigestSignFinal(EVP_MD_CTX *ctx, unsigned char *sigret,
          }
      }
      return 1;
@@ -173,7 +172,7 @@ index db1a1d7bc3..c94c3c53bd 100644
  }
  
  int EVP_DigestSign(EVP_MD_CTX *ctx, unsigned char *sigret, size_t *siglen,
-@@ -669,21 +690,27 @@ int EVP_DigestSign(EVP_MD_CTX *ctx, unsigned char *sigret, size_t *siglen,
+@@ -691,23 +718,30 @@ int EVP_DigestSign(EVP_MD_CTX *ctx, unsigned char *sigret, size_t *siglen,
  int EVP_DigestVerifyFinal(EVP_MD_CTX *ctx, const unsigned char *sig,
                            size_t siglen)
  {
@@ -183,10 +182,16 @@ index db1a1d7bc3..c94c3c53bd 100644
 +    unsigned char md[EVP_MAX_MD_SIZE];
      unsigned int mdlen = 0;
      int vctx = 0;
--    EVP_PKEY_CTX *dctx, *pctx = ctx->pctx;
-+    EVP_PKEY_CTX *dctx;
+-    EVP_PKEY_CTX *dctx = NULL, *pctx = ctx->pctx;
++    EVP_PKEY_CTX *dctx = NULL;
 +#endif /* !defined(FIPS_MODULE) */
 +    EVP_PKEY_CTX *pctx = ctx->pctx;
++ 
+ 
+     if ((ctx->flags & EVP_MD_CTX_FLAG_FINALISED) != 0) {
+         ERR_raise(ERR_LIB_EVP, EVP_R_FINAL_ERROR);
+         return 0;
+     }
  
 +#ifndef FIPS_MODULE
      if (pctx == NULL
@@ -196,25 +201,25 @@ index db1a1d7bc3..c94c3c53bd 100644
          goto legacy;
 +#endif /* !defined(FIPS_MODULE) */
  
-     if ((ctx->flags & EVP_MD_CTX_FLAG_FINALISE) != 0)
-         return pctx->op.sig.signature->digest_verify_final(pctx->op.sig.algctx,
-                                                            sig, siglen);
 +#ifndef FIPS_MODULE
-     dctx = EVP_PKEY_CTX_dup(pctx);
-     if (dctx == NULL)
-         return 0;
-@@ -691,8 +718,10 @@ int EVP_DigestVerifyFinal(EVP_MD_CTX *ctx, const unsigned char *sig,
-     r = dctx->op.sig.signature->digest_verify_final(dctx->op.sig.algctx,
-                                                     sig, siglen);
-     EVP_PKEY_CTX_free(dctx);
-+#endif /* !defined(FIPS_MODULE) */
+     if ((ctx->flags & EVP_MD_CTX_FLAG_FINALISE) == 0) {
+         /* try dup */
+         dctx = EVP_PKEY_CTX_dup(pctx);
+@@ -721,7 +755,13 @@ int EVP_DigestVerifyFinal(EVP_MD_CTX *ctx, const unsigned char *sig,
+     else
+         EVP_PKEY_CTX_free(dctx);
      return r;
++#else
++    r = pctx->op.sig.signature->digest_verify_final(pctx->op.sig.algctx,
++                                                    sig, siglen);
++    return r;
++#endif /* !defined(FIPS_MODULE) */
  
 +#ifndef FIPS_MODULE
   legacy:
      if (pctx == NULL || pctx->pmeth == NULL) {
          ERR_raise(ERR_LIB_EVP, EVP_R_INITIALIZATION_ERROR);
-@@ -732,6 +761,7 @@ int EVP_DigestVerifyFinal(EVP_MD_CTX *ctx, const unsigned char *sig,
+@@ -762,6 +802,7 @@ int EVP_DigestVerifyFinal(EVP_MD_CTX *ctx, const unsigned char *sig,
      if (vctx || !r)
          return r;
      return EVP_PKEY_verify(pctx, sig, siglen, md, mdlen);
@@ -222,16 +227,16 @@ index db1a1d7bc3..c94c3c53bd 100644
  }
  
  int EVP_DigestVerify(EVP_MD_CTX *ctx, const unsigned char *sigret,
-@@ -757,4 +787,3 @@ int EVP_DigestVerify(EVP_MD_CTX *ctx, const unsigned char *sigret,
+@@ -794,4 +835,3 @@ int EVP_DigestVerify(EVP_MD_CTX *ctx, const unsigned char *sigret,
          return -1;
      return EVP_DigestVerifyFinal(ctx, sigret, siglen);
  }
 -#endif /* FIPS_MODULE */
 diff --git a/providers/fips/self_test_kats.c b/providers/fips/self_test_kats.c
-index b6d5e8e134..77eec075e6 100644
+index 4ea10670c0..5eb27c8ed2 100644
 --- a/providers/fips/self_test_kats.c
 +++ b/providers/fips/self_test_kats.c
-@@ -444,11 +444,14 @@ static int self_test_sign(const ST_KAT_SIGN *t,
+@@ -450,10 +450,13 @@ static int self_test_sign(const ST_KAT_SIGN *t,
      int ret = 0;
      OSSL_PARAM *params = NULL, *params_sig = NULL;
      OSSL_PARAM_BLD *bld = NULL;
@@ -241,13 +246,12 @@ index b6d5e8e134..77eec075e6 100644
      EVP_PKEY *pkey = NULL;
 -    unsigned char sig[256];
      BN_CTX *bnctx = NULL;
-     BIGNUM *K = NULL;
 +    const char *msg = "Hello World!";
 +    unsigned char sig[256];
      size_t siglen = sizeof(sig);
      static const unsigned char dgst[] = {
          0x7f, 0x83, 0xb1, 0x65, 0x7f, 0xf1, 0xfc, 0x53, 0xb9, 0x2d, 0xc1, 0x81,
-@@ -488,23 +491,26 @@ static int self_test_sign(const ST_KAT_SIGN *t,
+@@ -487,23 +490,26 @@ static int self_test_sign(const ST_KAT_SIGN *t,
          || EVP_PKEY_fromdata(kctx, &pkey, EVP_PKEY_KEYPAIR, params) <= 0)
          goto err;
  
@@ -288,7 +292,7 @@ index b6d5e8e134..77eec075e6 100644
          || EVP_PKEY_CTX_set_params(sctx, params_sig) <= 0)
          goto err;
  
-@@ -509,14 +510,17 @@ static int self_test_sign(const ST_KAT_SIGN *t,
+@@ -513,14 +519,17 @@ static int self_test_sign(const ST_KAT_SIGN *t,
          goto err;
  
      OSSL_SELF_TEST_oncorrupt_byte(st, sig);
@@ -309,5 +313,5 @@ index b6d5e8e134..77eec075e6 100644
      OSSL_PARAM_free(params_sig);
      OSSL_PARAM_BLD_free(bld);
 -- 
-2.37.1
+2.44.0
 

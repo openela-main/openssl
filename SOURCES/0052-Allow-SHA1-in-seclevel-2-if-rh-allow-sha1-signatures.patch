@@ -95,7 +95,7 @@ index 4b74ee1a34..5f089de107 100644
 -     */
 -    sigalgstr[0] = (sig >> 8) & 0xff;
 -    sigalgstr[1] = sig & 0xff;
--    secbits = sigalg_security_bits(s->ctx, lu);
+-    secbits = sigalg_security_bits(SSL_CONNECTION_GET_CTX(s), lu);
 -    if (secbits == 0 ||
 -        !ssl_security(s, SSL_SECOP_SIGALG_CHECK, secbits,
 -                      md != NULL ? EVP_MD_get_type(md) : NID_undef,
@@ -104,8 +104,8 @@ index 4b74ee1a34..5f089de107 100644
 -        return 0;
 +
 +    if (lu->hash == NID_sha1
-+            && ossl_ctx_legacy_digest_signatures_allowed(s->ctx->libctx, 0)
-+            && SSL_get_security_level(s) < 3) {
++            && ossl_ctx_legacy_digest_signatures_allowed(s->session_ctx->libctx, 0)
++            && SSL_get_security_level(SSL_CONNECTION_GET_SSL(s)) < 3) {
 +        /* when rh-allow-sha1-signatures = yes and security level <= 2,
 +         * explicitly allow SHA1 for backwards compatibility */
 +    } else {
@@ -115,7 +115,7 @@ index 4b74ee1a34..5f089de107 100644
 +         */
 +        sigalgstr[0] = (sig >> 8) & 0xff;
 +        sigalgstr[1] = sig & 0xff;
-+        secbits = sigalg_security_bits(s->ctx, lu);
++        secbits = sigalg_security_bits(s->session_ctx, lu);
 +        if (secbits == 0 ||
 +            !ssl_security(s, SSL_SECOP_SIGALG_CHECK, secbits,
 +                          md != NULL ? EVP_MD_get_type(md) : NID_undef,
@@ -131,15 +131,15 @@ index 4b74ee1a34..5f089de107 100644
      }
  
 +    if (lu->hash == NID_sha1
-+            && ossl_ctx_legacy_digest_signatures_allowed(s->ctx->libctx, 0)
-+            && SSL_get_security_level(s) < 3) {
++            && ossl_ctx_legacy_digest_signatures_allowed(s->session_ctx->libctx, 0)
++            && SSL_get_security_level(SSL_CONNECTION_GET_SSL(s)) < 3) {
 +        /* when rh-allow-sha1-signatures = yes and security level <= 2,
 +         * explicitly allow SHA1 for backwards compatibility */
 +        return 1;
 +    }
 +
      /* Finally see if security callback allows it */
-     secbits = sigalg_security_bits(s->ctx, lu);
+     secbits = sigalg_security_bits(SSL_CONNECTION_GET_CTX(s), lu);
      sigalgstr[0] = (lu->sigalg >> 8) & 0xff;
 @@ -2977,6 +2994,8 @@ static int ssl_security_cert_sig(SSL *s, SSL_CTX *ctx, X509 *x, int op)
  {
@@ -147,9 +147,9 @@ index 4b74ee1a34..5f089de107 100644
      int secbits, nid, pknid;
 +    OSSL_LIB_CTX *libctx = NULL;
 +
+ 
      /* Don't check signature if self signed */
      if ((X509_get_extension_flags(x) & EXFLAG_SS) != 0)
-         return 1;
 @@ -2985,6 +3004,25 @@ static int ssl_security_cert_sig(SSL *s, SSL_CTX *ctx, X509 *x, int op)
      /* If digest NID not defined use signature NID */
      if (nid == NID_undef)
@@ -159,21 +159,21 @@ index 4b74ee1a34..5f089de107 100644
 +        libctx = x->libctx;
 +    else if (ctx && ctx->libctx)
 +        libctx = ctx->libctx;
-+    else if (s && s->ctx && s->ctx->libctx)
-+        libctx = s->ctx->libctx;
++    else if (s && s->session_ctx && s->session_ctx->libctx)
++        libctx = s->session_ctx->libctx;
 +    else
 +        libctx = OSSL_LIB_CTX_get0_global_default();
 +
 +    if (nid == NID_sha1
 +            && ossl_ctx_legacy_digest_signatures_allowed(libctx, 0)
-+            && ((s != NULL && SSL_get_security_level(s) < 3)
++            && ((s != NULL && SSL_get_security_level(SSL_CONNECTION_GET_SSL(s)) < 3)
 +                || (ctx != NULL && SSL_CTX_get_security_level(ctx) < 3)
 +            ))
 +        /* When rh-allow-sha1-signatures = yes and security level <= 2,
 +         * explicitly allow SHA1 for backwards compatibility. */
 +        return 1;
 +
-     if (s)
+     if (s != NULL)
          return ssl_security(s, op, secbits, nid, x);
      else
 diff --git a/test/recipes/25-test_verify.t b/test/recipes/25-test_verify.t
@@ -184,8 +184,8 @@ index 700bbd849c..2de1d76b5e 100644
      run(app([@args]));
  }
  
--plan tests => 163;
-+plan tests => 162;
+-plan tests => 193;
++plan tests => 192;
  
  # Canonical success
  ok(verify("ee-cert", "sslserver", ["root-cert"], ["ca-cert"]),
@@ -203,4 +203,3 @@ index 700bbd849c..2de1d76b5e 100644
      "PSS signature using SHA256 and auth level 2");
 -- 
 2.35.1
-

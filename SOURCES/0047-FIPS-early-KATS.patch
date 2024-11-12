@@ -1,7 +1,22 @@
-diff -up openssl-3.0.1/providers/fips/self_test.c.earlykats openssl-3.0.1/providers/fips/self_test.c
---- openssl-3.0.1/providers/fips/self_test.c.earlykats	2022-01-19 13:10:00.635830783 +0100
-+++ openssl-3.0.1/providers/fips/self_test.c	2022-01-19 13:11:43.309342656 +0100
-@@ -362,6 +362,16 @@ int SELF_TEST_post(SELF_TEST_POST_PARAMS
+From ba6e65e2f7e7fe8d9cd62e1e7e345bc41dda424f Mon Sep 17 00:00:00 2001
+From: rpm-build <rpm-build>
+Date: Thu, 19 Oct 2023 13:12:40 +0200
+Subject: [PATCH 21/46] 0047-FIPS-early-KATS.patch
+
+Patch-name: 0047-FIPS-early-KATS.patch
+Patch-id: 47
+Patch-status: |
+    # # Execute KATS before HMAC verification
+From-dist-git-commit: 5c67b5adc311af297f425c09e3e1ac7ca8483911
+---
+ providers/fips/self_test.c | 22 ++++++++++------------
+ 1 file changed, 10 insertions(+), 12 deletions(-)
+
+diff --git a/providers/fips/self_test.c b/providers/fips/self_test.c
+index e3a629018a..3c09bd8638 100644
+--- a/providers/fips/self_test.c
++++ b/providers/fips/self_test.c
+@@ -401,6 +401,16 @@ int SELF_TEST_post(SELF_TEST_POST_PARAMS *st, int on_demand_test)
      if (ev == NULL)
          goto end;
  
@@ -15,14 +30,13 @@ diff -up openssl-3.0.1/providers/fips/self_test.c.earlykats openssl-3.0.1/provid
 +        }
 +    }
 +
-     module_checksum = fips_hmac_container;
-     checksum_len = sizeof(fips_hmac_container);
- 
-@@ -411,18 +421,6 @@ int SELF_TEST_post(SELF_TEST_POST_PARAMS
-             kats_already_passed = 1;
+    if (st->module_checksum_data == NULL) {
+         module_checksum = fips_hmac_container;
+         checksum_len = sizeof(fips_hmac_container);
+@@ -451,18 +461,6 @@ int SELF_TEST_post(SELF_TEST_POST_PARAMS *st, int on_demand_test)
          }
      }
--
+ 
 -    /*
 -     * Only runs the KAT's during installation OR on_demand().
 -     * NOTE: If the installation option 'self_test_onload' is chosen then this
@@ -34,6 +48,10 @@ diff -up openssl-3.0.1/providers/fips/self_test.c.earlykats openssl-3.0.1/provid
 -            goto end;
 -        }
 -    }
-     ok = 1;
- end:
-     OSSL_SELF_TEST_free(ev);
+-
+     /* Verify that the RNG has been restored properly */
+     rng = ossl_rand_get0_private_noncreating(st->libctx);
+     if (rng != NULL)
+-- 
+2.41.0
+

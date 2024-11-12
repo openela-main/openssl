@@ -40,23 +40,11 @@ Dmitry Belyavskiy <dbelyavs@redhat.com>
 
 Signed-off-by: Clemens Lang <cllang@redhat.com>
 ---
- include/openssl/core_names.h                  |  1 +
  include/openssl/evp.h                         |  4 ++++
- providers/implementations/signature/rsa_sig.c | 18 ++++++++++++++++++
- 3 files changed, 23 insertions(+)
+ providers/implementations/signature/rsa_sig.c | 21 +++++++++++++++++
+ util/perl/OpenSSL/paramnames.pm               | 23 ++++++++++---------
+ 3 files changed, 37 insertions(+), 11 deletions(-)
 
-diff --git a/include/openssl/core_names.h b/include/openssl/core_names.h
-index 94fab83193..69c59f0b46 100644
---- a/include/openssl/core_names.h
-+++ b/include/openssl/core_names.h
-@@ -453,6 +453,7 @@ extern "C" {
- #define OSSL_SIGNATURE_PARAM_MGF1_PROPERTIES    \
-     OSSL_PKEY_PARAM_MGF1_PROPERTIES
- #define OSSL_SIGNATURE_PARAM_DIGEST_SIZE        OSSL_PKEY_PARAM_DIGEST_SIZE
-+#define OSSL_SIGNATURE_PARAM_REDHAT_FIPS_INDICATOR "redhat-fips-indicator"
- 
- /* Asym cipher parameters */
- #define OSSL_ASYM_CIPHER_PARAM_DIGEST                   OSSL_PKEY_PARAM_DIGEST
 diff --git a/include/openssl/evp.h b/include/openssl/evp.h
 index a5e78efd6e..f239200465 100644
 --- a/include/openssl/evp.h
@@ -111,6 +99,40 @@ index 49e7f9158a..0c45008a00 100644
      OSSL_PARAM_END
  };
  
+diff --git a/util/perl/OpenSSL/paramnames.pm b/util/perl/OpenSSL/paramnames.pm
+index 8b2d430f17..a109e44521 100644
+--- a/util/perl/OpenSSL/paramnames.pm
++++ b/util/perl/OpenSSL/paramnames.pm
+@@ -377,17 +377,18 @@ my %params = (
+     'EXCHANGE_PARAM_KDF_UKM' =>               "kdf-ukm",
+ 
+ # Signature parameters
+-    'SIGNATURE_PARAM_ALGORITHM_ID' =>       "algorithm-id",
+-    'SIGNATURE_PARAM_PAD_MODE' =>           '*PKEY_PARAM_PAD_MODE',
+-    'SIGNATURE_PARAM_DIGEST' =>             '*PKEY_PARAM_DIGEST',
+-    'SIGNATURE_PARAM_PROPERTIES' =>         '*PKEY_PARAM_PROPERTIES',
+-    'SIGNATURE_PARAM_PSS_SALTLEN' =>        "saltlen",
+-    'SIGNATURE_PARAM_MGF1_DIGEST' =>        '*PKEY_PARAM_MGF1_DIGEST',
+-    'SIGNATURE_PARAM_MGF1_PROPERTIES' =>    '*PKEY_PARAM_MGF1_PROPERTIES',
+-    'SIGNATURE_PARAM_DIGEST_SIZE' =>        '*PKEY_PARAM_DIGEST_SIZE',
+-    'SIGNATURE_PARAM_NONCE_TYPE' =>         "nonce-type",
+-    'SIGNATURE_PARAM_INSTANCE' =>           "instance",
+-    'SIGNATURE_PARAM_CONTEXT_STRING' =>     "context-string",
++    'SIGNATURE_PARAM_ALGORITHM_ID' =>          "algorithm-id",
++    'SIGNATURE_PARAM_PAD_MODE' =>              '*PKEY_PARAM_PAD_MODE',
++    'SIGNATURE_PARAM_DIGEST' =>                '*PKEY_PARAM_DIGEST',
++    'SIGNATURE_PARAM_PROPERTIES' =>            '*PKEY_PARAM_PROPERTIES',
++    'SIGNATURE_PARAM_PSS_SALTLEN' =>           "saltlen",
++    'SIGNATURE_PARAM_MGF1_DIGEST' =>           '*PKEY_PARAM_MGF1_DIGEST',
++    'SIGNATURE_PARAM_MGF1_PROPERTIES' =>       '*PKEY_PARAM_MGF1_PROPERTIES',
++    'SIGNATURE_PARAM_DIGEST_SIZE' =>           '*PKEY_PARAM_DIGEST_SIZE',
++    'SIGNATURE_PARAM_REDHAT_FIPS_INDICATOR' => "redhat-fips-indicator",
++    'SIGNATURE_PARAM_NONCE_TYPE' =>            "nonce-type",
++    'SIGNATURE_PARAM_INSTANCE' =>              "instance",
++    'SIGNATURE_PARAM_CONTEXT_STRING' =>        "context-string",
+ 
+ # Asym cipher parameters
+     'ASYM_CIPHER_PARAM_DIGEST' =>                   '*PKEY_PARAM_DIGEST',
 -- 
 2.38.1
 

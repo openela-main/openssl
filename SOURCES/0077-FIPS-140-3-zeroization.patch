@@ -20,8 +20,8 @@ diff -up openssl-3.0.1/crypto/rsa/rsa_lib.c.fipszero openssl-3.0.1/crypto/rsa/rs
 --- openssl-3.0.1/crypto/rsa/rsa_lib.c.fipszero	2022-08-05 13:08:31.875848536 +0200
 +++ openssl-3.0.1/crypto/rsa/rsa_lib.c	2022-08-05 13:09:35.438416025 +0200
 @@ -155,8 +155,8 @@ void RSA_free(RSA *r)
- 
      CRYPTO_THREAD_lock_free(r->lock);
+     CRYPTO_FREE_REF(&r->references);
  
 -    BN_free(r->n);
 -    BN_free(r->e);

@@ -28,8 +28,8 @@ print(string.sub(hash, 0, 16))
 
 Summary:              Utilities from the general purpose cryptography library with TLS implementation
 Name:                 openssl
-Version:              3.0.7
-Release:              28%{?dist}.openela.0.1
+Version:              3.2.2
+Release:              6%{?dist}.openela.0.1
 Epoch:                1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -74,8 +74,6 @@ Patch12:              0012-Disable-explicit-ec.patch
 Patch13:              0013-skipped-tests-EC-curves.patch
 # Instructions to load legacy provider in openssl.cnf
 Patch24:              0024-load-legacy-prov.patch
-# Tmp: test name change
-Patch31:              0031-tmp-Fix-test-names.patch
 # We load FIPS provider and set FIPS properties implicitly
 Patch32:              0032-Force-fips.patch
 # Embed HMAC into the fips.so
@@ -94,8 +92,6 @@ Patch47:              0047-FIPS-early-KATS.patch
 Patch49:              0049-Selectively-disallow-SHA1-signatures.patch
 # https://bugzilla.redhat.com/show_bug.cgi?id=2049265
 Patch50:              0050-FIPS-enable-pkcs12-mac.patch
-# Backport of patch for RHEL for Edge rhbz #2027261
-Patch51:              0051-Support-different-R_BITS-lengths-for-KBKDF.patch
 # Allow SHA1 in seclevel 2 if rh-allow-sha1-signatures = yes
 Patch52:              0052-Allow-SHA1-in-seclevel-2-if-rh-allow-sha1-signatures.patch
 # Originally from https://github.com/openssl/openssl/pull/18103
@@ -106,21 +102,9 @@ Patch52:              0052-Allow-SHA1-in-seclevel-2-if-rh-allow-sha1-signatures.
 Patch56:              0056-strcasecmp.patch
 # https://bugzilla.redhat.com/show_bug.cgi?id=2053289
 Patch58:              0058-FIPS-limit-rsa-encrypt.patch
-# https://bugzilla.redhat.com/show_bug.cgi?id=2069235
-Patch60:              0060-FIPS-KAT-signature-tests.patch
 # https://bugzilla.redhat.com/show_bug.cgi?id=2087147
 Patch61:              0061-Deny-SHA-1-signature-verification-in-FIPS-provider.patch
 Patch62:              0062-fips-Expose-a-FIPS-indicator.patch
-# https://bugzilla.redhat.com/show_bug.cgi?id=2130708
-# https://github.com/openssl/openssl/pull/18883
-Patch67:              0067-ppc64le-Montgomery-multiply.patch
-# https://github.com/openssl/openssl/commit/44a563dde1584cd9284e80b6e45ee5019be8d36c
-# https://github.com/openssl/openssl/commit/345c99b6654b8313c792d54f829943068911ddbd
-Patch71:              0071-AES-GCM-performance-optimization.patch
-# https://github.com/openssl/openssl/commit/f596bbe4da779b56eea34d96168b557d78e1149
-# https://github.com/openssl/openssl/commit/7e1f3ffcc5bc15fb9a12b9e3bb202f544c6ed5aa
-# hunks in crypto/ppccap.c from https://github.com/openssl/openssl/commit/f5485b97b6c9977c0d39c7669b9f97a879312447
-Patch72:              0072-ChaCha20-performance-optimizations-for-ppc64le.patch
 # https://bugzilla.redhat.com/show_bug.cgi?id=2102535
 Patch73:              0073-FIPS-Use-OAEP-in-KATs-support-fixed-OAEP-seed.patch
 # https://bugzilla.redhat.com/show_bug.cgi?id=2102535
@@ -149,72 +133,43 @@ Patch84:              0084-pbkdf2-Set-minimum-password-length-of-8-bytes.patch
 Patch85:              0085-FIPS-RSA-disable-shake.patch
 # https://bugzilla.redhat.com/show_bug.cgi?id=2142087
 Patch88:              0088-signature-Add-indicator-for-PSS-salt-length.patch
-# https://bugzilla.redhat.com/show_bug.cgi?id=2142087
-Patch89:              0089-PSS-salt-length-from-provider.patch
-# https://bugzilla.redhat.com/show_bug.cgi?id=2142087
-Patch90:              0090-signature-Clamp-PSS-salt-len-to-MD-len.patch
 # https://bugzilla.redhat.com/show_bug.cgi?id=2144561
 Patch91:              0091-FIPS-RSA-encapsulate.patch
-# https://bugzilla.redhat.com/show_bug.cgi?id=2142517
-Patch92:              0092-provider-improvements.patch
 # FIPS-95
 Patch93:              0093-DH-Disable-FIPS-186-4-type-parameters-in-FIPS-mode.patch
 
-# OpenSSL 3.0.8 CVEs
-Patch101:             0101-CVE-2022-4203-nc-match.patch
-Patch102:             0102-CVE-2022-4304-RSA-time-oracle.patch
-Patch103:             0103-CVE-2022-4450-pem-read-bio.patch
-Patch104:             0104-CVE-2023-0215-UAF-bio.patch
-Patch105:             0105-CVE-2023-0216-pkcs7-deref.patch
-Patch106:             0106-CVE-2023-0217-dsa.patch
-Patch107:             0107-CVE-2023-0286-X400.patch
-Patch108:             0108-CVE-2023-0401-pkcs7-md.patch
-
-# https://bugzilla.redhat.com/show_bug.cgi?id=2169314
-Patch109:             0109-fips-Zeroize-out-in-fips-selftest.patch
 # https://bugzilla.redhat.com/show_bug.cgi?id=2168289
 Patch110:             0110-GCM-Implement-explicit-FIPS-indicator-for-IV-gen.patch
-# https://bugzilla.redhat.com/show_bug.cgi?id=2175145
-Patch111:             0111-fips-Use-salt-16-bytes-in-PBKDF2-selftest.patch
 Patch112:             0112-pbdkf2-Set-indicator-if-pkcs5-param-disabled-checks.patch
 # https://bugzilla.redhat.com/show_bug.cgi?id=2179331
 Patch113:             0113-asymciphers-kem-Add-explicit-FIPS-indicator.patch
 # https://bugzilla.redhat.com/show_bug.cgi?id=2157951
 Patch114:             0114-FIPS-enforce-EMS-support.patch
+# skip quic and pairwise tests temporarily
+Patch115:             0115-skip-quic-pairwise.patch
+# Add version aliasing due to
+# https://github.com/openssl/openssl/issues/23534
+Patch116:             0116-version-aliasing.patch
+# https://github.com/openssl/openssl/issues/23050
+Patch117:             0117-ignore-unknown-sigalgorithms-groups.patch
 
-# X.509 policies minor CVEs
-Patch115:             0115-CVE-2023-0464.patch
-Patch116:             0116-CVE-2023-0465.patch
-Patch117:             0117-CVE-2023-0466.patch
-# AES-XTS CVE
-Patch118:             0118-CVE-2023-1255.patch
-
-#https://github.com/openssl/openssl/pull/13817
-#https://bugzilla.redhat.com/show_bug.cgi?id=2153471
-Patch120:             0120-RSA-PKCS15-implicit-rejection.patch
 # https://bugzilla.redhat.com/show_bug.cgi?id=2160797
 Patch121:             0121-FIPS-cms-defaults.patch
-Patch122:             0122-CVE-2023-2650.patch
-# https://github.com/openssl/openssl/pull/19386
-Patch123:             0123-ibmca-atexit-crash.patch
-Patch125:             0125-CVE-2023-2975.patch
-Patch126:             0126-CVE-2023-3446.patch
-Patch127:             0127-CVE-2023-3817.patch
-Patch128:             0128-CVE-2023-5363.patch
-# https://github.com/openssl/openssl/pull/22403
-Patch129:             0129-rsa-Add-SP800-56Br2-6.4.1.2.1-3.c-check.patch
-Patch130:             0130-CVE-2023-5678.patch
-# https://github.com/openssl/openssl/pull/20317
-Patch131:             0131-sslgroups-memleak.patch
-# https://github.com/openssl/openssl/commit/050d26383d4e264966fb83428e72d5d48f402d35
-Patch132:             0132-CVE-2023-6129.patch
-# https://github.com/openssl/openssl/commit/18c02492138d1eb8b6548cb26e7b625fb2414a2a
-Patch133:             0133-CVE-2023-6237.patch
-# https://github.com/openssl/openssl/pull/20780
-Patch134:             0134-engine-based-ECDHE-kex.patch
-# https://github.com/openssl/openssl/pull/23362
-Patch135:             0135-CVE-2024-0727.patch
-# https://github.com/openssl/openssl/commit/05f360d9e849a1b277db628f1f13083a7f8dd04f
+# KTLS regression, temporary skip tests
+Patch122:             0122-TMP-KTLS-test-skip.patch
+# HKDF regression with older provider implementations
+Patch123:             0123-kdf-Preserve-backward-compatibility-with-older-provi.patch
+# https://github.com/openssl/openssl/pull/24717
+Patch124:             0124-Fix-SSL_select_next_proto.patch
+Patch125:             0125-More-correctly-handle-a-selected_len-of-0-when-proce.patch
+Patch126:             0126-Use-correctly-formatted-ALPN-data-in-tserver.patch
+Patch127:             0127-Clarify-the-SSL_select_next_proto-documentation.patch
+Patch128:             0128-Add-a-test-for-SSL_select_next_proto.patch
+Patch129:             0129-Allow-an-empty-NPN-ALPN-protocol-list-in-the-tests.patch
+Patch130:             0130-Correct-return-values-for-tls_construct_stoc_next_pr.patch
+Patch131:             0131-Add-ALPN-validation-in-the-client.patch
+Patch132:             0132-Add-explicit-testing-of-ALN-and-NPN-in-sslapitest.patch
+Patch133:             0133-Add-a-test-for-an-empty-NextProto-message.patch
 Patch136:             0136-CVE-2024-6119.patch
 Patch137:             0001-remove-rhel-reference.patch
 
@@ -556,12 +511,44 @@ ln -s /etc/crypto-policies/back-ends/openssl_fips.config $RPM_BUILD_ROOT%{_sysco
 %ldconfig_scriptlets libs
 
 %changelog
-* Wed Sep 18 2024 Release Engineering <releng@openela.org> - 3.0.7.openela.0.1
+* Tue Nov 12 2024 Release Engineering <releng@openela.org> - 3.2.2.openela.0.1
 - Add OpenELA specific changes
 
-* Tue Sep 03 2024 Dmitry Belyavskiy <dbelyavs@redhat.com> - 1:3.0.7-28
-- Patch for CVE-2024-6119
-  Resolves: RHEL-55340
+* Thu Sep 05 2024 Dmitry Belyavskiy <dbelyavs@redhat.com> - 1:3.2.2-6
+- rebuilt
+  Related: RHEL-55339
+
+* Wed Sep 04 2024 Dmitry Belyavskiy <dbelyavs@redhat.com> - 1:3.2.2-5
+- Fix CVE-2024-6119: Possible denial of service in X.509 name checks
+  Resolves: RHEL-55339
+
+* Wed Aug 21 2024 Clemens Lang <cllang@redhat.com> - 1:3.2.2-4
+- Fix CVE-2024-5535: SSL_select_next_proto buffer overread
+  Resolves: RHEL-45657
+
+* Sat Jun 22 2024 Daiki Ueno <dueno@redhat.com> - 1:3.2.2-3
+- Replace HKDF backward compatibility patch with the official one
+  Related: RHEL-40823
+
+* Wed Jun 12 2024 Daiki Ueno <dueno@redhat.com> - 1:3.2.2-2
+- Add workaround for EVP_PKEY_CTX_add1_hkdf_info with older providers
+  Resolves: RHEL-40823
+
+* Wed Jun 05 2024 Dmitry Belyavskiy <dbelyavs@redhat.com> - 1:3.2.2-1
+- Rebase to OpenSSL 3.2.2. Fixes CVE-2024-2511, CVE-2024-4603, CVE-2024-4741,
+  and Minerva attack.
+  Resolves: RHEL-32148
+  Resolves: RHEL-36792
+  Resolves: RHEL-38514
+  Resolves: RHEL-39111
+
+* Thu May 23 2024 Dmitry Belyavskiy <dbelyavs@redhat.com> - 1:3.2.1-2
+- Update RNG changing for FIPS purpose
+  Resolves: RHEL-35380
+
+* Wed Apr 03 2024 Dmitry Belyavskiy <dbelyavs@redhat.com> - 1:3.2.1-1
+- Rebasing OpenSSL to 3.2.1
+  Resolves: RHEL-26271
 
 * Wed Feb 21 2024 Dmitry Belyavskiy <dbelyavs@redhat.com> - 1:3.0.7-27
 - Use certified FIPS module instead of freshly built one in Red Hat distribution
