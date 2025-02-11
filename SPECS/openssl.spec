@@ -29,7 +29,7 @@ print(string.sub(hash, 0, 16))
 Summary:              Utilities from the general purpose cryptography library with TLS implementation
 Name:                 openssl
 Version:              3.2.2
-Release:              6%{?dist}.openela.0.1
+Release:              6%{?dist}.1.openela.0.1
 Epoch:                1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -171,7 +171,8 @@ Patch131:             0131-Add-ALPN-validation-in-the-client.patch
 Patch132:             0132-Add-explicit-testing-of-ALN-and-NPN-in-sslapitest.patch
 Patch133:             0133-Add-a-test-for-an-empty-NextProto-message.patch
 Patch136:             0136-CVE-2024-6119.patch
-Patch137:             0001-remove-rhel-reference.patch
+Patch140:             0140-CVE-2024-12797.patch
+Patch141:             0001-remove-rhel-reference.patch
 
 License:              ASL 2.0
 URL:                  http://www.openssl.org/
@@ -311,7 +312,7 @@ export HASHBANGPERL=/usr/bin/perl
 	enable-cms enable-md2 enable-rc5 enable-ktls enable-fips\
 	no-mdc2 no-ec2m no-sm2 no-sm4 enable-buildtest-c++\
 	shared  ${sslarch} $RPM_OPT_FLAGS '-DDEVRANDOM="\"/dev/urandom\"" -DREDHAT_FIPS_VERSION="\"%{fips}\""'\
-	-Wl,--allow-multiple-definition
+	-Wl,--allow-multiple-definition -D_GNU_SOURCE
 
 # Do not run this in a production package the FIPS symbols must be patched-in
 #util/mkdef.pl crypto update
@@ -511,8 +512,12 @@ ln -s /etc/crypto-policies/back-ends/openssl_fips.config $RPM_BUILD_ROOT%{_sysco
 %ldconfig_scriptlets libs
 
 %changelog
-* Tue Nov 12 2024 Release Engineering <releng@openela.org> - 3.2.2.openela.0.1
+* Tue Feb 11 2025 Release Engineering <releng@openela.org> - 3.2.2.openela.0.1
 - Add OpenELA specific changes
+
+* Wed Jan 29 2025 Dmitry Belyavskiy <dbelyavs@redhat.com> - 1:3.2.2-6.1
+- RFC7250 handshakes with unauthenticated servers don't abort as expected (CVE-2024-12797)
+  Resolves: RHEL-76755
 
 * Thu Sep 05 2024 Dmitry Belyavskiy <dbelyavs@redhat.com> - 1:3.2.2-6
 - rebuilt
