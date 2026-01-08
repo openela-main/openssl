@@ -1,0 +1,145 @@
+From 79dbd85fe27ebabc278417af64ab8e3eb43d2d40 Mon Sep 17 00:00:00 2001
+From: Todd Short <todd.short@me.com>
+Date: Wed, 23 Mar 2022 18:55:10 -0400
+Subject: [PATCH] ticket_lifetime_hint may exceed 1 week in TLSv1.3
+
+For TLSv1.3, limit ticket lifetime hint to 1 week per RFC8446
+
+Fixes #17948
+
+Reviewed-by: Tomas Mraz <tomas@openssl.org>
+Reviewed-by: Tim Hudson <tjh@openssl.org>
+(Merged from https://github.com/openssl/openssl/pull/17952)
+
+(cherry picked from commit 0089cc7f9d42f6e39872161199fb8b6a99da2492)
+Modified by:	Maurizio Barbaro <mbarbaro@redhat.com> 
+---
+ doc/man3/SSL_CTX_set_timeout.pod | 10 ++++++
+ ssl/statem/statem_srvr.c         | 21 ++++++++----
+ test/sslapitest.c                | 59 ++++++++++++++++++++++++++++++++
+ 3 files changed, 84 insertions(+), 6 deletions(-)
+
+diff --git a/doc/man3/SSL_CTX_set_timeout.pod b/doc/man3/SSL_CTX_set_timeout.pod
+index c32585e45f924..54592654ffd1f 100644
+--- a/doc/man3/SSL_CTX_set_timeout.pod
++++ b/doc/man3/SSL_CTX_set_timeout.pod
+@@ -42,6 +42,16 @@ basis, see L<SSL_get_default_timeout(3)>.
+ All currently supported protocols have the same default timeout value
+ of 300 seconds.
+ 
++This timeout value is used as the ticket lifetime hint for stateless session
++tickets. It is also used as the timeout value within the ticket itself.
++
++For TLSv1.3, RFC8446 limits transmission of this value to 1 week (604800
++seconds).
++
++For TLSv1.2, tickets generated during an initial handshake use the value
++as specified. Tickets generated during a resumed handshake have a value
++of 0 for the ticket lifetime hint.
++
+ =head1 RETURN VALUES
+ 
+ SSL_CTX_set_timeout() returns the previously set timeout value.
+diff --git a/ssl/statem/statem_srvr.c b/ssl/statem/statem_srvr.c
+index d701c46b43b5a..79cfd1d8353a0 100644
+--- a/ssl/statem/statem_srvr.c
++++ b/ssl/statem/statem_srvr.c
+@@ -3820,15 +3820,24 @@ int tls_construct_server_certificate(SSL *s, WPACKET *pkt)
+ static int create_ticket_prequel(SSL *s, WPACKET *pkt, uint32_t age_add,
+                                  unsigned char *tick_nonce)
+ {
++    uint32_t timeout = (uint32_t)s->session->timeout;
++
+     /*
+-     * Ticket lifetime hint: For TLSv1.2 this is advisory only and we leave this
+-     * unspecified for resumed session (for simplicity).
++     * Ticket lifetime hint:
+      * In TLSv1.3 we reset the "time" field above, and always specify the
+-     * timeout.
++     * timeout, limited to a 1 week period per RFC8446.
++     * For TLSv1.2 this is advisory only and we leave this unspecified for
++     * resumed session (for simplicity).
+      */
+-    if (!WPACKET_put_bytes_u32(pkt,
+-                               (s->hit && !SSL_IS_TLS13(s))
+-                               ? 0 : s->session->timeout)) {
++#define ONE_WEEK_SEC (7 * 24 * 60 * 60)
++
++    if (SSL_IS_TLS13(s)) {
++        if (s->session->timeout > ONE_WEEK_SEC)
++            timeout = ONE_WEEK_SEC;
++    } else if (s->hit)
++        timeout = 0;
++
++    if (!WPACKET_put_bytes_u32(pkt, timeout)) {
+         SSLfatal(s, SSL_AD_INTERNAL_ERROR, SSL_F_CREATE_TICKET_PREQUEL,
+                  ERR_R_INTERNAL_ERROR);
+         return 0;
+
+--- a/test/sslapitest.c	2025-10-21 18:44:14.836888120 +0200
++++ b/test/sslapitest.c	2025-10-22 17:39:24.869230280 +0200
+@@ -6656,6 +6656,64 @@
+ 
+     return testresult;
+ }
++
++/*
++ * Test that the lifetime hint of a TLSv1.3 ticket is no more than 1 week
++ * 0 = TLSv1.2
++ * 1 = TLSv1.3
++ */
++static int test_ticket_lifetime(int idx)
++{
++    SSL_CTX *cctx = NULL, *sctx = NULL;
++    SSL *clientssl = NULL, *serverssl = NULL;
++    int testresult = 0;
++    int version = TLS1_3_VERSION;
++
++#define ONE_WEEK_SEC (7 * 24 * 60 * 60)
++#define TWO_WEEK_SEC (2 * ONE_WEEK_SEC)
++
++    if (idx == 0) {
++        version = TLS1_2_VERSION;
++    }
++
++    if (!TEST_true(create_ssl_ctx_pair(TLS_server_method(),
++                                       TLS_client_method(), version, version,
++                                       &sctx, &cctx, cert, privkey)))
++        goto end;
++
++    if (!TEST_true(create_ssl_objects(sctx, cctx, &serverssl,
++                                      &clientssl, NULL, NULL)))
++        goto end;
++
++    /*
++     * Set the timeout to be more than 1 week
++     * make sure the returned value is the default
++     */
++    if (!TEST_long_eq(SSL_CTX_set_timeout(sctx, TWO_WEEK_SEC),
++                      SSL_get_default_timeout(serverssl)))
++        goto end;
++
++    if (!TEST_true(create_ssl_connection(serverssl, clientssl, SSL_ERROR_NONE)))
++        goto end;
++
++    if (idx == 0) {
++        /* TLSv1.2 uses the set value */
++        if (!TEST_ulong_eq(SSL_SESSION_get_ticket_lifetime_hint(SSL_get_session(clientssl)), TWO_WEEK_SEC))
++            goto end;
++    } else {
++        /* TLSv1.3 uses the limited value */
++        if (!TEST_ulong_le(SSL_SESSION_get_ticket_lifetime_hint(SSL_get_session(clientssl)), ONE_WEEK_SEC))
++            goto end;
++    }
++    testresult = 1;
++
++end:
++    SSL_free(serverssl);
++    SSL_free(clientssl);
++    SSL_CTX_free(sctx);
++    SSL_CTX_free(cctx);
++    return testresult;
++}
+ #endif
+ 
+ int setup_tests(void)
