@@ -29,7 +29,7 @@ print(string.sub(hash, 0, 16))
 Summary:              Utilities from the general purpose cryptography library with TLS implementation
 Name:                 openssl
 Version:              3.5.1
-Release:              4%{?dist}.openela.0.1
+Release:              5%{?dist}.openela.0.1
 Epoch:                1
 Source0:              openssl-%{version}.tar.gz
 Source1:              fips-hmacify.sh
@@ -97,6 +97,7 @@ Patch0053:            0053-Allow-hybrid-MLKEM-in-FIPS-mode.patch
 Patch0054:            0054-Temporarily-disable-SLH-DSA-FIPS-self-tests.patch
 Patch0055:            0055-Add-a-define-to-disable-symver-attributes.patch
 Patch0056:            0056-Fix-incorrect-check-of-unwrapped-key-size.patch
+Patch0057:            0057-Do-not-make-key-share-choice-in-tls1_set_groups.patch
 
 #The patches that are different for RHEL9 and 10 start here
 Patch0100:            0100-RHEL9-Allow-SHA1-in-seclevel-2-if-rh-allow-sha1-signatures.patch
@@ -452,8 +453,12 @@ ln -s /etc/crypto-policies/back-ends/openssl_fips.config $RPM_BUILD_ROOT%{_sysco
 %ldconfig_scriptlets libs
 
 %changelog
-* Thu Nov 13 2025 Release Engineering <releng@openela.org> - 3.5.1.openela.0.1
+* Mon Jan 12 2026 Release Engineering <releng@openela.org> - 3.5.1.openela.0.1
 - Add OpenELA specific changes
+
+* Thu Dec 11 2025 Pavol Žáčik <pzacik@redhat.com> - 1:3.5.1-5
+- Do not make key share choice in tls1_set_groups()
+  Resolves: RHEL-131010
 
 * Thu Oct 23 2025 Pavol Žáčik <pzacik@redhat.com> - 1:3.5.1-4
 - Fix CVE-2025-9230
