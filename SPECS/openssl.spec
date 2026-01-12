@@ -29,7 +29,7 @@ print(string.sub(hash, 0, 16))
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 3.5.1
-Release: 4%{?dist}
+Release: 5%{?dist}
 Epoch: 1
 Source0: openssl-%{version}.tar.gz
 Source1: fips-hmacify.sh
@@ -98,6 +98,7 @@ Patch0053: 0053-Allow-hybrid-MLKEM-in-FIPS-mode.patch
 Patch0054: 0054-Temporarily-disable-SLH-DSA-FIPS-self-tests.patch
 Patch0055: 0055-Add-a-define-to-disable-symver-attributes.patch
 Patch0056: 0056-Fix-incorrect-check-of-unwrapped-key-size.patch
+Patch0057: 0057-Do-not-make-key-share-choice-in-tls1_set_groups.patch
 
 License: Apache-2.0
 URL: http://www.openssl.org/
@@ -454,6 +455,10 @@ touch $RPM_BUILD_ROOT/%{_prefix}/include/openssl/engine.h
 %ldconfig_scriptlets libs
 
 %changelog
+* Thu Dec 11 2025 Pavol Žáčik <pzacik@redhat.com> - 1:3.5.1-5
+- Do not make key share choice in tls1_set_groups()
+  Resolves: RHEL-130992
+
 * Wed Oct 22 2025 Pavol Žáčik <pzacik@redhat.com> - 1:3.5.1-4
 - Fix CVE-2025-9230
   Resolves: RHEL-115885
