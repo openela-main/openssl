@@ -29,7 +29,7 @@ print(string.sub(hash, 0, 16))
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 3.5.1
-Release: 5%{?dist}
+Release: 7%{?dist}
 Epoch: 1
 Source0: openssl-%{version}.tar.gz
 Source1: fips-hmacify.sh
@@ -99,6 +99,18 @@ Patch0054: 0054-Temporarily-disable-SLH-DSA-FIPS-self-tests.patch
 Patch0055: 0055-Add-a-define-to-disable-symver-attributes.patch
 Patch0056: 0056-Fix-incorrect-check-of-unwrapped-key-size.patch
 Patch0057: 0057-Do-not-make-key-share-choice-in-tls1_set_groups.patch
+Patch0058: 0058-Fix-PPC-register-processing.patch
+Patch0059: 0059-CVE-2025-11187.patch
+Patch0060: 0060-CVE-2025-15467.patch
+Patch0061: 0061-CVE-2025-15468.patch
+Patch0062: 0062-CVE-2025-15469.patch
+Patch0063: 0063-CVE-2025-66199.patch
+Patch0064: 0064-CVE-2025-68160.patch
+Patch0065: 0065-CVE-2025-69418.patch
+Patch0066: 0066-CVE-2025-69420.patch
+Patch0067: 0067-CVE-2025-69421.patch
+Patch0068: 0068-CVE-2025-69419.patch
+Patch0069: 0069-CVE-2026-22795.patch
 
 License: Apache-2.0
 URL: http://www.openssl.org/
@@ -455,6 +467,27 @@ touch $RPM_BUILD_ROOT/%{_prefix}/include/openssl/engine.h
 %ldconfig_scriptlets libs
 
 %changelog
+* Fri Jan 16 2026 Dmitry Belyavskiy <dbelyavs@redhat.com> - 1:3.5.1-7
+- Fix CVE-2025-11187 CVE-2025-15467 CVE-2025-15468 CVE-2025-15469
+  CVE-2025-66199 CVE-2025-68160 CVE-2025-69418 CVE-2025-69419 CVE-2025-69420
+  CVE-2025-69421 CVE-2026-22795 CVE-2026-22796
+  Resolves: RHEL-142062
+  Resolves: RHEL-141985
+  Resolves: RHEL-142053
+  Resolves: RHEL-142049
+  Resolves: RHEL-142045
+  Resolves: RHEL-142041
+  Resolves: RHEL-142037
+  Resolves: RHEL-142033
+  Resolves: RHEL-142029
+  Resolves: RHEL-142008
+  Resolves: RHEL-142025
+  Resolves: RHEL-142021
+
+* Wed Jan 07 2026 Dmitry Belyavskiy <dbelyavs@redhat.com> - 1:3.5.1-6
+- Fix AES/GCM ppc64le encrypt/decrypt
+  Resolves: RHEL-139108
+
 * Thu Dec 11 2025 Pavol Žáčik <pzacik@redhat.com> - 1:3.5.1-5
 - Do not make key share choice in tls1_set_groups()
   Resolves: RHEL-130992
