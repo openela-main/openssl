@@ -29,7 +29,7 @@ print(string.sub(hash, 0, 16))
 Summary:              Utilities from the general purpose cryptography library with TLS implementation
 Name:                 openssl
 Version:              3.5.1
-Release:              5%{?dist}.openela.0.1
+Release:              7%{?dist}.openela.0.1
 Epoch:                1
 Source0:              openssl-%{version}.tar.gz
 Source1:              fips-hmacify.sh
@@ -98,6 +98,18 @@ Patch0054:            0054-Temporarily-disable-SLH-DSA-FIPS-self-tests.patch
 Patch0055:            0055-Add-a-define-to-disable-symver-attributes.patch
 Patch0056:            0056-Fix-incorrect-check-of-unwrapped-key-size.patch
 Patch0057:            0057-Do-not-make-key-share-choice-in-tls1_set_groups.patch
+Patch0058:            0058-Fix-PPC-register-processing.patch
+Patch0059:            0059-CVE-2025-11187.patch
+Patch0060:            0060-CVE-2025-15467.patch
+Patch0061:            0061-CVE-2025-15468.patch
+Patch0062:            0062-CVE-2025-15469.patch
+Patch0063:            0063-CVE-2025-66199.patch
+Patch0064:            0064-CVE-2025-68160.patch
+Patch0065:            0065-CVE-2025-69418.patch
+Patch0066:            0066-CVE-2025-69420.patch
+Patch0067:            0067-CVE-2025-69421.patch
+Patch0068:            0068-CVE-2025-69419.patch
+Patch0069:            0069-CVE-2026-22795.patch
 
 #The patches that are different for RHEL9 and 10 start here
 Patch0100:            0100-RHEL9-Allow-SHA1-in-seclevel-2-if-rh-allow-sha1-signatures.patch
@@ -453,8 +465,29 @@ ln -s /etc/crypto-policies/back-ends/openssl_fips.config $RPM_BUILD_ROOT%{_sysco
 %ldconfig_scriptlets libs
 
 %changelog
-* Mon Jan 12 2026 Release Engineering <releng@openela.org> - 3.5.1.openela.0.1
+* Wed Jan 28 2026 Release Engineering <releng@openela.org> - 3.5.1.openela.0.1
 - Add OpenELA specific changes
+
+* Fri Jan 16 2026 Dmitry Belyavskiy <dbelyavs@redhat.com> - 1:3.5.1-7
+- Fix CVE-2025-11187 CVE-2025-15467 CVE-2025-15468 CVE-2025-15469
+  CVE-2025-66199 CVE-2025-68160 CVE-2025-69418 CVE-2025-69419 CVE-2025-69420
+  CVE-2025-69421 CVE-2026-22795 CVE-2026-22796
+  Resolves: RHEL-142068
+  Resolves: RHEL-142002
+  Resolves: RHEL-142055
+  Resolves: RHEL-142051
+  Resolves: RHEL-142047
+  Resolves: RHEL-142043
+  Resolves: RHEL-142039
+  Resolves: RHEL-142035
+  Resolves: RHEL-142031
+  Resolves: RHEL-142011
+  Resolves: RHEL-142027
+  Resolves: RHEL-142023
+
+* Wed Jan 07 2026 Dmitry Belyavskiy <dbelyavs@redhat.com> - 1:3.5.1-6
+- Fix AES/GCM ppc64le encrypt/decrypt
+  Resolves: RHEL-139131
 
 * Thu Dec 11 2025 Pavol Žáčik <pzacik@redhat.com> - 1:3.5.1-5
 - Do not make key share choice in tls1_set_groups()
