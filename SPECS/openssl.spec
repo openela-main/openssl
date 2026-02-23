@@ -22,7 +22,7 @@
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.1.1k
-Release: 14%{?dist}
+Release: 15%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -99,11 +99,15 @@ Patch107: openssl-1.1.1-cve-2023-5678.patch
 # Backport from OpenSSL 3.2/RHEL 9
 # Proper fix for CVE-2020-25659
 Patch108: openssl-1.1.1-pkcs1-implicit-rejection.patch
-# Backport from OpenSSL 3.0
+# Backport from OpenSSL 3.2
 # Fix for CVE-2024-5535
 Patch109: openssl-1.1.1-fix-ssl-select-next-proto.patch
+# Fix for CVE-2025-9230
 Patch110: openssl-1.1.1-cve-2025-9230.patch
 Patch111: openssl-1.1.1-ticket_lifetime_hint.patch
+# Fix for CVE-2025-69419 (next two)
+Patch112: openssl-1.1.1-hardening-from-openssl-3.0.1.patch
+Patch113: openssl-1.1.1-cve-2025-69419.patch
 
 License: OpenSSL and ASL 2.0
 URL: http://www.openssl.org/
@@ -182,64 +186,66 @@ from other formats to the formats used by the OpenSSL toolkit.
 cp %{SOURCE12} crypto/ec/
 cp %{SOURCE13} test/
 
-%patch1 -p1 -b .build   %{?_rawbuild}
-%patch2 -p1 -b .defaults
-%patch3 -p1 -b .no-html  %{?_rawbuild}
-%patch4 -p1 -b .man-rename
+%patch -P1 -p1 -b .build   %{?_rawbuild}
+%patch -P2 -p1 -b .defaults
+%patch -P3 -p1 -b .no-html  %{?_rawbuild}
+%patch -P4 -p1 -b .man-rename
 
-%patch31 -p1 -b .conf-paths
-%patch32 -p1 -b .version-add-engines
-%patch33 -p1 -b .dgst
-%patch36 -p1 -b .no-brainpool
-%patch37 -p1 -b .curves
-%patch38 -p1 -b .no-weak-verify
-%patch40 -p1 -b .sslv3-abi
-%patch41 -p1 -b .system-cipherlist
-%patch42 -p1 -b .fips
-%patch44 -p1 -b .version-override
-%patch45 -p1 -b .weak-ciphers
-%patch46 -p1 -b .seclevel
-%patch47 -p1 -b .ts-sha256-default
-%patch48 -p1 -b .fips-post-rand
-%patch49 -p1 -b .evp-kdf
-%patch50 -p1 -b .ssh-kdf
-%patch51 -p1 -b .intel-cet
-%patch52 -p1 -b .s390x-update
-%patch53 -p1 -b .crng-test
-%patch55 -p1 -b .arm-update
-%patch56 -p1 -b .s390x-ecc
-%patch60 -p1 -b .krb5-kdf
-%patch61 -p1 -b .edk2-build
-%patch62 -p1 -b .fips-curves
-%patch65 -p1 -b .drbg-selftest
-%patch66 -p1 -b .fips-dh
-%patch67 -p1 -b .kdf-selftest
-%patch69 -p1 -b .alpn-cb
-%patch70 -p1 -b .rewire-fips-drbg
-%patch74 -p1 -b .addrconfig
-%patch75 -p1 -b .tls13-curves
-%patch76 -p1 -b .cleanup-reneg
-%patch77 -p1 -b .s390x-aes
-%patch78 -p1 -b .addr-ipv6
-%patch79 -p1 -b .servername-cb
-%patch80 -p1 -b .s390x-test-aes
-%patch81 -p1 -b .read-buff
-%patch82 -p1 -b .cve-2022-0778
-%patch83 -p1 -b .replace-expired-certs
-%patch84 -p1 -b .cve-2022-1292
-%patch85 -p1 -b .cve-2022-2068
-%patch86 -p1 -b .cve-2022-2097
-%patch101 -p1 -b .cve-2022-4304
-%patch102 -p1 -b .cve-2022-4450
-%patch103 -p1 -b .cve-2023-0215
-%patch104 -p1 -b .cve-2023-0286
-%patch105 -p1 -b .cve-2023-3446
-%patch106 -p1 -b .cve-2023-3817
-%patch107 -p1 -b .cve-2023-5678
-%patch108 -p1 -b .pkcs15imprejection
-%patch109 -p1 -b .cve-2024-5535
-%patch110 -p1 -b .cve-2025-9230
-%patch111 -p1 -b .ticket_lifetime_hint
+%patch -P31 -p1 -b .conf-paths
+%patch -P32 -p1 -b .version-add-engines
+%patch -P33 -p1 -b .dgst
+%patch -P36 -p1 -b .no-brainpool
+%patch -P37 -p1 -b .curves
+%patch -P38 -p1 -b .no-weak-verify
+%patch -P40 -p1 -b .sslv3-abi
+%patch -P41 -p1 -b .system-cipherlist
+%patch -P42 -p1 -b .fips
+%patch -P44 -p1 -b .version-override
+%patch -P45 -p1 -b .weak-ciphers
+%patch -P46 -p1 -b .seclevel
+%patch -P47 -p1 -b .ts-sha256-default
+%patch -P48 -p1 -b .fips-post-rand
+%patch -P49 -p1 -b .evp-kdf
+%patch -P50 -p1 -b .ssh-kdf
+%patch -P51 -p1 -b .intel-cet
+%patch -P52 -p1 -b .s390x-update
+%patch -P53 -p1 -b .crng-test
+%patch -P55 -p1 -b .arm-update
+%patch -P56 -p1 -b .s390x-ecc
+%patch -P60 -p1 -b .krb5-kdf
+%patch -P61 -p1 -b .edk2-build
+%patch -P62 -p1 -b .fips-curves
+%patch -P65 -p1 -b .drbg-selftest
+%patch -P66 -p1 -b .fips-dh
+%patch -P67 -p1 -b .kdf-selftest
+%patch -P69 -p1 -b .alpn-cb
+%patch -P70 -p1 -b .rewire-fips-drbg
+%patch -P74 -p1 -b .addrconfig
+%patch -P75 -p1 -b .tls13-curves
+%patch -P76 -p1 -b .cleanup-reneg
+%patch -P77 -p1 -b .s390x-aes
+%patch -P78 -p1 -b .addr-ipv6
+%patch -P79 -p1 -b .servername-cb
+%patch -P80 -p1 -b .s390x-test-aes
+%patch -P81 -p1 -b .read-buff
+%patch -P82 -p1 -b .cve-2022-0778
+%patch -P83 -p1 -b .replace-expired-certs
+%patch -P84 -p1 -b .cve-2022-1292
+%patch -P85 -p1 -b .cve-2022-2068
+%patch -P86 -p1 -b .cve-2022-2097
+%patch -P101 -p1 -b .cve-2022-4304
+%patch -P102 -p1 -b .cve-2022-4450
+%patch -P103 -p1 -b .cve-2023-0215
+%patch -P104 -p1 -b .cve-2023-0286
+%patch -P105 -p1 -b .cve-2023-3446
+%patch -P106 -p1 -b .cve-2023-3817
+%patch -P107 -p1 -b .cve-2023-5678
+%patch -P108 -p1 -b .pkcs15imprejection
+%patch -P109 -p1 -b .cve-2024-5535
+%patch -P110 -p1 -b .cve-2025-9230
+%patch -P111 -p1 -b .ticket_lifetime_hint
+%patch -P112 -p1 -b .cve-2025-69419-1
+%patch -P113 -p1 -b .cve-2025-69419-2
 
 %build
 # Figure out which flags we want to use.
@@ -523,61 +529,63 @@ export LD_LIBRARY_PATH
 %postun libs -p /sbin/ldconfig
 
 %changelog
-* Mon Dec 08 2025 Nikita Sanjay Patwa <npatwa@redhat.com> - 1:1.1.1k-14
-- Backport fix for Out-of-bounds read & write in RFC 3211 KEK Unwrap
-  Fix CVE-2025-9230
-  Resolves: RHEL-128613
-- Fix bug for ticket_lifetime_hint exceed issue
-  Resolves: RHEL-119891
+* Thu Feb 12 2026 Antonio Vieiro <avieirov@redhat.com> - 1:1.1.1k-15
+- Fix CVE-2025-69419: Arbitrary code execution due to out-of-bounds write in PKCS#12 processing
+  ticket_lifetime_hint exceed 1 week in TLSv1.3 and breaks compliant clients
+  Resolves: RHEL-149165
+  Resolves: RHEL-142715
 
-* Mon Sep 16 2024 Maurizio Barbaro <mbarbaro@redhat.com> - 1:1.1.1k-13
-- Backport fix SSL_select_next proto from OpenSSL 3.2  
+* Mon Dec 22 2025 Nikita Sanjay Patwa <npatwa@redhat.com> - 1:1.1.1k-14.1
+- Backport fix for openssl: Out-of-bounds read & write in RFC 3211 KEK Unwrap
+  Fix CVE-2025-9230
+  Resolves: RHEL-128615
+
+* Tue Sep 17 2024 Maurizio Barbaro <mbarbaro@redhat.com> - 1:1.1.1k-14
+- Backport fix SSL_select_next proto from OpenSSL 3.2
   Fix CVE-2024-5535 
   Resolves: RHEL-45654
 
 * Thu Nov 30 2023 Dmitry Belyavskiy <dbelyavs@redhat.com> - 1:1.1.1k-12
 - Backport implicit rejection mechanism for RSA PKCS#1 v1.5 to RHEL-8 series
   (a proper fix for CVE-2020-25659)
-  Resolves: RHEL-17696
+  Resolves: RHEL-17694
 
 * Wed Nov 15 2023 Clemens Lang <cllang@redhat.com> - 1:1.1.1k-11
 - Fix CVE-2023-5678: Generating excessively long X9.42 DH keys or checking
   excessively long X9.42 DH keys or parameters may be very slow
-  Resolves: RHEL-16538
+  Resolves: RHEL-16536
 
 * Thu Oct 19 2023 Clemens Lang <cllang@redhat.com> - 1:1.1.1k-10
 - Fix CVE-2023-3446: Excessive time spent checking DH keys and parameters
-  Resolves: RHEL-14245
+  Resolves: RHEL-14243
 - Fix CVE-2023-3817: Excessive time spent checking DH q parameter value
-  Resolves: RHEL-14239
+  Resolves: RHEL-14237
 
-* Wed Feb 08 2023 Dmitry Belyavskiy <dbelyavs@redhat.com> - 1:1.1.1k-9
+* Thu May 04 2023 Dmitry Belyavskiy <dbelyavs@redhat.com> - 1:1.1.1k-9
 - Fixed Timing Oracle in RSA Decryption
   Resolves: CVE-2022-4304
 - Fixed Double free after calling PEM_read_bio_ex
   Resolves: CVE-2022-4450
 - Fixed Use-after-free following BIO_new_NDEF
   Resolves: CVE-2023-0215
+
+* Wed Feb 08 2023 Dmitry Belyavskiy <dbelyavs@redhat.com> - 1:1.1.1k-8
 - Fixed X.400 address type confusion in X.509 GeneralName
   Resolves: CVE-2023-0286
-
-* Thu Jul 21 2022 Dmitry Belyavskiy <dbelyavs@redhat.com> - 1:1.1.1k-8
-- Fix no-ec build
-  Resolves: rhbz#2071020
 
 * Tue Jul 05 2022 Clemens Lang <cllang@redhat.com> - 1:1.1.1k-7
 - Fix CVE-2022-2097: AES OCB fails to encrypt some bytes on 32-bit x86
   Resolves: CVE-2022-2097
 - Update expired certificates used in the testsuite
-  Resolves: rhbz#2092462
+  Resolves: rhbz#2100554
 - Fix CVE-2022-1292: openssl: c_rehash script allows command injection
-  Resolves: rhbz#2090372
+  Resolves: rhbz#2090371
 - Fix CVE-2022-2068: the c_rehash script allows command injection
-  Resolves: rhbz#2098279
+  Resolves: rhbz#2098278
 
 * Wed Mar 23 2022 Clemens Lang <cllang@redhat.com> - 1:1.1.1k-6
 - Fixes CVE-2022-0778 openssl: Infinite loop in BN_mod_sqrt() reachable when parsing certificates
-- Resolves: rhbz#2067146
+- Resolves: rhbz#2067145
 
 * Tue Nov 16 2021 Sahana Prasad <sahana@redhat.com> - 1:1.1.1k-5
 - Fixes CVE-2021-3712 openssl: Read buffer overruns processing ASN.1 strings
