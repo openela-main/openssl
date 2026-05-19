@@ -1,7 +1,7 @@
-From 60e56b8d5d031a7169aa4ad07b13bca15faf345b Mon Sep 17 00:00:00 2001
+From 2afc42b7faa263387234aa747d676efd140a7c8a Mon Sep 17 00:00:00 2001
 From: rpm-build <rpm-build>
 Date: Wed, 6 Mar 2024 19:17:15 +0100
-Subject: [PATCH 11/53] RH: skipped tests EC curves
+Subject: [PATCH 11/57] RH: skipped tests EC curves
 
 Patch-name: 0013-skipped-tests-EC-curves.patch
 Patch-id: 13
@@ -16,10 +16,10 @@ From-dist-git-commit: 4334bc837fbc64d14890fdc51679a80770d498ce
  4 files changed, 3 insertions(+), 15 deletions(-)
 
 diff --git a/test/recipes/15-test_ec.t b/test/recipes/15-test_ec.t
-index c953fad9f1..906769a12e 100644
+index 9bf946e81b..d6521876e5 100644
 --- a/test/recipes/15-test_ec.t
 +++ b/test/recipes/15-test_ec.t
-@@ -94,7 +94,7 @@ SKIP: {
+@@ -104,7 +104,7 @@ SKIP: {
  
  subtest 'Check loading of fips and non-fips keys' => sub {
      plan skip_all => "FIPS is disabled"
@@ -78,5 +78,5 @@ index f722800e27..26a01786bb 100644
  my @basic_cmd = ("cmp_vfy_test",
                   data_file("server.crt"),     data_file("client.crt"),
 -- 
-2.50.0
+2.52.0
 

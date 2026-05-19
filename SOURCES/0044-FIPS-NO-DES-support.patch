@@ -1,54 +1,38 @@
-From 8774a96fde9355aa32c040c145e4f35d7c09a5bd Mon Sep 17 00:00:00 2001
+From 62748c233ae3afb8b0797a7d1ce2f391721d2971 Mon Sep 17 00:00:00 2001
 From: Simo Sorce <simo@redhat.com>
 Date: Fri, 7 Mar 2025 18:15:13 -0500
-Subject: [PATCH 44/53] FIPS: NO DES support
+Subject: [PATCH 44/57] FIPS: NO DES support
 
 Signed-off-by: Simo Sorce <simo@redhat.com>
 ---
- providers/fips/fipsprov.c                           |  3 ++-
- providers/fips/self_test_data.inc                   |  5 ++++-
+ providers/fips/fipsprov.c                           |  4 ----
+ providers/fips/self_test_data.inc                   |  2 ++
  test/evp_libctx_test.c                              |  4 +++-
  .../30-test_evp_data/evpciph_des3_common.txt        | 13 ++++---------
  test/recipes/30-test_evp_data/evpmac_cmac_des.txt   | 10 ----------
  test/recipes/80-test_cms.t                          |  2 +-
- 6 files changed, 14 insertions(+), 23 deletions(-)
+ 6 files changed, 10 insertions(+), 25 deletions(-)
 
 diff --git a/providers/fips/fipsprov.c b/providers/fips/fipsprov.c
-index 84d8e897cc..4b394c3e39 100644
+index f8f2822300..33e1a179cf 100644
 --- a/providers/fips/fipsprov.c
 +++ b/providers/fips/fipsprov.c
-@@ -355,7 +355,8 @@ static const OSSL_ALGORITHM_CAPABLE fips_ciphers[] = {
-          ossl_cipher_capable_aes_cbc_hmac_sha256),
+@@ -355,10 +355,6 @@ static const OSSL_ALGORITHM_CAPABLE fips_ciphers[] = {
+         ossl_cipher_capable_aes_cbc_hmac_sha256),
      ALGC(PROV_NAMES_AES_256_CBC_HMAC_SHA256, ossl_aes256cbc_hmac_sha256_functions,
-          ossl_cipher_capable_aes_cbc_hmac_sha256),
+         ossl_cipher_capable_aes_cbc_hmac_sha256),
 -#ifndef OPENSSL_NO_DES
-+/* We don't certify 3DES in our FIPS provider */
-+#if 0 /* ifndef OPENSSL_NO_DES */
-     ALG(PROV_NAMES_DES_EDE3_ECB, ossl_tdes_ede3_ecb_functions),
-     ALG(PROV_NAMES_DES_EDE3_CBC, ossl_tdes_ede3_cbc_functions),
- #endif  /* OPENSSL_NO_DES */
+-    ALG(PROV_NAMES_DES_EDE3_ECB, ossl_tdes_ede3_ecb_functions),
+-    ALG(PROV_NAMES_DES_EDE3_CBC, ossl_tdes_ede3_cbc_functions),
+-#endif /* OPENSSL_NO_DES */
+     { { NULL, NULL, NULL }, NULL }
+ };
+ static OSSL_ALGORITHM exported_fips_ciphers[OSSL_NELEM(fips_ciphers)];
 diff --git a/providers/fips/self_test_data.inc b/providers/fips/self_test_data.inc
-index 10ca473764..6a69e1687b 100644
+index a7d7684d96..d8d23e6f90 100644
 --- a/providers/fips/self_test_data.inc
 +++ b/providers/fips/self_test_data.inc
-@@ -209,6 +209,7 @@ static const ST_KAT_DIGEST st_kat_digest_tests[] =
- /*- CIPHER TEST DATA */
- 
- /* DES3 test data */
-+#if 0
- static const unsigned char des_ede3_cbc_pt[] = {
-     0x6B, 0xC1, 0xBE, 0xE2, 0x2E, 0x40, 0x9F, 0x96,
-     0xE9, 0x3D, 0x7E, 0x11, 0x73, 0x93, 0x17, 0x2A,
-@@ -229,7 +230,7 @@ static const unsigned char des_ede3_cbc_ct[] = {
-     0x51, 0x65, 0x70, 0x48, 0x1F, 0x25, 0xB5, 0x0F,
-     0x73, 0xC0, 0xBD, 0xA8, 0x5C, 0x8E, 0x0D, 0xA7
- };
--
-+#endif
- /* AES-256 GCM test data */
- static const unsigned char aes_256_gcm_key[] = {
-     0x92, 0xe1, 0x1d, 0xcd, 0xaa, 0x86, 0x6f, 0x5c,
-@@ -315,6 +316,7 @@ static const ST_KAT_CIPHER st_kat_cipher_tests[] = {
+@@ -305,6 +305,7 @@ static const ST_KAT_CIPHER st_kat_cipher_tests[] = {
          CIPHER_MODE_DECRYPT,
          ITM(aes_128_ecb_key)
      },
@@ -56,7 +40,7 @@ index 10ca473764..6a69e1687b 100644
  #ifndef OPENSSL_NO_DES
      {
          {
-@@ -327,6 +329,7 @@ static const ST_KAT_CIPHER st_kat_cipher_tests[] = {
+@@ -317,6 +318,7 @@ static const ST_KAT_CIPHER st_kat_cipher_tests[] = {
          ITM(tdes_key)
      }
  #endif
@@ -65,10 +49,10 @@ index 10ca473764..6a69e1687b 100644
  
  static const char hkdf_digest[] = "SHA256";
 diff --git a/test/evp_libctx_test.c b/test/evp_libctx_test.c
-index 2838f343bd..19dd2c6c63 100644
+index 773210fadb..e0b4efe3f4 100644
 --- a/test/evp_libctx_test.c
 +++ b/test/evp_libctx_test.c
-@@ -831,7 +831,9 @@ int setup_tests(void)
+@@ -984,7 +984,9 @@ int setup_tests(void)
      ADD_TEST(kem_invalid_keytype);
  #endif
  #ifndef OPENSSL_NO_DES
@@ -157,10 +141,10 @@ index a11e5ffe54..e4a7cbe75e 100644
 -Input = FA620C1BBE97319E9A0CF0492121F7A20EB08A6A709DCBD00AAF38E4F99E754E
 -Output = 8F49A1B7D6AA2258
 diff --git a/test/recipes/80-test_cms.t b/test/recipes/80-test_cms.t
-index 756f90c1bd..ac833d2a2f 100644
+index beadb43cf4..71ab4a3910 100644
 --- a/test/recipes/80-test_cms.t
 +++ b/test/recipes/80-test_cms.t
-@@ -398,7 +398,7 @@ my @smime_cms_tests = (
+@@ -415,7 +415,7 @@ my @smime_cms_tests = (
        \&final_compare
      ],
  
@@ -170,5 +154,5 @@ index 756f90c1bd..ac833d2a2f 100644
          "-des3", "-secretkey", "000102030405060708090A0B0C0D0E0F1011121314151617",
          "-stream", "-out", "{output}.cms" ],
 -- 
-2.50.0
+2.52.0
 

@@ -28,8 +28,8 @@ print(string.sub(hash, 0, 16))
 
 Summary:              Utilities from the general purpose cryptography library with TLS implementation
 Name:                 openssl
-Version:              3.5.1
-Release:              7%{?dist}.openela.0.1
+Version:              3.5.5
+Release:              1%{?dist}.openela.0.1
 Epoch:                1
 Source0:              openssl-%{version}.tar.gz
 Source1:              fips-hmacify.sh
@@ -96,20 +96,8 @@ Patch0053:            0053-Allow-hybrid-MLKEM-in-FIPS-mode.patch
 %endif
 Patch0054:            0054-Temporarily-disable-SLH-DSA-FIPS-self-tests.patch
 Patch0055:            0055-Add-a-define-to-disable-symver-attributes.patch
-Patch0056:            0056-Fix-incorrect-check-of-unwrapped-key-size.patch
-Patch0057:            0057-Do-not-make-key-share-choice-in-tls1_set_groups.patch
-Patch0058:            0058-Fix-PPC-register-processing.patch
-Patch0059:            0059-CVE-2025-11187.patch
-Patch0060:            0060-CVE-2025-15467.patch
-Patch0061:            0061-CVE-2025-15468.patch
-Patch0062:            0062-CVE-2025-15469.patch
-Patch0063:            0063-CVE-2025-66199.patch
-Patch0064:            0064-CVE-2025-68160.patch
-Patch0065:            0065-CVE-2025-69418.patch
-Patch0066:            0066-CVE-2025-69420.patch
-Patch0067:            0067-CVE-2025-69421.patch
-Patch0068:            0068-CVE-2025-69419.patch
-Patch0069:            0069-CVE-2026-22795.patch
+Patch0056:            0056-Add-targets-to-skip-build-of-non-installable-program.patch
+Patch0057:            0057-Disable-RSA-PKCS1.5-FIPS-POST-not-relevant-for-RHEL.patch
 
 #The patches that are different for RHEL9 and 10 start here
 Patch0100:            0100-RHEL9-Allow-SHA1-in-seclevel-2-if-rh-allow-sha1-signatures.patch
@@ -273,7 +261,7 @@ export HASHBANGPERL=/usr/bin/perl
 # Do not run this in a production package the FIPS symbols must be patched-in
 #util/mkdef.pl crypto update
 
-make %{?_smp_mflags} all
+make %{?_smp_mflags} build_inst_sw
 
 # Clean up the .pc files
 for i in libcrypto.pc libssl.pc openssl.pc ; do
@@ -299,7 +287,11 @@ OPENSSL_SYSTEM_CIPHERS_OVERRIDE=xyz_nonexistent_file
 export OPENSSL_SYSTEM_CIPHERS_OVERRIDE
 #embed HMAC into fips provider for test run
 %{SOURCE1} providers/fips.so
-#run tests itself
+
+# Build tests with LTO disabled and run them
+make -s %{?_smp_mflags} build_programs \
+    CFLAGS="%{build_cflags} -fno-lto" \
+    CXXFLAGS="%{build_cxxflags} -fno-lto"
 make test HARNESS_JOBS=8
 
 # Add generation of HMAC checksum of the final stripped library
@@ -465,37 +457,38 @@ ln -s /etc/crypto-policies/back-ends/openssl_fips.config $RPM_BUILD_ROOT%{_sysco
 %ldconfig_scriptlets libs
 
 %changelog
-* Wed Jan 28 2026 Release Engineering <releng@openela.org> - 3.5.1.openela.0.1
+* Tue May 19 2026 Release Engineering <releng@openela.org> - 3.5.5.openela.0.1
 - Add OpenELA specific changes
 
-* Fri Jan 16 2026 Dmitry Belyavskiy <dbelyavs@redhat.com> - 1:3.5.1-7
-- Fix CVE-2025-11187 CVE-2025-15467 CVE-2025-15468 CVE-2025-15469
-  CVE-2025-66199 CVE-2025-68160 CVE-2025-69418 CVE-2025-69419 CVE-2025-69420
-  CVE-2025-69421 CVE-2026-22795 CVE-2026-22796
-  Resolves: RHEL-142068
-  Resolves: RHEL-142002
-  Resolves: RHEL-142055
-  Resolves: RHEL-142051
-  Resolves: RHEL-142047
-  Resolves: RHEL-142043
-  Resolves: RHEL-142039
-  Resolves: RHEL-142035
-  Resolves: RHEL-142031
-  Resolves: RHEL-142011
-  Resolves: RHEL-142027
-  Resolves: RHEL-142023
+* Tue Jan 27 2026 Dmitry Belyavskiy <dbelyavs@redhat.com> - 1:3.5.5-1
+- Rebase to OpenSSL 3.5.5
+  Resolves: RHEL-136895
+  Resolves: RHEL-142004
+  Resolves: RHEL-142012
+  Resolves: RHEL-142020
+  Resolves: RHEL-142024
+  Resolves: RHEL-142028
+  Resolves: RHEL-142032
+  Resolves: RHEL-142036
+  Resolves: RHEL-142040
+  Resolves: RHEL-142044
+  Resolves: RHEL-142048
+  Resolves: RHEL-142052
+  Resolves: RHEL-142056
 
-* Wed Jan 07 2026 Dmitry Belyavskiy <dbelyavs@redhat.com> - 1:3.5.1-6
-- Fix AES/GCM ppc64le encrypt/decrypt
-  Resolves: RHEL-139131
-
-* Thu Dec 11 2025 Pavol Žáčik <pzacik@redhat.com> - 1:3.5.1-5
-- Do not make key share choice in tls1_set_groups()
-  Resolves: RHEL-131010
-
-* Thu Oct 23 2025 Pavol Žáčik <pzacik@redhat.com> - 1:3.5.1-4
+* Thu Oct 23 2025 Pavol Žáčik <pzacik@redhat.com> - 1:3.5.1-6
 - Fix CVE-2025-9230
-  Resolves: RHEL-115929
+  Resolves: RHEL-115928
+
+* Fri Sep 05 2025 Pavol Žáčik <pzacik@redhat.com> - 1:3.5.1-5
+- Fix globally disabled LTO
+  Related: RHEL-111633
+
+* Thu Aug 28 2025 Pavol Žáčik <pzacik@redhat.com> - 1:3.5.1-4
+- Make openssl speed test signatures without errors
+  Resolves: RHEL-95502
+- Build tests in check and without LTO
+  Resolves: RHEL-111633
 
 * Thu Jul 17 2025 Simo Sorce <simo@redhat.com> - 1:3.5.1-3
 - Add custom define to disable symbol versioning in downstream patched code

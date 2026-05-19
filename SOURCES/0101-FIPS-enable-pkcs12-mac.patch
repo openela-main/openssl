@@ -10,7 +10,7 @@ diff -up openssl-3.5.0-build/openssl-3.5.0/apps/pkcs12.c.xxx openssl-3.5.0-build
 -
              if (pbmac1_pbkdf2 == 1) {
                  if (!PKCS12_set_pbmac1_pbkdf2(p12, mpass, -1, NULL,
-                                               macsaltlen, maciter,
+                         macsaltlen, maciter,
 @@ -844,15 +841,34 @@ int pkcs12_main(int argc, char **argv)
  
          if (OBJ_obj2nid(macobj) != NID_pbmac1) {
@@ -34,8 +34,8 @@ diff -up openssl-3.5.0-build/openssl-3.5.0/apps/pkcs12.c.xxx openssl-3.5.0-build
 +            }
  
              pkcs12kdf = EVP_KDF_fetch(app_get0_libctx(), "PKCS12KDF",
--                                      app_get0_propq());
-+                                      adjusted_propq ? adjusted_propq : app_get0_propq());
+-                app_get0_propq());
++                adjusted_propq ? adjusted_propq : app_get0_propq());
              if (pkcs12kdf == NULL) {
                  BIO_printf(bio_err, "Error verifying PKCS12 MAC; no PKCS12KDF support.\n");
                  BIO_printf(bio_err, "Use -nomacver if MAC verification is not required.\n");
@@ -94,9 +94,9 @@ diff -up openssl-3.5.0-build/openssl-3.5.0/crypto/pkcs12/p12_key.c.xxx openssl-3
 +    }
  
      *p++ = OSSL_PARAM_construct_utf8_string(OSSL_KDF_PARAM_DIGEST,
-                                             (char *)EVP_MD_get0_name(md_type),
+         (char *)EVP_MD_get0_name(md_type),
 @@ -127,6 +151,7 @@ int PKCS12_key_gen_uni_ex(unsigned char
-         } OSSL_TRACE_END(PKCS12_KEYGEN);
+         OSSL_TRACE_END(PKCS12_KEYGEN);
      }
      EVP_KDF_CTX_free(ctx);
 +    OPENSSL_free(adjusted_propq);

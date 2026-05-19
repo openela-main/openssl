@@ -1,7 +1,7 @@
-From d0063158bcf9321daec1ffcbfeb3d7b085aebce3 Mon Sep 17 00:00:00 2001
+From be07c8ed65b9657227d03b905b9a490bd14bd173 Mon Sep 17 00:00:00 2001
 From: Simo Sorce <simo@redhat.com>
 Date: Mon, 14 Apr 2025 15:25:40 -0400
-Subject: [PATCH 48/53] FIPS: KDF key lenght errors
+Subject: [PATCH 48/57] FIPS: KDF key lenght errors
 
 Signed-off-by: Simo Sorce <simo@redhat.com>
 ---
@@ -171,5 +171,5 @@ index 1fb2472001..93c07ede7c 100644
  
  # Test that the key whose length is shorter than 112 bits is reported as
 -- 
-2.50.0
+2.52.0
 

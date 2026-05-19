@@ -1,7 +1,7 @@
-From 6a1b39542597be9a28f94dad23a8e93285368653 Mon Sep 17 00:00:00 2001
+From 60f55f072544cb998c42da41ee33ced2b4428b9f Mon Sep 17 00:00:00 2001
 From: rpm-build <rpm-build>
 Date: Wed, 6 Mar 2024 19:17:15 +0100
-Subject: [PATCH 07/53] RH: Add FIPS_mode compatibility macro
+Subject: [PATCH 07/57] RH: Add FIPS_mode compatibility macro
 
 Patch-name: 0008-Add-FIPS_mode-compatibility-macro.patch
 Patch-id: 8
@@ -47,10 +47,10 @@ index 0000000000..4162cbf88e
 +# endif
 +#endif
 diff --git a/test/property_test.c b/test/property_test.c
-index 18f8cc8740..6864b1a3c1 100644
+index d470731e50..0b044ec853 100644
 --- a/test/property_test.c
 +++ b/test/property_test.c
-@@ -687,6 +687,19 @@ static int test_property_list_to_string(int i)
+@@ -703,6 +703,19 @@ err:
      return ret;
  }
  
@@ -70,14 +70,14 @@ index 18f8cc8740..6864b1a3c1 100644
  int setup_tests(void)
  {
      ADD_TEST(test_property_string);
-@@ -700,6 +713,7 @@ int setup_tests(void)
+@@ -716,6 +729,7 @@ int setup_tests(void)
      ADD_TEST(test_property);
      ADD_TEST(test_query_cache_stochastic);
      ADD_TEST(test_fips_mode);
 +    ADD_TEST(test_downstream_FIPS_mode);
      ADD_ALL_TESTS(test_property_list_to_string, OSSL_NELEM(to_string_tests));
+     ADD_TEST(test_property_list_to_string_bounds);
      return 1;
- }
 -- 
-2.50.0
+2.52.0
 
