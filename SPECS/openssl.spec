@@ -28,8 +28,8 @@ print(string.sub(hash, 0, 16))
 
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
-Version: 3.5.1
-Release: 7%{?dist}
+Version: 3.5.5
+Release: 2%{?dist}
 Epoch: 1
 Source0: openssl-%{version}.tar.gz
 Source1: fips-hmacify.sh
@@ -97,20 +97,9 @@ Patch0053: 0053-Allow-hybrid-MLKEM-in-FIPS-mode.patch
 %endif
 Patch0054: 0054-Temporarily-disable-SLH-DSA-FIPS-self-tests.patch
 Patch0055: 0055-Add-a-define-to-disable-symver-attributes.patch
-Patch0056: 0056-Fix-incorrect-check-of-unwrapped-key-size.patch
-Patch0057: 0057-Do-not-make-key-share-choice-in-tls1_set_groups.patch
-Patch0058: 0058-Fix-PPC-register-processing.patch
-Patch0059: 0059-CVE-2025-11187.patch
-Patch0060: 0060-CVE-2025-15467.patch
-Patch0061: 0061-CVE-2025-15468.patch
-Patch0062: 0062-CVE-2025-15469.patch
-Patch0063: 0063-CVE-2025-66199.patch
-Patch0064: 0064-CVE-2025-68160.patch
-Patch0065: 0065-CVE-2025-69418.patch
-Patch0066: 0066-CVE-2025-69420.patch
-Patch0067: 0067-CVE-2025-69421.patch
-Patch0068: 0068-CVE-2025-69419.patch
-Patch0069: 0069-CVE-2026-22795.patch
+Patch0056: 0056-Add-targets-to-skip-build-of-non-installable-program.patch
+Patch0057: 0057-Disable-RSA-PKCS1.5-FIPS-POST-not-relevant-for-RHEL.patch
+Patch0058: 0058-CVE-2026-31790.patch
 
 License: Apache-2.0
 URL: http://www.openssl.org/
@@ -278,7 +267,7 @@ export HASHBANGPERL=/usr/bin/perl
 # Do not run this in a production package the FIPS symbols must be patched-in
 #util/mkdef.pl crypto update
 
-make -s %{?_smp_mflags} all
+make -s %{?_smp_mflags} build_inst_sw
 
 # Clean up the .pc files
 for i in libcrypto.pc libssl.pc openssl.pc ; do
@@ -302,7 +291,11 @@ export OPENSSL_ENABLE_SHA1_SIGNATURES
 OPENSSL_SYSTEM_CIPHERS_OVERRIDE=xyz_nonexistent_file
 export OPENSSL_SYSTEM_CIPHERS_OVERRIDE
 %{SOURCE1} providers/fips.so
-#run tests itself
+
+# Build tests with LTO disabled and run them
+make -s %{?_smp_mflags} build_programs \
+    CFLAGS="%{build_cflags} -fno-lto" \
+    CXXFLAGS="%{build_cxxflags} -fno-lto"
 make test HARNESS_JOBS=8
 
 # Add generation of HMAC checksum of the final stripped library
@@ -467,34 +460,40 @@ touch $RPM_BUILD_ROOT/%{_prefix}/include/openssl/engine.h
 %ldconfig_scriptlets libs
 
 %changelog
-* Fri Jan 16 2026 Dmitry Belyavskiy <dbelyavs@redhat.com> - 1:3.5.1-7
-- Fix CVE-2025-11187 CVE-2025-15467 CVE-2025-15468 CVE-2025-15469
-  CVE-2025-66199 CVE-2025-68160 CVE-2025-69418 CVE-2025-69419 CVE-2025-69420
-  CVE-2025-69421 CVE-2026-22795 CVE-2026-22796
-  Resolves: RHEL-142062
-  Resolves: RHEL-141985
-  Resolves: RHEL-142053
-  Resolves: RHEL-142049
-  Resolves: RHEL-142045
-  Resolves: RHEL-142041
-  Resolves: RHEL-142037
-  Resolves: RHEL-142033
-  Resolves: RHEL-142029
-  Resolves: RHEL-142008
-  Resolves: RHEL-142025
-  Resolves: RHEL-142021
+* Thu Apr 09 2026 Pavol Žáčik <pzacik@redhat.com> - 1:3.5.5-2
+- Fix CVE-2026-31790
+  Resolves: RHEL-161574
 
-* Wed Jan 07 2026 Dmitry Belyavskiy <dbelyavs@redhat.com> - 1:3.5.1-6
-- Fix AES/GCM ppc64le encrypt/decrypt
-  Resolves: RHEL-139108
+* Tue Jan 27 2026 Dmitry Belyavskiy <dbelyavs@redhat.com> - 1:3.5.5-1
+- Rebase to OpenSSL 3.5.5
+  Resolves: RHEL-122599
+  Resolves: RHEL-141987
+  Resolves: RHEL-142009
+  Resolves: RHEL-142022
+  Resolves: RHEL-142026
+  Resolves: RHEL-142030
+  Resolves: RHEL-142034
+  Resolves: RHEL-142038
+  Resolves: RHEL-142042
+  Resolves: RHEL-142046
+  Resolves: RHEL-142050
+  Resolves: RHEL-142054
 
-* Thu Dec 11 2025 Pavol Žáčik <pzacik@redhat.com> - 1:3.5.1-5
-- Do not make key share choice in tls1_set_groups()
-  Resolves: RHEL-130992
-
-* Wed Oct 22 2025 Pavol Žáčik <pzacik@redhat.com> - 1:3.5.1-4
+* Wed Oct 22 2025 Pavol Žáčik <pzacik@redhat.com> - 1:3.5.1-6
 - Fix CVE-2025-9230
-  Resolves: RHEL-115885
+  Resolves: RHEL-115883
+
+* Fri Sep 05 2025 Pavol Žáčik <pzacik@redhat.com> - 1:3.5.1-5
+- Fix globally disabled LTO
+  Related: RHEL-111634
+- Initialize reserved and unused memory in aes-s390x.pl
+  Resolves: RHEL-107479
+
+* Thu Aug 28 2025 Pavol Žáčik <pzacik@redhat.com> - 1:3.5.1-4
+- Make openssl speed test signatures without errors
+  Resolves: RHEL-95182
+- Build tests in check and without LTO
+  Resolves: RHEL-111634
 
 * Thu Jul 24 2025 Simo Sorce <simo@redhat.com> - 1:3.5.1-3
 - Add custom define to disable symbol versioning in downstream patched code

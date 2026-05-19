@@ -1,7 +1,7 @@
-From 4e6b86b5130552bfee64c7ecaf045ec00749ecbd Mon Sep 17 00:00:00 2001
+From e43a23f06a9e23f1091f88c6dfa6c1bd4e065a7a Mon Sep 17 00:00:00 2001
 From: rpm-build <rpm-build>
 Date: Wed, 6 Mar 2024 19:17:15 +0100
-Subject: [PATCH 18/53] FIPS: disable fipsinstall
+Subject: [PATCH 18/57] FIPS: disable fipsinstall
 
 Patch-name: 0034.fipsinstall_disable.patch
 Patch-id: 34
@@ -10,24 +10,24 @@ Patch-status: |
 From-dist-git-commit: 4334bc837fbc64d14890fdc51679a80770d498ce
 ---
  apps/fipsinstall.c                    |   3 +
- doc/man1/openssl-fipsinstall.pod.in   | 485 +-------------------------
+ doc/man1/openssl-fipsinstall.pod.in   | 481 +-------------------------
  doc/man1/openssl.pod                  |   4 -
  doc/man5/config.pod                   |   1 -
- doc/man5/fips_config.pod              | 228 +-----------
+ doc/man5/fips_config.pod              | 222 +-----------
  doc/man7/OSSL_PROVIDER-FIPS.pod       |   1 -
  test/recipes/00-prep_fipsmodule_cnf.t |  10 +-
  test/recipes/01-test_fipsmodule_cnf.t |   7 +-
  test/recipes/03-test_fipsinstall.t    |   2 +
- 9 files changed, 22 insertions(+), 719 deletions(-)
+ 9 files changed, 22 insertions(+), 709 deletions(-)
  mode change 100644 => 100755 test/recipes/00-prep_fipsmodule_cnf.t
  mode change 100644 => 100755 test/recipes/01-test_fipsmodule_cnf.t
  mode change 100644 => 100755 test/recipes/03-test_fipsinstall.t
 
 diff --git a/apps/fipsinstall.c b/apps/fipsinstall.c
-index 0daa55a1b8..b4e29ac301 100644
+index dcc09a5ed7..e3d5f6e86d 100644
 --- a/apps/fipsinstall.c
 +++ b/apps/fipsinstall.c
-@@ -590,6 +590,9 @@ int fipsinstall_main(int argc, char **argv)
+@@ -636,6 +636,9 @@ int fipsinstall_main(int argc, char **argv)
      EVP_MAC *mac = NULL;
      CONF *conf = NULL;
  
@@ -38,10 +38,10 @@ index 0daa55a1b8..b4e29ac301 100644
          goto end;
  
 diff --git a/doc/man1/openssl-fipsinstall.pod.in b/doc/man1/openssl-fipsinstall.pod.in
-index 9dd4f5a49f..9a063022a9 100644
+index 2db5acd242..1c6b783413 100644
 --- a/doc/man1/openssl-fipsinstall.pod.in
 +++ b/doc/man1/openssl-fipsinstall.pod.in
-@@ -8,488 +8,9 @@ openssl-fipsinstall - perform FIPS configuration installation
+@@ -8,484 +8,9 @@ openssl-fipsinstall - perform FIPS configuration installation
  =head1 SYNOPSIS
  
  B<openssl fipsinstall>
@@ -274,9 +274,7 @@ index 9dd4f5a49f..9a063022a9 100644
 -
 -=item B<-hkdf_digest_check>
 -
--Configure the module to enable a run-time digest check when deriving a key by
--HKDF.
--See NIST SP 800-56Cr2 for details.
+-This option is deprecated.
 -
 -=item B<-tls13_kdf_digest_check>
 -
@@ -298,9 +296,7 @@ index 9dd4f5a49f..9a063022a9 100644
 -
 -=item B<-sskdf_digest_check>
 -
--Configure the module to enable a run-time digest check when deriving a key by
--SSKDF.
--See NIST SP 800-56Cr2 for details.
+-This option is deprecated.
 -
 -=item B<-x963kdf_digest_check>
 -
@@ -410,7 +406,7 @@ index 9dd4f5a49f..9a063022a9 100644
 -
 -=item B<-self_test_oninstall>
 -
--The converse of B<-self_test_oninstall>.  The two fields related to the
+-The converse of B<-self_test_onload>.  The two fields related to the
 -"test status indicator" and "MAC status indicator" are written to the
 -output configuration file.
 -This field is not relevant for an OpenSSL FIPS 140-3 provider, since this is no
@@ -534,7 +530,7 @@ index 9dd4f5a49f..9a063022a9 100644
  =head1 COPYRIGHT
  
 diff --git a/doc/man1/openssl.pod b/doc/man1/openssl.pod
-index edef2ff598..0762a00d74 100644
+index 635b52aeb1..55bc6e44c6 100644
 --- a/doc/man1/openssl.pod
 +++ b/doc/man1/openssl.pod
 @@ -139,10 +139,6 @@ Engine (loadable module) information and manipulation.
@@ -561,10 +557,10 @@ index b994081924..7a6d7fab4a 100644
  L<EVP_set_default_properties(3)>,
  L<CONF_modules_load(3)>,
 diff --git a/doc/man5/fips_config.pod b/doc/man5/fips_config.pod
-index a25ced3383..15748c5756 100644
+index c3f7b8f3ab..2505938c13 100644
 --- a/doc/man5/fips_config.pod
 +++ b/doc/man5/fips_config.pod
-@@ -6,230 +6,10 @@ fips_config - OpenSSL FIPS configuration
+@@ -6,224 +6,10 @@ fips_config - OpenSSL FIPS configuration
  
  =head1 DESCRIPTION
  
@@ -624,17 +620,11 @@ index a25ced3383..15748c5756 100644
 -
 -=item B<install-status>
 -
--An indicator that the self-tests were successfully run.
--This should only be written after the module has
--successfully passed its self tests during installation.
--If this field is not present, then the self tests will run when the module
--loads.
+-This field is deprecated and is no longer used.
 -
 -=item B<install-mac>
 -
--A MAC of the value of the B<install-status> option, to prevent accidental
--changes to that value.
--It is written-to at the same time as B<install-status> is updated.
+-This field is deprecated and is no longer used.
 -
 -=back
 -
@@ -674,7 +664,7 @@ index a25ced3383..15748c5756 100644
 -
 -=item B<hkdf-digest-check>
 -
--See L<openssl-fipsinstall(1)/OPTIONS> B<-hkdf_digest_check>
+-This option is deprecated.
 -
 -=item B<tls13-kdf-digest-check>
 -
@@ -690,7 +680,7 @@ index a25ced3383..15748c5756 100644
 -
 -=item B<sskdf-digest-check>
 -
--See L<openssl-fipsinstall(1)/OPTIONS> B<-sskdf_digest_check>
+-This option is deprecated.
 -
 -=item B<x963kdf-digest-check>
 -
@@ -800,10 +790,10 @@ index a25ced3383..15748c5756 100644
  =head1 COPYRIGHT
  
 diff --git a/doc/man7/OSSL_PROVIDER-FIPS.pod b/doc/man7/OSSL_PROVIDER-FIPS.pod
-index 571a1e99e0..1e384a4ff3 100644
+index d14005a89a..c3797f5682 100644
 --- a/doc/man7/OSSL_PROVIDER-FIPS.pod
 +++ b/doc/man7/OSSL_PROVIDER-FIPS.pod
-@@ -588,7 +588,6 @@ process.
+@@ -574,7 +574,6 @@ process.
  
  =head1 SEE ALSO
  
@@ -853,7 +843,7 @@ index ce594817d5..4530a46dd0
 diff --git a/test/recipes/03-test_fipsinstall.t b/test/recipes/03-test_fipsinstall.t
 old mode 100644
 new mode 100755
-index 1f9110ef60..7e80637bd5
+index 3dcbe67c6d..1a5a475d91
 --- a/test/recipes/03-test_fipsinstall.t
 +++ b/test/recipes/03-test_fipsinstall.t
 @@ -22,6 +22,8 @@ use lib srctop_dir('Configurations');
@@ -866,5 +856,5 @@ index 1f9110ef60..7e80637bd5
  
  # Compatible options for pedantic FIPS compliance
 -- 
-2.50.0
+2.52.0
 

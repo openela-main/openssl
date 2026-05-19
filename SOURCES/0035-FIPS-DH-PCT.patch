@@ -1,7 +1,7 @@
-From 5276208d8cb9a1504ec5a4f9a9d554daf7918731 Mon Sep 17 00:00:00 2001
+From a1ee967fae9cb6f4a06d4ffbcd62c6efd9ac05f0 Mon Sep 17 00:00:00 2001
 From: Simo Sorce <simo@redhat.com>
 Date: Mon, 24 Mar 2025 10:49:00 -0400
-Subject: [PATCH 35/53] FIPS: DH: PCT
+Subject: [PATCH 35/57] FIPS: DH: PCT
 
 Signed-off-by: Simo Sorce <simo@redhat.com>
 ---
@@ -9,7 +9,7 @@ Signed-off-by: Simo Sorce <simo@redhat.com>
  1 file changed, 26 insertions(+)
 
 diff --git a/crypto/dh/dh_key.c b/crypto/dh/dh_key.c
-index 7132b9b68e..189bfc3e8b 100644
+index 2d9f7a8100..ae47dc2cd9 100644
 --- a/crypto/dh/dh_key.c
 +++ b/crypto/dh/dh_key.c
 @@ -43,6 +43,9 @@ int ossl_dh_compute_key(unsigned char *key, const BIGNUM *pub_key, DH *dh)
@@ -46,7 +46,7 @@ index 7132b9b68e..189bfc3e8b 100644
  
      if (BN_num_bits(dh->params.p) > OPENSSL_DH_MAX_MODULUS_BITS) {
          ERR_raise(ERR_LIB_DH, DH_R_MODULUS_TOO_LARGE);
-@@ -369,8 +382,21 @@ static int generate_key(DH *dh)
+@@ -370,8 +383,21 @@ static int generate_key(DH *dh)
      if (!ossl_dh_generate_public_key(ctx, dh, priv_key, pub_key))
          goto err;
  
@@ -60,14 +60,14 @@ index 7132b9b68e..189bfc3e8b 100644
      dh->pub_key = pub_key;
      dh->priv_key = priv_key;
 +#ifdef FIPS_MODULE
-+    if (ossl_dh_check_pairwise(dh) <= 0) {
++    if (ossl_dh_check_pairwise(dh, 0) <= 0) {
 +        abort();
 +    }
 +#endif
 +
      dh->dirty_cnt++;
      ok = 1;
-  err:
+ err:
 -- 
-2.50.0
+2.52.0
 

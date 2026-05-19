@@ -1,7 +1,7 @@
-From 2dbc4a1c31e66fd841a87f62834d8d60aff10d45 Mon Sep 17 00:00:00 2001
+From 9fca36a6c0712f3c11e6ba942e99039b17fc75b0 Mon Sep 17 00:00:00 2001
 From: Simo Sorce <simo@redhat.com>
 Date: Fri, 7 Mar 2025 18:10:52 -0500
-Subject: [PATCH 43/53] FIPS: NO DSA Support
+Subject: [PATCH 43/57] FIPS: NO DSA Support
 
 Signed-off-by: Simo Sorce <simo@redhat.com>
 ---
@@ -18,7 +18,7 @@ Signed-off-by: Simo Sorce <simo@redhat.com>
  mode change 100644 => 100755 test/recipes/30-test_evp.t
 
 diff --git a/providers/fips/fipsprov.c b/providers/fips/fipsprov.c
-index 1e90f363af..84d8e897cc 100644
+index 0f006301d7..f8f2822300 100644
 --- a/providers/fips/fipsprov.c
 +++ b/providers/fips/fipsprov.c
 @@ -431,7 +431,8 @@ static const OSSL_ALGORITHM fips_keyexch[] = {
@@ -31,23 +31,23 @@ index 1e90f363af..84d8e897cc 100644
      { PROV_NAMES_DSA, FIPS_DEFAULT_PROPERTIES, ossl_dsa_signature_functions },
      { PROV_NAMES_DSA_SHA1, FIPS_DEFAULT_PROPERTIES, ossl_dsa_sha1_signature_functions },
      { PROV_NAMES_DSA_SHA224, FIPS_DEFAULT_PROPERTIES, ossl_dsa_sha224_signature_functions },
-@@ -561,8 +562,9 @@ static const OSSL_ALGORITHM fips_keymgmt[] = {
-       PROV_DESCS_DHX },
+@@ -559,8 +560,9 @@ static const OSSL_ALGORITHM fips_keymgmt[] = {
+         PROV_DESCS_DHX },
  #endif
  #ifndef OPENSSL_NO_DSA
 -    { PROV_NAMES_DSA, FIPS_DEFAULT_PROPERTIES, ossl_dsa_keymgmt_functions,
--      PROV_DESCS_DSA },
+-        PROV_DESCS_DSA },
 +    /* We don't certify DSA in our FIPS provider */
 +    /* { PROV_NAMES_DSA, FIPS_DEFAULT_PROPERTIES, ossl_dsa_keymgmt_functions,
-+      PROV_DESCS_DSA }, */
++           PROV_DESCS_DSA }, */
  #endif
      { PROV_NAMES_RSA, FIPS_DEFAULT_PROPERTIES, ossl_rsa_keymgmt_functions,
-       PROV_DESCS_RSA },
+         PROV_DESCS_RSA },
 diff --git a/providers/fips/self_test_data.inc b/providers/fips/self_test_data.inc
-index 5cbb5352a5..10ca473764 100644
+index 6abab0a7a1..a7d7684d96 100644
 --- a/providers/fips/self_test_data.inc
 +++ b/providers/fips/self_test_data.inc
-@@ -1522,8 +1522,9 @@ static const unsigned char ed448_expected_sig[] = {
+@@ -1547,8 +1547,9 @@ static const unsigned char ed448_expected_sig[] = {
  # endif /* OPENSSL_NO_ECX */
  #endif /* OPENSSL_NO_EC */
  
@@ -58,7 +58,7 @@ index 5cbb5352a5..10ca473764 100644
  static const unsigned char dsa_p[] = {
      0xa2, 0x9b, 0x88, 0x72, 0xce, 0x8b, 0x84, 0x23,
      0xb7, 0xd5, 0xd2, 0x1d, 0x4b, 0x02, 0xf5, 0x7e,
-@@ -1651,6 +1652,7 @@ static const ST_KAT_PARAM dsa_key[] = {
+@@ -1676,6 +1677,7 @@ static const ST_KAT_PARAM dsa_key[] = {
      ST_KAT_PARAM_END()
  };
  #endif /* OPENSSL_NO_DSA */
@@ -66,7 +66,7 @@ index 5cbb5352a5..10ca473764 100644
  
  #ifndef OPENSSL_NO_ML_DSA
  static const unsigned char ml_dsa_65_pub_key[] = {
-@@ -3013,6 +3015,7 @@ static const ST_KAT_SIGN st_kat_sign_tests[] = {
+@@ -3038,6 +3040,7 @@ static const ST_KAT_SIGN st_kat_sign_tests[] = {
      },
  # endif /* OPENSSL_NO_ECX */
  #endif /* OPENSSL_NO_EC */
@@ -74,7 +74,7 @@ index 5cbb5352a5..10ca473764 100644
  #ifndef OPENSSL_NO_DSA
      {
          OSSL_SELF_TEST_DESC_SIGN_DSA,
-@@ -3025,6 +3028,7 @@ static const ST_KAT_SIGN st_kat_sign_tests[] = {
+@@ -3050,6 +3053,7 @@ static const ST_KAT_SIGN st_kat_sign_tests[] = {
          ITM(dsa_expected_sig)
      },
  #endif /* OPENSSL_NO_DSA */
@@ -83,18 +83,18 @@ index 5cbb5352a5..10ca473764 100644
  #ifndef OPENSSL_NO_ML_DSA
      {
 diff --git a/test/acvp_test.c b/test/acvp_test.c
-index 2bcc886fd2..db0282d043 100644
+index 15c87c57a7..e3321874c2 100644
 --- a/test/acvp_test.c
 +++ b/test/acvp_test.c
-@@ -1735,6 +1735,7 @@ int setup_tests(void)
-                   OSSL_NELEM(dh_safe_prime_keyver_data));
+@@ -1749,6 +1749,7 @@ int setup_tests(void)
+         OSSL_NELEM(dh_safe_prime_keyver_data));
  #endif /* OPENSSL_NO_DH */
  
 +#if 0 /* Red Hat FIPS provider doesn't have fips=yes property on DSA */
  #ifndef OPENSSL_NO_DSA
      dsasign_allowed = fips_provider_version_lt(libctx, 3, 4, 0);
      ADD_ALL_TESTS(dsa_keygen_test, OSSL_NELEM(dsa_keygen_data));
-@@ -1743,6 +1744,7 @@ int setup_tests(void)
+@@ -1757,6 +1758,7 @@ int setup_tests(void)
      ADD_ALL_TESTS(dsa_siggen_test, OSSL_NELEM(dsa_siggen_data));
      ADD_ALL_TESTS(dsa_sigver_test, OSSL_NELEM(dsa_sigver_data));
  #endif /* OPENSSL_NO_DSA */
@@ -103,10 +103,10 @@ index 2bcc886fd2..db0282d043 100644
  #ifndef OPENSSL_NO_EC
      ec_cofactors = fips_provider_version_ge(libctx, 3, 4, 0);
 diff --git a/test/endecode_test.c b/test/endecode_test.c
-index d2ff9e6eb6..dfd5e92f7e 100644
+index b15bab217e..acfb5ef36d 100644
 --- a/test/endecode_test.c
 +++ b/test/endecode_test.c
-@@ -1536,6 +1536,7 @@ int setup_tests(void)
+@@ -1549,6 +1549,7 @@ int setup_tests(void)
           * so no legacy tests.
           */
  #endif
@@ -114,9 +114,9 @@ index d2ff9e6eb6..dfd5e92f7e 100644
  #ifndef OPENSSL_NO_DSA
          ADD_TEST_SUITE(DSA);
          ADD_TEST_SUITE_PARAMS(DSA);
-@@ -1546,6 +1547,7 @@ int setup_tests(void)
+@@ -1559,6 +1560,7 @@ int setup_tests(void)
          ADD_TEST_SUITE_PROTECTED_PVK(DSA);
- # endif
+ #endif
  #endif
 +    }
  #ifndef OPENSSL_NO_EC
@@ -302,10 +302,10 @@ index 5e5315a5b9..660d1db149 100644
  Key = DSA-2048-160
  Input = "Hello"
 diff --git a/test/recipes/80-test_cms.t b/test/recipes/80-test_cms.t
-index ece29485f4..756f90c1bd 100644
+index 91283c5e74..beadb43cf4 100644
 --- a/test/recipes/80-test_cms.t
 +++ b/test/recipes/80-test_cms.t
-@@ -107,7 +107,7 @@ my @smime_pkcs7_tests = (
+@@ -116,7 +116,7 @@ my @smime_pkcs7_tests = (
        \&final_compare
      ],
  
@@ -314,7 +314,7 @@ index ece29485f4..756f90c1bd 100644
        [ "{cmd1}", @prov, "-sign", "-in", $smcont, "-outform", "DER", "-nodetach",
          "-signer", catfile($smdir, "smdsa1.pem"), "-out", "{output}.cms" ],
        [ "{cmd2}", @prov, "-verify", "-in", "{output}.cms", "-inform", "DER",
-@@ -115,7 +115,7 @@ my @smime_pkcs7_tests = (
+@@ -124,7 +124,7 @@ my @smime_pkcs7_tests = (
        \&final_compare
      ],
  
@@ -323,7 +323,7 @@ index ece29485f4..756f90c1bd 100644
        [ "{cmd1}", @prov, "-sign", "-in", $smcont, "-outform", "DER",
          "-signer", catfile($smdir, "smdsa1.pem"), "-out", "{output}.cms" ],
        [ "{cmd2}", @prov, "-verify", "-in", "{output}.cms", "-inform", "DER",
-@@ -124,7 +124,7 @@ my @smime_pkcs7_tests = (
+@@ -133,7 +133,7 @@ my @smime_pkcs7_tests = (
        \&final_compare
      ],
  
@@ -332,7 +332,7 @@ index ece29485f4..756f90c1bd 100644
        [ "{cmd1}", @prov, "-sign", "-in", $smcont, "-outform", "DER",
          "-signer", catfile($smdir, "smdsa1.pem"), "-out", "{output}.cms" ],
        [ "{cmd1}", @prov, "-resign", "-in", "{output}.cms", "-inform", "DER", "-outform", "DER",
-@@ -135,7 +135,7 @@ my @smime_pkcs7_tests = (
+@@ -144,7 +144,7 @@ my @smime_pkcs7_tests = (
        \&final_compare
      ],
  
@@ -341,7 +341,7 @@ index ece29485f4..756f90c1bd 100644
        [ "{cmd1}", @prov, "-sign", "-in", $smcont, "-outform", "DER",
          "-nodetach", "-stream",
          "-signer", catfile($smdir, "smdsa1.pem"), "-out", "{output}.cms" ],
-@@ -144,7 +144,7 @@ my @smime_pkcs7_tests = (
+@@ -153,7 +153,7 @@ my @smime_pkcs7_tests = (
        \&final_compare
      ],
  
@@ -350,7 +350,7 @@ index ece29485f4..756f90c1bd 100644
        [ "{cmd1}", @prov, "-sign", "-in", $smcont, "-outform", "DER",
          "-nodetach", "-stream",
          "-signer", $smrsa1,
-@@ -157,7 +157,7 @@ my @smime_pkcs7_tests = (
+@@ -166,7 +166,7 @@ my @smime_pkcs7_tests = (
        \&final_compare
      ],
  
@@ -359,7 +359,7 @@ index ece29485f4..756f90c1bd 100644
        [ "{cmd1}", @prov, "-sign", "-in", $smcont, "-outform", "DER",
          "-noattr", "-nodetach", "-stream",
          "-signer", $smrsa1,
-@@ -187,7 +187,7 @@ my @smime_pkcs7_tests = (
+@@ -196,7 +196,7 @@ my @smime_pkcs7_tests = (
        \&zero_compare
      ],
  
@@ -368,7 +368,7 @@ index ece29485f4..756f90c1bd 100644
        [ "{cmd1}", @prov, "-sign", "-in", $smcont, "-nodetach",
          "-signer", $smrsa1,
          "-signer", catfile($smdir, "smrsa2.pem"),
-@@ -199,7 +199,7 @@ my @smime_pkcs7_tests = (
+@@ -208,7 +208,7 @@ my @smime_pkcs7_tests = (
        \&final_compare
      ],
  
@@ -377,7 +377,7 @@ index ece29485f4..756f90c1bd 100644
        [ "{cmd1}", @prov, "-sign", "-in", $smcont,
          "-signer", $smrsa1,
          "-signer", catfile($smdir, "smrsa2.pem"),
-@@ -265,7 +265,7 @@ if ($no_fips || $old_fips) {
+@@ -282,7 +282,7 @@ if ($no_fips || $old_fips) {
  
  my @smime_cms_tests = (
  
@@ -386,7 +386,7 @@ index ece29485f4..756f90c1bd 100644
        [ "{cmd1}", @prov, "-sign", "-in", $smcont, "-outform", "DER",
          "-nodetach", "-keyid",
          "-signer", $smrsa1,
-@@ -278,7 +278,7 @@ my @smime_cms_tests = (
+@@ -295,7 +295,7 @@ my @smime_cms_tests = (
        \&final_compare
      ],
  
@@ -396,5 +396,5 @@ index ece29485f4..756f90c1bd 100644
          "-signer", $smrsa1,
          "-signer", catfile($smdir, "smrsa2.pem"),
 -- 
-2.50.0
+2.52.0
 
