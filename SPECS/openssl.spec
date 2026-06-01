@@ -29,7 +29,7 @@ print(string.sub(hash, 0, 16))
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 3.5.5
-Release: 2%{?dist}
+Release: 3%{?dist}
 Epoch: 1
 Source0: openssl-%{version}.tar.gz
 Source1: fips-hmacify.sh
@@ -100,6 +100,7 @@ Patch0055: 0055-Add-a-define-to-disable-symver-attributes.patch
 Patch0056: 0056-Add-targets-to-skip-build-of-non-installable-program.patch
 Patch0057: 0057-Disable-RSA-PKCS1.5-FIPS-POST-not-relevant-for-RHEL.patch
 Patch0058: 0058-CVE-2026-31790.patch
+Patch0059: 0059-CVE-2026-28390.patch
 
 License: Apache-2.0
 URL: http://www.openssl.org/
@@ -460,6 +461,10 @@ touch $RPM_BUILD_ROOT/%{_prefix}/include/openssl/engine.h
 %ldconfig_scriptlets libs
 
 %changelog
+* Wed May 13 2026 Pavol Žáčik <pzacik@redhat.com> - 1:3.5.5-3
+- Fix CVE-2026-28390
+  Resolves: RHEL-165705
+
 * Thu Apr 09 2026 Pavol Žáčik <pzacik@redhat.com> - 1:3.5.5-2
 - Fix CVE-2026-31790
   Resolves: RHEL-161574
