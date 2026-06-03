@@ -29,7 +29,7 @@ print(string.sub(hash, 0, 16))
 Summary:              Utilities from the general purpose cryptography library with TLS implementation
 Name:                 openssl
 Version:              3.5.5
-Release:              2%{?dist}.openela.0.1
+Release:              3%{?dist}.openela.0.1
 Epoch:                1
 Source0:              openssl-%{version}.tar.gz
 Source1:              fips-hmacify.sh
@@ -99,6 +99,7 @@ Patch0055:            0055-Add-a-define-to-disable-symver-attributes.patch
 Patch0056:            0056-Add-targets-to-skip-build-of-non-installable-program.patch
 Patch0057:            0057-Disable-RSA-PKCS1.5-FIPS-POST-not-relevant-for-RHEL.patch
 Patch0058:            0058-CVE-2026-31790.patch
+Patch0059:            0059-CVE-2026-28390.patch
 
 #The patches that are different for RHEL9 and 10 start here
 Patch0100:            0100-RHEL9-Allow-SHA1-in-seclevel-2-if-rh-allow-sha1-signatures.patch
@@ -458,8 +459,12 @@ ln -s /etc/crypto-policies/back-ends/openssl_fips.config $RPM_BUILD_ROOT%{_sysco
 %ldconfig_scriptlets libs
 
 %changelog
-* Tue May 19 2026 Release Engineering <releng@openela.org> - 3.5.5.openela.0.1
+* Wed Jun 03 2026 Release Engineering <releng@openela.org> - 3.5.5.openela.0.1
 - Add OpenELA specific changes
+
+* Wed May 13 2026 Pavol Žáčik <pzacik@redhat.com> - 1:3.5.5-3
+- Fix CVE-2026-28390
+  Resolves: RHEL-165870
 
 * Thu Apr 09 2026 Pavol Žáčik <pzacik@redhat.com> - 1:3.5.5-2
 - Fix CVE-2026-31790
