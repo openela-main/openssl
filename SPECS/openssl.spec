@@ -29,7 +29,7 @@ print(string.sub(hash, 0, 16))
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 3.5.5
-Release: 3%{?dist}
+Release: 4%{?dist}
 Epoch: 1
 Source0: openssl-%{version}.tar.gz
 Source1: fips-hmacify.sh
@@ -101,6 +101,21 @@ Patch0056: 0056-Add-targets-to-skip-build-of-non-installable-program.patch
 Patch0057: 0057-Disable-RSA-PKCS1.5-FIPS-POST-not-relevant-for-RHEL.patch
 Patch0058: 0058-CVE-2026-31790.patch
 Patch0059: 0059-CVE-2026-28390.patch
+Patch0060: 0060-CVE-2026-7383.patch
+Patch0061: 0061-CVE-2026-9076.patch
+Patch0062: 0062-CVE-2026-34180.patch
+Patch0063: 0063-CVE-2026-34181.patch
+Patch0064: 0064-CVE-2026-34183.patch
+Patch0065: 0065-CVE-2026-42764.patch
+Patch0066: 0066-CVE-2026-42766.patch
+Patch0067: 0067-CVE-2026-42767.patch
+Patch0068: 0068-CVE-2026-42768.patch
+Patch0069: 0069-CVE-2026-42769.patch
+Patch0070: 0070-CVE-2026-42770.patch
+Patch0071: 0071-CVE-2026-45445.patch
+Patch0072: 0072-CVE-2026-45446.patch
+Patch0073: 0073-CVE-2026-45447.patch
+Patch0074: 0074-CVE-2026-34182.patch
 
 License: Apache-2.0
 URL: http://www.openssl.org/
@@ -461,6 +476,27 @@ touch $RPM_BUILD_ROOT/%{_prefix}/include/openssl/engine.h
 %ldconfig_scriptlets libs
 
 %changelog
+* Mon Jun 01 2026 Dmitry Belyavskiy <dbelyavs@redhat.com> - 1:3.5.5-4
+Fix CVE-2026-7383, CVE-2026-9076, CVE-2026-34180, CVE-2026-34181,
+CVE-2026-34183, CVE-2026-42764, CVE-2026-42766, CVE-2026-42767, CVE-2026-42768,
+CVE-2026-42769, CVE-2026-42770, CVE-2026-45445, CVE-2026-45446, CVE-2026-45447,
+CVE-2026-34182.
+Resolves: RHEL-179267
+Resolves: RHEL-179281
+Resolves: RHEL-179537
+Resolves: RHEL-179542
+Resolves: RHEL-179545
+Resolves: RHEL-179550
+Resolves: RHEL-179553
+Resolves: RHEL-179626
+Resolves: RHEL-179658
+Resolves: RHEL-179675
+Resolves: RHEL-179682
+Resolves: RHEL-179685
+Resolves: RHEL-179689
+Resolves: RHEL-179693
+Resolves: RHEL-179697
+
 * Wed May 13 2026 Pavol Žáčik <pzacik@redhat.com> - 1:3.5.5-3
 - Fix CVE-2026-28390
   Resolves: RHEL-165705
