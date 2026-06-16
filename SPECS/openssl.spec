@@ -22,7 +22,7 @@
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.1.1k
-Release: 15%{?dist}
+Release: 16%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -108,6 +108,8 @@ Patch111: openssl-1.1.1-ticket_lifetime_hint.patch
 # Fix for CVE-2025-69419 (next two)
 Patch112: openssl-1.1.1-hardening-from-openssl-3.0.1.patch
 Patch113: openssl-1.1.1-cve-2025-69419.patch
+Patch114: openssl-1.1.1-cve-2026-45447.patch
+Patch115: openssl-1.1.1-cve-2024-4741.patch
 
 License: OpenSSL and ASL 2.0
 URL: http://www.openssl.org/
@@ -246,6 +248,8 @@ cp %{SOURCE13} test/
 %patch -P111 -p1 -b .ticket_lifetime_hint
 %patch -P112 -p1 -b .cve-2025-69419-1
 %patch -P113 -p1 -b .cve-2025-69419-2
+%patch -P114 -p1 -b .cve-2026-45447
+%patch -P115 -p1 -b .cve-2024-4741
 
 %build
 # Figure out which flags we want to use.
@@ -529,6 +533,12 @@ export LD_LIBRARY_PATH
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Mon Jun 01 2026 Dmitry Belyavskiy <dbelyavs@redhat.com> - 1:1.1.1k-16
+- Fix CVE-2026-45447: Heap Use-After-Free in OpenSSL PKCS7_verify()
+  Resolves: RHEL-180978
+- Fix CVE-2024-4741: Use After Free with SSL_free_buffers
+  Resolves: RHEL-180983
+
 * Thu Feb 12 2026 Antonio Vieiro <avieirov@redhat.com> - 1:1.1.1k-15
 - Fix CVE-2025-69419: Arbitrary code execution due to out-of-bounds write in PKCS#12 processing
   ticket_lifetime_hint exceed 1 week in TLSv1.3 and breaks compliant clients

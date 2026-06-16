@@ -1109,6 +1109,14 @@
  
 --- openssl-1.1.1k/crypto/pkcs7/pk7_doit.c.pkcs1-implicit-rejection	2021-03-25 14:28:38.000000000 +0100
 +++ openssl-1.1.1k/crypto/pkcs7/pk7_doit.c	2023-11-17 17:29:02.922553639 +0100
+@@ -12,6 +12,7 @@
+ #include <openssl/rand.h>
+ #include <openssl/objects.h>
+ #include <openssl/x509.h>
++#include <openssl/rsa.h>
+ #include <openssl/x509v3.h>
+ #include <openssl/err.h>
+ 
 @@ -159,6 +159,13 @@ static int pkcs7_decrypt_rinfo(unsigned
          goto err;
      }
