@@ -22,7 +22,7 @@
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.1.1k
-Release: 16%{?dist}
+Release: 17%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -110,6 +110,8 @@ Patch112: openssl-1.1.1-hardening-from-openssl-3.0.1.patch
 Patch113: openssl-1.1.1-cve-2025-69419.patch
 Patch114: openssl-1.1.1-cve-2026-45447.patch
 Patch115: openssl-1.1.1-cve-2024-4741.patch
+# Fix for CVE-2026-28390
+Patch116: openssl-1.1.1-cve-2026-28390.patch
 
 License: OpenSSL and ASL 2.0
 URL: http://www.openssl.org/
@@ -250,6 +252,7 @@ cp %{SOURCE13} test/
 %patch -P113 -p1 -b .cve-2025-69419-2
 %patch -P114 -p1 -b .cve-2026-45447
 %patch -P115 -p1 -b .cve-2024-4741
+%patch -P116 -p1 -b .cve-2026-28390
 
 %build
 # Figure out which flags we want to use.
@@ -533,6 +536,10 @@ export LD_LIBRARY_PATH
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Fri Jul 03 2026 Otmar Sabela <osabela@redhat.com> - 1:1.1.1k-17
+- Fixes CVE-2026-28390: Denial of Service due to NULL pointer dereference in CMS EnvelopedData processing
+  Resolves: RHEL-165783
+
 * Mon Jun 01 2026 Dmitry Belyavskiy <dbelyavs@redhat.com> - 1:1.1.1k-16
 - Fix CVE-2026-45447: Heap Use-After-Free in OpenSSL PKCS7_verify()
   Resolves: RHEL-180978
