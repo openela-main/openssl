@@ -1,0 +1,215 @@
+From 738688d7620613d35db5bf80dbac56f16fd33b5e Mon Sep 17 00:00:00 2001
+From: Daniel Sands <dnsands@sandia.gov>
+Date: Thu, 12 Mar 2026 11:59:13 -0600
+Subject: [PATCH 1/3] Add intelligence to asn1_d2i_read_bio for reading entire
+ header without blocking for extra data
+
+Reviewed-by: Tomas Mraz <tomas@openssl.foundation>
+Reviewed-by: Dmitry Belyavskiy <beldmit@gmail.com>
+
+(cherry picked from commit 35852da1d9e24cb74034b2f418cef3a58203b127)
+(cherry picked from commit 445b06163b0c466abebac6c2ac06917c3b9ec5db)
+(cherry picked from commit 53b2a52c9b337d8b8b5259758f7b7ea21f799131)
+
+Reviewed-by: Frederik Wedel-Heinen <fwh.openssl@gmail.com>
+MergeDate: Thu May  7 12:17:41 2026
+(Merged from https://github.com/openssl/openssl/pull/30986)
+---
+ crypto/asn1/a_d2i_fp.c | 57 +++++++++++++++++++++++++++++++++++++-----
+ crypto/asn1/asn1_lib.c |  2 +-
+ 2 files changed, 52 insertions(+), 7 deletions(-)
+
+diff --git a/crypto/asn1/a_d2i_fp.c b/crypto/asn1/a_d2i_fp.c
+index 82d2f7cc90..5892024687 100644
+--- a/crypto/asn1/a_d2i_fp.c
++++ b/crypto/asn1/a_d2i_fp.c
+@@ -104,7 +104,7 @@ void *ASN1_item_d2i_fp(const ASN1_ITEM *it, FILE *in, void *x)
+ }
+ #endif
+ 
+-#define HEADER_SIZE 8
++#define HEADER_SIZE 2
+ #define ASN1_CHUNK_INITIAL_SIZE (16 * 1024)
+ int asn1_d2i_read_bio(BIO *in, BUF_MEM **pb)
+ {
+@@ -138,7 +138,7 @@ int asn1_d2i_read_bio(BIO *in, BUF_MEM **pb)
+                 goto err;
+             }
+             i = BIO_read(in, &(b->data[len]), want);
+-            if (i < 0 && diff == 0) {
++            if (i <= 0) {
+                 ERR_raise(ERR_LIB_ASN1, ASN1_R_NOT_ENOUGH_DATA);
+                 goto err;
+             }
+@@ -154,12 +154,58 @@ int asn1_d2i_read_bio(BIO *in, BUF_MEM **pb)
+         }
+         /* else data already loaded */
+ 
++        /* make sure there is enough data for a complete header */
+         p = (unsigned char *)&(b->data[off]);
+         q = p;
+         diff = len - off;
+-        if (diff == 0)
++        if (diff < 2) {
++            /* Failed sanity check */
++            ERR_raise(ERR_LIB_ASN1, ASN1_R_NOT_ENOUGH_DATA);
+             goto err;
+-        inf = ASN1_get_object(&q, &slen, &tag, &xclass, diff);
++        }
++
++        diff--;
++        if ((*(q++) & V_ASN1_PRIMITIVE_TAG) == V_ASN1_PRIMITIVE_TAG) {
++            /* Multi-byte tag.  See if we have the whole thing yet */
++            do {
++                diff--;
++            } while (diff > 0 && *(q++) & 0x80);
++
++            if (diff == 0) {
++                /*
++                 * End of current data, will need at least 1 more byte for
++                 * length.  2 if the tag is still incomplete
++                 */
++                want = q - p + 2;
++                if (*q & 0x80) {
++                    want++;
++                }
++                continue;
++            }
++        }
++
++        /* Check the length.  This should also work for indefinite length */
++        diff--;
++        if (*q & 0x80) {
++            unsigned int n = *q & 0x7f;
++
++            if (n > sizeof(long)) {
++                ERR_raise(ERR_LIB_ASN1, ASN1_R_TOO_LONG);
++                goto err;
++            }
++            if (n > diff) {
++                want = q - p + n + 1;
++                continue;
++            }
++        }
++
++        /*
++         * We have a complete header now, assuming we didn't hit EOF. Parse the
++         * tag and length
++         */
++        q = p;
++        diff = len - off;
++        inf = ASN1_get_object(&q, &slen, &tag, &xclass, (int)diff);
+         if (inf & 0x80) {
+             unsigned long e;
+ 
+@@ -169,8 +215,7 @@ int asn1_d2i_read_bio(BIO *in, BUF_MEM **pb)
+             ERR_pop_to_mark();
+             ERR_set_mark();
+         }
+-        i = q - p; /* header length */
+-        off += i; /* end of data */
++        off += q - p; /* end of data */
+ 
+         if (inf & 1) {
+             /* no data body so go round again */
+diff --git a/crypto/asn1/asn1_lib.c b/crypto/asn1/asn1_lib.c
+index ae234bb5ea..b2c796888f 100644
+--- a/crypto/asn1/asn1_lib.c
++++ b/crypto/asn1/asn1_lib.c
+@@ -129,7 +129,7 @@ static int asn1_get_length(const unsigned char **pp, int *inf, long *rl,
+         *inf = 0;
+         i = *p & 0x7f;
+         if (*p++ & 0x80) {
+-            if (max < i + 1)
++            if (max < i)
+                 return 0;
+             /* Skip leading zeroes */
+             while (i > 0 && *p == 0) {
+-- 
+2.54.0
+
+
+From d1ae010b2976c4a296e660de16a2a1236de6078f Mon Sep 17 00:00:00 2001
+From: Tomas Mraz <tomas@openssl.foundation>
+Date: Tue, 5 May 2026 17:01:42 +0200
+Subject: [PATCH 2/3] The tag value must fit into int
+
+We cannot allow an unbounded tag value as this is an O(n^2) algorithm
+and the tag cannot be larger than INT_MAX anyway.
+Fixes 35852da1d9e24cb74034b2f418cef3a58203b127
+
+Reviewed-by: Eugene Syromiatnikov <esyr@openssl.org>
+Reviewed-by: Matt Caswell <matt@openssl.foundation>
+Reviewed-by: Simo Sorce <simo@redhat.com>
+MergeDate: Thu May  7 12:21:15 2026
+(Merged from https://github.com/openssl/openssl/pull/31091)
+---
+ crypto/asn1/a_d2i_fp.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/crypto/asn1/a_d2i_fp.c b/crypto/asn1/a_d2i_fp.c
+index 5892024687..eed4bdf9cf 100644
+--- a/crypto/asn1/a_d2i_fp.c
++++ b/crypto/asn1/a_d2i_fp.c
+@@ -166,8 +166,15 @@ int asn1_d2i_read_bio(BIO *in, BUF_MEM **pb)
+ 
+         diff--;
+         if ((*(q++) & V_ASN1_PRIMITIVE_TAG) == V_ASN1_PRIMITIVE_TAG) {
++            unsigned int i = 0;
+             /* Multi-byte tag.  See if we have the whole thing yet */
+             do {
++                if (i > 4) {
++                    /* The tag value must fit into int */
++                    ERR_raise(ERR_LIB_ASN1, ASN1_R_HEADER_TOO_LONG);
++                    goto err;
++                }
++                ++i;
+                 diff--;
+             } while (diff > 0 && *(q++) & 0x80);
+ 
+-- 
+2.54.0
+
+
+From 74cd48ff31ba6220e98e6ec601684e81f1ec768f Mon Sep 17 00:00:00 2001
+From: Tomas Mraz <tomas@openssl.foundation>
+Date: Thu, 7 May 2026 20:42:57 +0200
+Subject: [PATCH 3/3] asn1_d2i_read_bio(): Fix shadowing of declaration of i
+
+Rename inner i declaration to n.
+
+Reviewed-by: Frederik Wedel-Heinen <fwh.openssl@gmail.com>
+Reviewed-by: Nikola Pajkovsky <nikolap@openssl.org>
+Reviewed-by: Eugene Syromiatnikov <esyr@openssl.org>
+MergeDate: Thu May  7 19:04:13 2026
+(Merged from https://github.com/openssl/openssl/pull/31110)
+---
+ crypto/asn1/a_d2i_fp.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/crypto/asn1/a_d2i_fp.c b/crypto/asn1/a_d2i_fp.c
+index eed4bdf9cf..cf5901eed0 100644
+--- a/crypto/asn1/a_d2i_fp.c
++++ b/crypto/asn1/a_d2i_fp.c
+@@ -166,15 +166,15 @@ int asn1_d2i_read_bio(BIO *in, BUF_MEM **pb)
+ 
+         diff--;
+         if ((*(q++) & V_ASN1_PRIMITIVE_TAG) == V_ASN1_PRIMITIVE_TAG) {
+-            unsigned int i = 0;
++            unsigned int n = 0;
+             /* Multi-byte tag.  See if we have the whole thing yet */
+             do {
+-                if (i > 4) {
++                if (n > 4) {
+                     /* The tag value must fit into int */
+                     ERR_raise(ERR_LIB_ASN1, ASN1_R_HEADER_TOO_LONG);
+                     goto err;
+                 }
+-                ++i;
++                ++n;
+                 diff--;
+             } while (diff > 0 && *(q++) & 0x80);
+ 
+-- 
+2.54.0
+

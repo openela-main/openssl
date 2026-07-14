@@ -29,7 +29,7 @@ print(string.sub(hash, 0, 16))
 Summary:              Utilities from the general purpose cryptography library with TLS implementation
 Name:                 openssl
 Version:              3.5.5
-Release:              4%{?dist}.openela.0.1
+Release:              5%{?dist}.openela.0.1
 Epoch:                1
 Source0:              openssl-%{version}.tar.gz
 Source1:              fips-hmacify.sh
@@ -115,6 +115,7 @@ Patch0071:            0071-CVE-2026-45445.patch
 Patch0072:            0072-CVE-2026-45446.patch
 Patch0073:            0073-CVE-2026-45447.patch
 Patch0074:            0074-CVE-2026-34182.patch
+Patch0075:            0075-asn1_d2i_read_bio-blocking.patch
 
 #The patches that are different for RHEL9 and 10 start here
 Patch0100:            0100-RHEL9-Allow-SHA1-in-seclevel-2-if-rh-allow-sha1-signatures.patch
@@ -474,8 +475,12 @@ ln -s /etc/crypto-policies/back-ends/openssl_fips.config $RPM_BUILD_ROOT%{_sysco
 %ldconfig_scriptlets libs
 
 %changelog
-* Thu Jun 11 2026 Release Engineering <releng@openela.org> - 3.5.5.openela.0.1
+* Tue Jul 14 2026 Release Engineering <releng@openela.org> - 3.5.5.openela.0.1
 - Add OpenELA specific changes
+
+* Thu Jun 25 2026 Pavol Žáčik <pzacik@redhat.com> - 1:3.5.5-5
+- Patch asn1_d2i_read_bio to read headers without blocking
+  Resolves: RHEL-178642
 
 * Mon Jun 01 2026 Dmitry Belyavskiy <dbelyavs@redhat.com> - 1:3.5.5-4
 Fix CVE-2026-7383, CVE-2026-9076, CVE-2026-34180, CVE-2026-34181,
