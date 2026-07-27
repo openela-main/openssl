@@ -29,7 +29,7 @@ print(string.sub(hash, 0, 16))
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 3.5.5
-Release: 5%{?dist}
+Release: 6%{?dist}
 Epoch: 1
 Source0: openssl-%{version}.tar.gz
 Source1: fips-hmacify.sh
@@ -117,6 +117,7 @@ Patch0072: 0072-CVE-2026-45446.patch
 Patch0073: 0073-CVE-2026-45447.patch
 Patch0074: 0074-CVE-2026-34182.patch
 Patch0075: 0075-asn1_d2i_read_bio-blocking.patch
+Patch0076: 0076-asn1_d2i_read_bio_EOF.patch
 
 License: Apache-2.0
 URL: http://www.openssl.org/
@@ -477,6 +478,10 @@ touch $RPM_BUILD_ROOT/%{_prefix}/include/openssl/engine.h
 %ldconfig_scriptlets libs
 
 %changelog
+* Wed Jul 15 2026 Pavol Žáčik <pzacik@redhat.com> - 1:3.5.5-6
+- Patch asn1_d2i_read_bio to not raise NOT_ENOUGH_DATA at object boundary
+  Resolves: RHEL-210864
+
 * Thu Jun 25 2026 Pavol Žáčik <pzacik@redhat.com> - 1:3.5.5-5
 - Patch asn1_d2i_read_bio to read headers without blocking
   Resolves: RHEL-169991
