@@ -1,4 +1,4 @@
-From 5aa108caf01f482d35aba7acae6b5a8fa1577410 Mon Sep 17 00:00:00 2001
+From d3013b93461e421ac5d13b1bd74dc8478d84cd94 Mon Sep 17 00:00:00 2001
 From: rpm-build <rpm-build>
 Date: Wed, 6 Mar 2024 19:17:15 +0100
 Subject: [PATCH 08/57] RH: Add Kernel FIPS mode flag support - FIXSTYLE
@@ -90,5 +90,5 @@ index 1b4050a81f..eb7f409af0 100644
  #endif
  
 -- 
-2.52.0
+2.55.0
 

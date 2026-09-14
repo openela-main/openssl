@@ -1,4 +1,4 @@
-From 51fc5ce32bfe0fbe018934fa88252efe9073c649 Mon Sep 17 00:00:00 2001
+From 2bbf046d3610da70df48eafd372f7742b2f665e3 Mon Sep 17 00:00:00 2001
 From: Simo Sorce <simo@redhat.com>
 Date: Thu, 13 Feb 2025 18:16:29 -0500
 Subject: [PATCH 39/57] FIPS: PKCS12: PBMAC1 defaults
@@ -31,5 +31,5 @@ index 2c83e43845..20aad27c59 100644
                  if (!PKCS12_set_pbmac1_pbkdf2(p12, mpass, -1, NULL,
                          macsaltlen, maciter,
 -- 
-2.52.0
+2.55.0
 

@@ -1,4 +1,4 @@
-From 034d02d047e4a4d84d5c8ca2b54557b1679e8610 Mon Sep 17 00:00:00 2001
+From bdb0ecbad71078d147cd3879f27468d53abb01fe Mon Sep 17 00:00:00 2001
 From: Simo Sorce <simo@redhat.com>
 Date: Mon, 24 Mar 2025 10:50:37 -0400
 Subject: [PATCH 24/57] FIPS: RSA: PCTs
@@ -67,7 +67,7 @@ index 3582936d67..383c3071a9 100644
      BN_clear_free(gctx->pub_exp);
      OPENSSL_free(gctx);
 diff --git a/providers/implementations/signature/rsa_sig.c b/providers/implementations/signature/rsa_sig.c
-index bbdd037728..4e0744eeba 100644
+index c92e7ca6ef..f5a04a32ed 100644
 --- a/providers/implementations/signature/rsa_sig.c
 +++ b/providers/implementations/signature/rsa_sig.c
 @@ -37,7 +37,7 @@
@@ -97,7 +97,7 @@ index bbdd037728..4e0744eeba 100644
  {
      PROV_RSA_CTX *prsactx = NULL;
      char *propq_copy = NULL;
-@@ -1309,7 +1309,7 @@ int rsa_digest_verify_final(void *vprsactx, const unsigned char *sig,
+@@ -1334,7 +1334,7 @@ int rsa_digest_verify_final(void *vprsactx, const unsigned char *sig,
      return ok;
  }
  
@@ -106,7 +106,7 @@ index bbdd037728..4e0744eeba 100644
  {
      PROV_RSA_CTX *prsactx = (PROV_RSA_CTX *)vprsactx;
  
-@@ -1861,6 +1861,45 @@ static const OSSL_PARAM *rsa_settable_ctx_md_params(void *vprsactx)
+@@ -1886,6 +1886,45 @@ static const OSSL_PARAM *rsa_settable_ctx_md_params(void *vprsactx)
      return EVP_MD_settable_ctx_params(prsactx->md);
  }
  
@@ -153,5 +153,5 @@ index bbdd037728..4e0744eeba 100644
      { OSSL_FUNC_SIGNATURE_NEWCTX, (void (*)(void))rsa_newctx },
      { OSSL_FUNC_SIGNATURE_SIGN_INIT, (void (*)(void))rsa_sign_init },
 -- 
-2.52.0
+2.55.0
 

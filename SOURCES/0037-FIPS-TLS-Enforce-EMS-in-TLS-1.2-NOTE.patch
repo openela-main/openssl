@@ -1,4 +1,4 @@
-From 0f4b67897d87b6cb1bd1f65ca2aafbce1c3c6872 Mon Sep 17 00:00:00 2001
+From 8a8136eaa70356abf2ea095e10dfb4f0ed6ea2d6 Mon Sep 17 00:00:00 2001
 From: rpm-build <rpm-build>
 Date: Wed, 6 Mar 2024 19:17:17 +0100
 Subject: [PATCH 37/57] FIPS: TLS: Enforce EMS in TLS 1.2 - NOTE
@@ -25,10 +25,10 @@ From-dist-git-commit: 4334bc837fbc64d14890fdc51679a80770d498ce
  9 files changed, 47 insertions(+), 6 deletions(-)
 
 diff --git a/doc/man3/SSL_CONF_cmd.pod b/doc/man3/SSL_CONF_cmd.pod
-index 3e2de6e66b..ad9a2dc8bf 100644
+index e78a2231da..60ed79f410 100644
 --- a/doc/man3/SSL_CONF_cmd.pod
 +++ b/doc/man3/SSL_CONF_cmd.pod
-@@ -626,6 +626,9 @@ B<ExtendedMasterSecret>: use extended master secret extension, enabled by
+@@ -624,6 +624,9 @@ B<ExtendedMasterSecret>: use extended master secret extension, enabled by
  default. Inverse of B<SSL_OP_NO_EXTENDED_MASTER_SECRET>: that is,
  B<-ExtendedMasterSecret> is the same as setting B<SSL_OP_NO_EXTENDED_MASTER_SECRET>.
  
@@ -63,7 +63,7 @@ index 2505938c13..3887c54f0e 100644
  
  Copyright 2019-2025 The OpenSSL Project Authors. All Rights Reserved.
 diff --git a/include/openssl/ssl.h.in b/include/openssl/ssl.h.in
-index 82410670f4..1026a9b7b0 100644
+index 81f6a19ce7..fbe9f1dda3 100644
 --- a/include/openssl/ssl.h.in
 +++ b/include/openssl/ssl.h.in
 @@ -432,6 +432,7 @@ typedef int (*SSL_async_callback_fn)(SSL *s, void *arg);
@@ -98,7 +98,7 @@ index 0d93593880..4361edfa49 100644
          SSL_FLAG_TBL("AllowNoDHEKEX", SSL_OP_ALLOW_NO_DHE_KEX),
          SSL_FLAG_TBL("PreferNoDHEKEX", SSL_OP_PREFER_NO_DHE_KEX),
 diff --git a/ssl/statem/extensions_srvr.c b/ssl/statem/extensions_srvr.c
-index cdb914daed..1bcc0fd902 100644
+index 5218547f59..d5c1b39d1f 100644
 --- a/ssl/statem/extensions_srvr.c
 +++ b/ssl/statem/extensions_srvr.c
 @@ -12,6 +12,7 @@
@@ -109,7 +109,7 @@ index cdb914daed..1bcc0fd902 100644
  
  #define COOKIE_STATE_FORMAT_VERSION 1
  
-@@ -1889,8 +1890,13 @@ EXT_RETURN tls_construct_stoc_ems(SSL_CONNECTION *s, WPACKET *pkt,
+@@ -1898,8 +1899,13 @@ EXT_RETURN tls_construct_stoc_ems(SSL_CONNECTION *s, WPACKET *pkt,
      unsigned int context,
      X509 *x, size_t chainidx)
  {
@@ -177,7 +177,7 @@ index 50944328cb..edb2e81273 100644
  KDF = TLS1-PRF
  Ctrl.digest = digest:SHA256
 diff --git a/test/sslapitest.c b/test/sslapitest.c
-index a94061d974..92a33f05db 100644
+index f0aeaf8b89..1873b4ab83 100644
 --- a/test/sslapitest.c
 +++ b/test/sslapitest.c
 @@ -582,7 +582,7 @@ static int test_client_cert_verify_cb(void)
@@ -190,5 +190,5 @@ index a94061d974..92a33f05db 100644
      if (!TEST_true(create_ssl_ctx_pair(libctx, TLS_server_method(),
              TLS_client_method(), TLS1_VERSION, 0,
 -- 
-2.52.0
+2.55.0
 

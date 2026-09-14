@@ -1,4 +1,4 @@
-From 97d32c648aa0ba85165f40a9b9fca194301420fa Mon Sep 17 00:00:00 2001
+From bcbaf975d5032243565c88d285418b710854942d Mon Sep 17 00:00:00 2001
 From: rpm-build <rpm-build>
 Date: Wed, 6 Mar 2024 19:17:15 +0100
 Subject: [PATCH 23/57] FIPS: RSA: encrypt limits - REVIEW
@@ -911,7 +911,7 @@ index 18e11bdaa9..17ceb59148 100644
  Ctrl = rsa_padding_mode:oaep
  Ctrl = rsa_mgf1_md:sha1
 diff --git a/test/recipes/80-test_cms.t b/test/recipes/80-test_cms.t
-index 279a498475..c278987186 100644
+index b27a03d601..b94f5389c0 100644
 --- a/test/recipes/80-test_cms.t
 +++ b/test/recipes/80-test_cms.t
 @@ -267,7 +267,7 @@ my @smime_pkcs7_tests = (
@@ -923,7 +923,7 @@ index 279a498475..c278987186 100644
             [ "{cmd1}", @prov, "-encrypt", "-in", $smcont,
               "-aes256", "-stream", "-out", "{output}.cms",
               $smrsa1,
-@@ -1284,6 +1284,9 @@ sub check_availability {
+@@ -1363,6 +1363,9 @@ sub check_availability {
      return "$tnam: skipped, DSA disabled\n"
          if ($no_dsa && $tnam =~ / DSA/);
  
@@ -981,5 +981,5 @@ index f7be2e1872..568a1ddba4
              }
              next if $protocol eq "-tls1_3";
 -- 
-2.52.0
+2.55.0
 

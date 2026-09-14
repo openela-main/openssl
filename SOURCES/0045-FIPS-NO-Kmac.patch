@@ -1,4 +1,4 @@
-From 7afd41a086ff9d3c39ff592e26d006c769e2a6d7 Mon Sep 17 00:00:00 2001
+From 75ca2b0c1829684e2ecb486d3bef0ac5a6443b47 Mon Sep 17 00:00:00 2001
 From: Simo Sorce <simo@redhat.com>
 Date: Fri, 7 Mar 2025 18:22:07 -0500
 Subject: [PATCH 45/57] FIPS: NO Kmac
@@ -15,10 +15,10 @@ Signed-off-by: Simo Sorce <simo@redhat.com>
  7 files changed, 39 insertions(+), 86 deletions(-)
 
 diff --git a/providers/fips/fipsprov.c b/providers/fips/fipsprov.c
-index 33e1a179cf..7930cf3241 100644
+index 16ed6a4a0c..f2d11326c1 100644
 --- a/providers/fips/fipsprov.c
 +++ b/providers/fips/fipsprov.c
-@@ -294,10 +294,10 @@ static const OSSL_ALGORITHM fips_digests[] = {
+@@ -293,10 +293,10 @@ static const OSSL_ALGORITHM fips_digests[] = {
       * KECCAK-KMAC-128 and KECCAK-KMAC-256 as hashes are mostly useful for
       * KMAC128 and KMAC256.
       */
@@ -31,7 +31,7 @@ index 33e1a179cf..7930cf3241 100644
      { NULL, NULL, NULL }
  };
  
-@@ -365,8 +365,9 @@ static const OSSL_ALGORITHM fips_macs[] = {
+@@ -364,8 +364,9 @@ static const OSSL_ALGORITHM fips_macs[] = {
  #endif
      { PROV_NAMES_GMAC, FIPS_DEFAULT_PROPERTIES, ossl_gmac_functions },
      { PROV_NAMES_HMAC, FIPS_DEFAULT_PROPERTIES, ossl_hmac_functions },
@@ -44,7 +44,7 @@ index 33e1a179cf..7930cf3241 100644
  };
  
 diff --git a/providers/fips/self_test_data.inc b/providers/fips/self_test_data.inc
-index d8d23e6f90..43f7c89fd6 100644
+index c92e8541a9..675789a87d 100644
 --- a/providers/fips/self_test_data.inc
 +++ b/providers/fips/self_test_data.inc
 @@ -533,6 +533,7 @@ static const ST_KAT_PARAM kbkdf_params[] = {
@@ -421,5 +421,5 @@ index 831eecbac9..af92ceea98 100644
 -Custom = ""
 -Output = 75358CF39E41494E949707927CEE0AF20A3FF553904C86B08F21CC414BCFD691589D27CF5E15369CBBFF8B9A4C2EB17800855D0235FF635DA82533EC6B759B69
 -- 
-2.52.0
+2.55.0
 

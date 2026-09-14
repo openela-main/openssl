@@ -1,4 +1,4 @@
-From a6d43e2d94ba1f8ff57dfb403d9d70d9f6f0f433 Mon Sep 17 00:00:00 2001
+From 7db8402c2c44c585ee7e005d96cb715c144c6663 Mon Sep 17 00:00:00 2001
 From: Simo Sorce <simo@redhat.com>
 Date: Thu, 13 Feb 2025 18:11:19 -0500
 Subject: [PATCH 15/57] RH: TMP KTLS test skip
@@ -9,7 +9,7 @@ From-dist-git-commit: 83382cc2a09dfcc55d5740fd08fd95c2333a56c9
  1 file changed, 3 insertions(+), 2 deletions(-)
 
 diff --git a/test/sslapitest.c b/test/sslapitest.c
-index 993d9e6018..a94061d974 100644
+index ece9a59c82..f0aeaf8b89 100644
 --- a/test/sslapitest.c
 +++ b/test/sslapitest.c
 @@ -1029,9 +1029,10 @@ end:
@@ -26,5 +26,5 @@ index 993d9e6018..a94061d974 100644
  
  static int ping_pong_query(SSL *clientssl, SSL *serverssl)
 -- 
-2.52.0
+2.55.0
 

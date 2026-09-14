@@ -1,4 +1,4 @@
-From b8a5ce1fbad62e0f7b023aab827d2888413d5ced Mon Sep 17 00:00:00 2001
+From 35bea414aee07bf83f41f16f9b583eeddf70b6ea Mon Sep 17 00:00:00 2001
 From: rpm-build <rpm-build>
 Date: Wed, 6 Mar 2024 19:17:15 +0100
 Subject: [PATCH 19/57] FIPS: Force fips provider on
@@ -13,7 +13,7 @@ From-dist-git-commit: 4334bc837fbc64d14890fdc51679a80770d498ce
  1 file changed, 29 insertions(+), 1 deletion(-)
 
 diff --git a/crypto/provider_conf.c b/crypto/provider_conf.c
-index f2e76ac402..a2a8a9942c 100644
+index f2e76ac402..d92827d3ba 100644
 --- a/crypto/provider_conf.c
 +++ b/crypto/provider_conf.c
 @@ -10,6 +10,8 @@
@@ -75,5 +75,5 @@ index f2e76ac402..a2a8a9942c 100644
  }
  
 -- 
-2.52.0
+2.55.0
 

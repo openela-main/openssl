@@ -1,4 +1,4 @@
-From 17caabce423bbcfe0501ebaa11c2d4a8379aca92 Mon Sep 17 00:00:00 2001
+From 39add9b309bac2f393cf757be6d562def249a145 Mon Sep 17 00:00:00 2001
 From: Simo Sorce <simo@redhat.com>
 Date: Mon, 24 Mar 2025 10:50:06 -0400
 Subject: [PATCH 41/57] FIPS: EC: DH/DSA PCTs
@@ -41,7 +41,7 @@ index 43f3515878..0d35fc1590 100644
      retlen = ECDH_compute_key(secret, size, ppubkey, privk, NULL);
  
 diff --git a/providers/implementations/keymgmt/ec_kmgmt.c b/providers/implementations/keymgmt/ec_kmgmt.c
-index 305dc3a6b8..04e604c453 100644
+index 1d740307f6..80c13b3076 100644
 --- a/providers/implementations/keymgmt/ec_kmgmt.c
 +++ b/providers/implementations/keymgmt/ec_kmgmt.c
 @@ -963,9 +963,18 @@ struct ec_gen_ctx {
@@ -87,7 +87,7 @@ index 305dc3a6b8..04e604c453 100644
  
      if (gctx->group_check != NULL)
          ret = ret && ossl_ec_set_check_group_type_from_name(ec, gctx->group_check);
-@@ -1379,7 +1398,10 @@ static void ec_gen_cleanup(void *genctx)
+@@ -1365,7 +1384,10 @@ static void ec_gen_cleanup(void *genctx)
  
      if (gctx == NULL)
          return;
@@ -100,7 +100,7 @@ index 305dc3a6b8..04e604c453 100644
      EC_GROUP_free(gctx->gen_group);
      BN_free(gctx->p);
 diff --git a/providers/implementations/signature/ecdsa_sig.c b/providers/implementations/signature/ecdsa_sig.c
-index f5c101005f..b1576977f7 100644
+index b65e7d58a0..65f294135f 100644
 --- a/providers/implementations/signature/ecdsa_sig.c
 +++ b/providers/implementations/signature/ecdsa_sig.c
 @@ -33,7 +33,7 @@
@@ -139,7 +139,7 @@ index f5c101005f..b1576977f7 100644
  {
      PROV_ECDSA_CTX *ctx = (PROV_ECDSA_CTX *)vctx;
  
-@@ -854,6 +854,35 @@ static const OSSL_PARAM *ecdsa_settable_ctx_md_params(void *vctx)
+@@ -851,6 +851,35 @@ static const OSSL_PARAM *ecdsa_settable_ctx_md_params(void *vctx)
      return EVP_MD_settable_ctx_params(ctx->md);
  }
  
@@ -176,5 +176,5 @@ index f5c101005f..b1576977f7 100644
      { OSSL_FUNC_SIGNATURE_NEWCTX, (void (*)(void))ecdsa_newctx },
      { OSSL_FUNC_SIGNATURE_SIGN_INIT, (void (*)(void))ecdsa_sign_init },
 -- 
-2.52.0
+2.55.0
 

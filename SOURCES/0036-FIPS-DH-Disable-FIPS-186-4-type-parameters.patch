@@ -1,4 +1,4 @@
-From a7ddcb6ceef64c92b5c21389900477bc3a38f46d Mon Sep 17 00:00:00 2001
+From 0f6a3214e4eecd4de0bac7b44e39f5293bc26f19 Mon Sep 17 00:00:00 2001
 From: rpm-build <rpm-build>
 Date: Wed, 6 Mar 2024 19:17:17 +0100
 Subject: [PATCH 36/57] FIPS: DH: Disable FIPS 186-4 type parameters
@@ -39,7 +39,7 @@ NOTE: Dropped changes in test/recipes/80-test_cms.t
  11 files changed, 119 insertions(+), 21 deletions(-)
 
 diff --git a/crypto/dh/dh_backend.c b/crypto/dh/dh_backend.c
-index f68429862c..00b229a295 100644
+index 77b0b3257f..911f602938 100644
 --- a/crypto/dh/dh_backend.c
 +++ b/crypto/dh/dh_backend.c
 @@ -47,6 +47,16 @@ int ossl_dh_params_fromdata(DH *dh, const OSSL_PARAM params[])
@@ -60,7 +60,7 @@ index f68429862c..00b229a295 100644
      if (param_priv_len != NULL
          && (!OSSL_PARAM_get_long(param_priv_len, &priv_len)
 diff --git a/crypto/dh/dh_check.c b/crypto/dh/dh_check.c
-index 3002609b68..2aabdd2908 100644
+index 8787945f8a..8122916f74 100644
 --- a/crypto/dh/dh_check.c
 +++ b/crypto/dh/dh_check.c
 @@ -58,13 +58,15 @@ int DH_check_params(const DH *dh, int *ret)
@@ -184,7 +184,7 @@ index dd36dce281..21ac48c1de 100644
          DH_free(ret);
          return NULL;
 diff --git a/providers/implementations/keymgmt/dh_kmgmt.c b/providers/implementations/keymgmt/dh_kmgmt.c
-index 8a1afe7907..759ab77e1b 100644
+index eac99a4fed..46a8e8066d 100644
 --- a/providers/implementations/keymgmt/dh_kmgmt.c
 +++ b/providers/implementations/keymgmt/dh_kmgmt.c
 @@ -420,6 +420,11 @@ static int dh_validate(const void *keydata, int selection, int checktype)
@@ -200,10 +200,10 @@ index 8a1afe7907..759ab77e1b 100644
          /*
           * Both of these functions check parameters. DH_check_params_ex()
 diff --git a/test/endecode_test.c b/test/endecode_test.c
-index c3b55af3e7..b15bab217e 100644
+index 93347bed40..3dfb1cb56f 100644
 --- a/test/endecode_test.c
 +++ b/test/endecode_test.c
-@@ -85,10 +85,10 @@ static EVP_PKEY *make_template(const char *type, OSSL_PARAM *genparams)
+@@ -87,10 +87,10 @@ static EVP_PKEY *make_template(const char *type, OSSL_PARAM *genparams)
       * for testing only. Use a minimum key size of 2048 for security purposes.
       */
      if (strcmp(type, "DH") == 0)
@@ -217,7 +217,7 @@ index c3b55af3e7..b15bab217e 100644
  
      /*
 diff --git a/test/evp_libctx_test.c b/test/evp_libctx_test.c
-index 3786c567a7..773210fadb 100644
+index 0c96f735ad..57ca0e07b4 100644
 --- a/test/evp_libctx_test.c
 +++ b/test/evp_libctx_test.c
 @@ -222,7 +222,7 @@ static int do_dh_param_keygen(int tstid, const BIGNUM **bn)
@@ -230,10 +230,10 @@ index 3786c567a7..773210fadb 100644
  
      if (expected) {
 diff --git a/test/helpers/predefined_dhparams.c b/test/helpers/predefined_dhparams.c
-index 28070efdb6..4baeb673f3 100644
+index ef71b4498d..59c7776c38 100644
 --- a/test/helpers/predefined_dhparams.c
 +++ b/test/helpers/predefined_dhparams.c
-@@ -311,6 +311,68 @@ EVP_PKEY *get_dhx512(OSSL_LIB_CTX *libctx)
+@@ -120,6 +120,68 @@ EVP_PKEY *get_dhx512(OSSL_LIB_CTX *libctx)
          dhx512_q, sizeof(dhx512_q));
  }
  
@@ -329,5 +329,5 @@ index 6332aaec4b..4d8c900c00 100755
                 'test sslv2/sslv3 with 1024bit DHE via BIO pair');
            }
 -- 
-2.52.0
+2.55.0
 

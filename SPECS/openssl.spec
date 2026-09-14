@@ -28,8 +28,8 @@ print(string.sub(hash, 0, 16))
 
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
-Version: 3.5.5
-Release: 6%{?dist}
+Version: 3.5.8
+Release: 1%{?dist}
 Epoch: 1
 Source0: openssl-%{version}.tar.gz
 Source1: fips-hmacify.sh
@@ -99,25 +99,6 @@ Patch0054: 0054-Temporarily-disable-SLH-DSA-FIPS-self-tests.patch
 Patch0055: 0055-Add-a-define-to-disable-symver-attributes.patch
 Patch0056: 0056-Add-targets-to-skip-build-of-non-installable-program.patch
 Patch0057: 0057-Disable-RSA-PKCS1.5-FIPS-POST-not-relevant-for-RHEL.patch
-Patch0058: 0058-CVE-2026-31790.patch
-Patch0059: 0059-CVE-2026-28390.patch
-Patch0060: 0060-CVE-2026-7383.patch
-Patch0061: 0061-CVE-2026-9076.patch
-Patch0062: 0062-CVE-2026-34180.patch
-Patch0063: 0063-CVE-2026-34181.patch
-Patch0064: 0064-CVE-2026-34183.patch
-Patch0065: 0065-CVE-2026-42764.patch
-Patch0066: 0066-CVE-2026-42766.patch
-Patch0067: 0067-CVE-2026-42767.patch
-Patch0068: 0068-CVE-2026-42768.patch
-Patch0069: 0069-CVE-2026-42769.patch
-Patch0070: 0070-CVE-2026-42770.patch
-Patch0071: 0071-CVE-2026-45445.patch
-Patch0072: 0072-CVE-2026-45446.patch
-Patch0073: 0073-CVE-2026-45447.patch
-Patch0074: 0074-CVE-2026-34182.patch
-Patch0075: 0075-asn1_d2i_read_bio-blocking.patch
-Patch0076: 0076-asn1_d2i_read_bio_EOF.patch
 
 License: Apache-2.0
 URL: http://www.openssl.org/
@@ -478,6 +459,22 @@ touch $RPM_BUILD_ROOT/%{_prefix}/include/openssl/engine.h
 %ldconfig_scriptlets libs
 
 %changelog
+* Tue Aug 25 2026 Dmitry Belyavskiy <dbelyavs@redhat.com> - 1:3.5.8-1
+- Rebase to OpenSSL 3.5.8
+  Resolves: RHEL-242944
+  Resolves: RHEL-246254
+  Resolves: RHEL-246266
+  Resolves: RHEL-246306
+  Resolves: RHEL-246437
+  Resolves: RHEL-246441
+  Resolves: RHEL-246445
+  Resolves: RHEL-246449
+  Resolves: RHEL-246453
+
+* Thu Aug 06 2026 Pavol Žáčik <pzacik@redhat.com> - 1:3.5.5-7
+- Backport the "HollowByte" hardening patch
+  Resolves: RHEL-212362
+
 * Wed Jul 15 2026 Pavol Žáčik <pzacik@redhat.com> - 1:3.5.5-6
 - Patch asn1_d2i_read_bio to not raise NOT_ENOUGH_DATA at object boundary
   Resolves: RHEL-210864
