@@ -1,4 +1,4 @@
-From 1b1a5447386cf8a149c4cd603c893a691eb210b5 Mon Sep 17 00:00:00 2001
+From 6bd63b3a1c5267c5c14f57ffecbe7771295dc464 Mon Sep 17 00:00:00 2001
 From: Dmitry Belyavskiy <beldmit@gmail.com>
 Date: Fri, 30 May 2025 16:17:37 +0200
 Subject: [PATCH 53/57] Allow hybrid MLKEM in FIPS mode
@@ -12,10 +12,10 @@ Subject: [PATCH 53/57] Allow hybrid MLKEM in FIPS mode
  5 files changed, 105 insertions(+), 15 deletions(-)
 
 diff --git a/crypto/ml_kem/ml_kem.c b/crypto/ml_kem/ml_kem.c
-index dd8a39197a..833abf9f1d 100644
+index 6c3141ca2d..5a71926c47 100644
 --- a/crypto/ml_kem/ml_kem.c
 +++ b/crypto/ml_kem/ml_kem.c
-@@ -1924,6 +1924,7 @@ ML_KEM_KEY *ossl_ml_kem_key_new(OSSL_LIB_CTX *libctx, const char *properties,
+@@ -1965,6 +1965,7 @@ ML_KEM_KEY *ossl_ml_kem_key_new(OSSL_LIB_CTX *libctx, const char *properties,
  {
      const ML_KEM_VINFO *vinfo = ossl_ml_kem_get_vinfo(evp_type);
      ML_KEM_KEY *key;
@@ -23,7 +23,7 @@ index dd8a39197a..833abf9f1d 100644
  
      if (vinfo == NULL) {
          ERR_raise_data(ERR_LIB_CRYPTO, ERR_R_PASSED_INVALID_ARGUMENT,
-@@ -1934,15 +1935,17 @@ ML_KEM_KEY *ossl_ml_kem_key_new(OSSL_LIB_CTX *libctx, const char *properties,
+@@ -1975,15 +1976,17 @@ ML_KEM_KEY *ossl_ml_kem_key_new(OSSL_LIB_CTX *libctx, const char *properties,
      if ((key = OPENSSL_malloc(sizeof(*key))) == NULL)
          return NULL;
  
@@ -56,7 +56,7 @@ index dbe9192364..35dcbbf32c 100644
 +char *get_adjusted_propq(const char *propq);
  #endif /* OPENSSL_HEADER_ML_KEM_H */
 diff --git a/providers/defltprov.c b/providers/defltprov.c
-index 90655395c1..f74b160d6f 100644
+index de2a46515e..76bba34b79 100644
 --- a/providers/defltprov.c
 +++ b/providers/defltprov.c
 @@ -517,8 +517,8 @@ static const OSSL_ALGORITHM deflt_asym_kem[] = {
@@ -70,7 +70,7 @@ index 90655395c1..f74b160d6f 100644
  #endif
  #endif
      { NULL, NULL, NULL }
-@@ -594,13 +594,13 @@ static const OSSL_ALGORITHM deflt_keymgmt[] = {
+@@ -598,13 +598,13 @@ static const OSSL_ALGORITHM deflt_keymgmt[] = {
      { PROV_NAMES_X25519MLKEM768, "provider=default", ossl_mlx_x25519_kem_kmgmt_functions,
          PROV_DESCS_X25519MLKEM768 },
      { PROV_NAMES_X448MLKEM1024, "provider=default", ossl_mlx_x448_kem_kmgmt_functions,
@@ -90,7 +90,7 @@ index 90655395c1..f74b160d6f 100644
  #endif
  #ifndef OPENSSL_NO_SLH_DSA
 diff --git a/providers/implementations/kem/mlx_kem.c b/providers/implementations/kem/mlx_kem.c
-index 376b3342dd..09fa003612 100644
+index a917fa93d5..04429e0926 100644
 --- a/providers/implementations/kem/mlx_kem.c
 +++ b/providers/implementations/kem/mlx_kem.c
 @@ -19,6 +19,7 @@
@@ -148,15 +148,15 @@ index 376b3342dd..09fa003612 100644
      if (ctx == NULL
          || EVP_PKEY_encapsulate_init(ctx, NULL) <= 0
          || EVP_PKEY_encapsulate(ctx, cbuf, &encap_clen, sbuf, &encap_slen) <= 0)
-@@ -238,6 +263,7 @@ static int mlx_kem_encapsulate(void *vctx, unsigned char *ctext, size_t *clen,
- end:
+@@ -242,6 +267,7 @@ end:
+             ML_KEM_SHARED_SECRET_BYTES + key->xinfo->shsec_bytes);
      EVP_PKEY_free(xkey);
      EVP_PKEY_CTX_free(ctx);
 +    OPENSSL_free(adjusted_propq);
      return ret;
  }
  
-@@ -253,6 +279,7 @@ static int mlx_kem_decapsulate(void *vctx, uint8_t *shsec, size_t *slen,
+@@ -257,6 +283,7 @@ static int mlx_kem_decapsulate(void *vctx, uint8_t *shsec, size_t *slen,
      size_t decap_clen = key->minfo->ctext_bytes + key->xinfo->pubkey_bytes;
      int ml_kem_slot = key->xinfo->ml_kem_slot;
      int ret = 0;
@@ -164,7 +164,7 @@ index 376b3342dd..09fa003612 100644
  
      if (!mlx_kem_have_prvkey(key)) {
          ERR_raise(ERR_LIB_PROV, PROV_R_MISSING_KEY);
-@@ -288,7 +315,8 @@ static int mlx_kem_decapsulate(void *vctx, uint8_t *shsec, size_t *slen,
+@@ -292,7 +319,8 @@ static int mlx_kem_decapsulate(void *vctx, uint8_t *shsec, size_t *slen,
      decap_slen = ML_KEM_SHARED_SECRET_BYTES;
      cbuf = ctext + ml_kem_slot * key->xinfo->pubkey_bytes;
      sbuf = shsec + ml_kem_slot * key->xinfo->shsec_bytes;
@@ -174,8 +174,8 @@ index 376b3342dd..09fa003612 100644
      if (ctx == NULL
          || EVP_PKEY_decapsulate_init(ctx, NULL) <= 0
          || EVP_PKEY_decapsulate(ctx, sbuf, &decap_slen, cbuf, decap_clen) <= 0)
-@@ -326,6 +354,7 @@ static int mlx_kem_decapsulate(void *vctx, uint8_t *shsec, size_t *slen,
- end:
+@@ -334,6 +362,7 @@ end:
+             ML_KEM_SHARED_SECRET_BYTES + key->xinfo->shsec_bytes);
      EVP_PKEY_CTX_free(ctx);
      EVP_PKEY_free(xkey);
 +    OPENSSL_free(adjusted_propq);
@@ -183,7 +183,7 @@ index 376b3342dd..09fa003612 100644
  }
  
 diff --git a/providers/implementations/keymgmt/mlx_kmgmt.c b/providers/implementations/keymgmt/mlx_kmgmt.c
-index 46ed63039e..6ce9aa3c9a 100644
+index 75267f88e7..7beea2c2f0 100644
 --- a/providers/implementations/keymgmt/mlx_kmgmt.c
 +++ b/providers/implementations/keymgmt/mlx_kmgmt.c
 @@ -155,6 +155,52 @@ typedef struct export_cb_arg_st {
@@ -250,7 +250,7 @@ index 46ed63039e..6ce9aa3c9a 100644
          if (len != sub_arg->publen) {
              ERR_raise_data(ERR_LIB_PROV, ERR_R_INTERNAL_ERROR,
                  "Unexpected %s public key length %lu != %lu",
-@@ -343,12 +393,14 @@ load_slot(OSSL_LIB_CTX *libctx, const char *propq, const char *pname,
+@@ -349,12 +399,14 @@ load_slot(OSSL_LIB_CTX *libctx, const char *propq, const char *pname,
      void *val;
      int ml_kem_slot = key->xinfo->ml_kem_slot;
      int ret = 0;
@@ -265,7 +265,7 @@ index 46ed63039e..6ce9aa3c9a 100644
      } else {
          alg = key->xinfo->algorithm_name;
          group = (char *)key->xinfo->group_name;
-@@ -358,7 +410,8 @@ load_slot(OSSL_LIB_CTX *libctx, const char *propq, const char *pname,
+@@ -364,7 +416,8 @@ load_slot(OSSL_LIB_CTX *libctx, const char *propq, const char *pname,
      }
      val = (void *)(in + off);
  
@@ -275,7 +275,7 @@ index 46ed63039e..6ce9aa3c9a 100644
          || EVP_PKEY_fromdata_init(ctx) <= 0)
          goto err;
      parr[0] = OSSL_PARAM_construct_octet_string(pname, val, len);
-@@ -369,6 +422,7 @@ load_slot(OSSL_LIB_CTX *libctx, const char *propq, const char *pname,
+@@ -375,6 +428,7 @@ load_slot(OSSL_LIB_CTX *libctx, const char *propq, const char *pname,
          ret = 1;
  
  err:
@@ -283,7 +283,7 @@ index 46ed63039e..6ce9aa3c9a 100644
      EVP_PKEY_CTX_free(ctx);
      return ret;
  }
-@@ -685,6 +739,7 @@ static void *mlx_kem_gen(void *vgctx, OSSL_CALLBACK *osslcb, void *cbarg)
+@@ -697,6 +751,7 @@ static void *mlx_kem_gen(void *vgctx, OSSL_CALLBACK *osslcb, void *cbarg)
      PROV_ML_KEM_GEN_CTX *gctx = vgctx;
      MLX_KEY *key;
      char *propq;
@@ -291,7 +291,7 @@ index 46ed63039e..6ce9aa3c9a 100644
  
      if (gctx == NULL
          || (gctx->selection & OSSL_KEYMGMT_SELECT_KEYPAIR) == OSSL_KEYMGMT_SELECT_PUBLIC_KEY)
-@@ -700,8 +755,10 @@ static void *mlx_kem_gen(void *vgctx, OSSL_CALLBACK *osslcb, void *cbarg)
+@@ -712,8 +767,10 @@ static void *mlx_kem_gen(void *vgctx, OSSL_CALLBACK *osslcb, void *cbarg)
          return key;
  
      /* For now, using the same "propq" for all components */
@@ -304,5 +304,5 @@ index 46ed63039e..6ce9aa3c9a 100644
          key->xinfo->algorithm_name,
          key->xinfo->group_name);
 -- 
-2.52.0
+2.55.0
 

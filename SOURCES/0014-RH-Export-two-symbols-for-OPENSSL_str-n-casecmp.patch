@@ -1,4 +1,4 @@
-From 51d485de6b9e2a714610daa886bde82b45016c0a Mon Sep 17 00:00:00 2001
+From 365f4de8ff84e3dc77551a0038652bb7973a18f2 Mon Sep 17 00:00:00 2001
 From: Simo Sorce <simo@redhat.com>
 Date: Thu, 13 Feb 2025 16:09:09 -0500
 Subject: [PATCH 14/57] RH: Export two symbols for OPENSSL_str[n]casecmp
@@ -17,7 +17,7 @@ with upstream.
  mode change 100644 => 100755 test/recipes/01-test_symbol_presence.t
 
 diff --git a/crypto/evp/digest.c b/crypto/evp/digest.c
-index 8a6e87c11a..638dac8844 100644
+index 7f0d77ab69..101f49862c 100644
 --- a/crypto/evp/digest.c
 +++ b/crypto/evp/digest.c
 @@ -573,7 +573,7 @@ int EVP_DigestSqueeze(EVP_MD_CTX *ctx, unsigned char *md, size_t size)
@@ -30,10 +30,10 @@ index 8a6e87c11a..638dac8844 100644
                      symver ("EVP_MD_CTX_dup@OPENSSL_3.2.0")))
  #endif
 diff --git a/crypto/evp/evp_enc.c b/crypto/evp/evp_enc.c
-index d5ff34a4e2..b4edd825cd 100644
+index b4cfe2b809..30c2ec56dc 100644
 --- a/crypto/evp/evp_enc.c
 +++ b/crypto/evp/evp_enc.c
-@@ -1757,7 +1757,7 @@ int EVP_CIPHER_CTX_rand_key(EVP_CIPHER_CTX *ctx, unsigned char *key)
+@@ -1767,7 +1767,7 @@ int EVP_CIPHER_CTX_rand_key(EVP_CIPHER_CTX *ctx, unsigned char *key)
  }
  
  EVP_CIPHER_CTX
@@ -43,10 +43,10 @@ index d5ff34a4e2..b4edd825cd 100644
                      symver ("EVP_CIPHER_CTX_dup@OPENSSL_3.2.0")))
  #endif
 diff --git a/crypto/o_str.c b/crypto/o_str.c
-index 35540630be..fde43421ea 100644
+index 154393c7b3..b221ba789e 100644
 --- a/crypto/o_str.c
 +++ b/crypto/o_str.c
-@@ -406,7 +406,12 @@ int openssl_strerror_r(int errnum, char *buf, size_t buflen)
+@@ -417,7 +417,12 @@ int openssl_strerror_r(int errnum, char *buf, size_t buflen)
  #endif
  }
  
@@ -60,7 +60,7 @@ index 35540630be..fde43421ea 100644
  {
      int t;
  
-@@ -416,7 +421,12 @@ int OPENSSL_strcasecmp(const char *s1, const char *s2)
+@@ -427,7 +432,12 @@ int OPENSSL_strcasecmp(const char *s1, const char *s2)
      return t;
  }
  
@@ -104,5 +104,5 @@ index eab3987a6b..d377d542db 100644
  RAND_set0_public                        5559	3_1_0	EXIST::FUNCTION:
  RAND_set0_private                       5560	3_1_0	EXIST::FUNCTION:
 -- 
-2.52.0
+2.55.0
 

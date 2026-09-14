@@ -1,4 +1,4 @@
-From 04f1fc282cd5f5e7a9fbf2d82a62a9810d2e4acc Mon Sep 17 00:00:00 2001
+From 2e5c5494f72433a7dc4f1979fb29ba7c7d5f1fc1 Mon Sep 17 00:00:00 2001
 From: rpm-build <rpm-build>
 Date: Wed, 6 Mar 2024 19:17:14 +0100
 Subject: [PATCH 05/57] RH: Disable signature verification with bad digests -
@@ -30,5 +30,5 @@ index 55f86ee83f..95483afc00 100644
          const EVP_MD *type = NULL;
  
 -- 
-2.52.0
+2.55.0
 

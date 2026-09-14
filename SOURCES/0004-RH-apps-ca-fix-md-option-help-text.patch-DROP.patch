@@ -1,4 +1,4 @@
-From 3e60b46747eae0aec3171f13da6be706bcac6b48 Mon Sep 17 00:00:00 2001
+From 398109b4775fc42f1f5d1bdfc34068a51f2b7cc8 Mon Sep 17 00:00:00 2001
 From: rpm-build <rpm-build>
 Date: Wed, 6 Mar 2024 19:17:14 +0100
 Subject: [PATCH 04/57] RH: apps ca fix md option help text.patch - DROP?
@@ -26,5 +26,5 @@ index 02b00c7c03..7f77e069ab 100644
      { "keyform", OPT_KEYFORM, 'f',
          "Private key file format (ENGINE, other values ignored)" },
 -- 
-2.52.0
+2.55.0
 

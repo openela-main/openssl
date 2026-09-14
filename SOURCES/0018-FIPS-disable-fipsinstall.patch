@@ -1,4 +1,4 @@
-From e43a23f06a9e23f1091f88c6dfa6c1bd4e065a7a Mon Sep 17 00:00:00 2001
+From 4a470b2effd2473d876a85941b13a6318a500c4e Mon Sep 17 00:00:00 2001
 From: rpm-build <rpm-build>
 Date: Wed, 6 Mar 2024 19:17:15 +0100
 Subject: [PATCH 18/57] FIPS: disable fipsinstall
@@ -530,7 +530,7 @@ index 2db5acd242..1c6b783413 100644
  =head1 COPYRIGHT
  
 diff --git a/doc/man1/openssl.pod b/doc/man1/openssl.pod
-index 635b52aeb1..55bc6e44c6 100644
+index 1963715f38..0f8c415096 100644
 --- a/doc/man1/openssl.pod
 +++ b/doc/man1/openssl.pod
 @@ -139,10 +139,6 @@ Engine (loadable module) information and manipulation.
@@ -856,5 +856,5 @@ index 3dcbe67c6d..1a5a475d91
  
  # Compatible options for pedantic FIPS compliance
 -- 
-2.52.0
+2.55.0
 

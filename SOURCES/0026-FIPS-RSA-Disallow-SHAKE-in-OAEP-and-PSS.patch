@@ -1,4 +1,4 @@
-From 05d9c9154e199bb4a84e215f0b20bd06ac5081d8 Mon Sep 17 00:00:00 2001
+From 64c71ed5188c9e76e87cc79c8a8121df7f42be29 Mon Sep 17 00:00:00 2001
 From: rpm-build <rpm-build>
 Date: Wed, 6 Mar 2024 19:17:17 +0100
 Subject: [PATCH 26/57] FIPS: RSA: Disallow SHAKE in OAEP and PSS
@@ -93,5 +93,5 @@ index 98d6e70346..7fe78b9055 100644
      if (hLen <= 0)
          goto err;
 -- 
-2.52.0
+2.55.0
 

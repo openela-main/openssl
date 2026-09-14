@@ -1,4 +1,4 @@
-From 80a4d4da42db9711d06953f4dcd6e9f29c001292 Mon Sep 17 00:00:00 2001
+From a0493c058ee5d891f7d61b35b131f722c5d81d87 Mon Sep 17 00:00:00 2001
 From: rpm-build <rpm-build>
 Date: Wed, 6 Mar 2024 19:17:16 +0100
 Subject: [PATCH 32/57] FIPS: RAND: FIPS-140-3 DRBG - NEEDS REVIEW
@@ -68,7 +68,7 @@ index f9d90d5d43..6b23d55cf5 100644
      if (reseed_required || prediction_resistance) {
          if (!ossl_prov_drbg_reseed_unlocked(drbg, prediction_resistance, NULL,
 diff --git a/providers/implementations/rands/seeding/rand_unix.c b/providers/implementations/rands/seeding/rand_unix.c
-index 80ae817313..1e73a1ec28 100644
+index 0b8a9ec341..5af3c76d64 100644
 --- a/providers/implementations/rands/seeding/rand_unix.c
 +++ b/providers/implementations/rands/seeding/rand_unix.c
 @@ -47,12 +47,14 @@
@@ -147,7 +147,7 @@ index 80ae817313..1e73a1ec28 100644
 -    return getrandom(buf, buflen, 0);
 -#elif (defined(__FreeBSD__) || defined(__NetBSD__)) && defined(KERN_ARND)
 -    return sysctl_random(buf, buflen);
--#elif defined(__wasi__)
+-#elif defined(__wasi__) || defined(__EMSCRIPTEN__)
 -    if (getentropy(buf, buflen) == 0)
 -        return (ssize_t)buflen;
 -    return -1;
@@ -161,5 +161,5 @@ index 80ae817313..1e73a1ec28 100644
  #endif /* defined(OPENSSL_RAND_SEED_GETRANDOM) */
  
 -- 
-2.52.0
+2.55.0
 

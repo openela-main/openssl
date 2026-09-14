@@ -120,41 +120,6 @@ index 4b74ee1a34..5f089de107 100644
      /* Finally see if security callback allows it */
      secbits = sigalg_security_bits(SSL_CONNECTION_GET_CTX(s), lu);
      sigalgstr[0] = (lu->sigalg >> 8) & 0xff;
-@@ -2977,6 +2994,8 @@ static int ssl_security_cert_sig(SSL *s, SSL_CTX *ctx, X509 *x, int op)
- {
-     /* Lookup signature algorithm digest */
-     int secbits, nid, pknid;
-+    OSSL_LIB_CTX *libctx = NULL;
-+
- 
-     /* Don't check signature if self signed */
-     if ((X509_get_extension_flags(x) & EXFLAG_SS) != 0)
-@@ -2985,6 +3004,25 @@ static int ssl_security_cert_sig(SSL *s, SSL_CTX *ctx, X509 *x, int op)
-     /* If digest NID not defined use signature NID */
-     if (nid == NID_undef)
-         nid = pknid;
-+
-+    if (x && x->libctx)
-+        libctx = x->libctx;
-+    else if (ctx && ctx->libctx)
-+        libctx = ctx->libctx;
-+    else if (s && s->session_ctx && s->session_ctx->libctx)
-+        libctx = s->session_ctx->libctx;
-+    else
-+        libctx = OSSL_LIB_CTX_get0_global_default();
-+
-+    if (nid == NID_sha1
-+            && ossl_ctx_legacy_digest_signatures_allowed(libctx, 0)
-+            && ((s != NULL && SSL_get_security_level(SSL_CONNECTION_GET_SSL(s)) < 3)
-+                || (ctx != NULL && SSL_CTX_get_security_level(ctx) < 3)
-+            ))
-+        /* When rh-allow-sha1-signatures = yes and security level <= 2,
-+         * explicitly allow SHA1 for backwards compatibility. */
-+        return 1;
-+
-     if (s != NULL)
-         return ssl_security(s, op, secbits, nid, x);
-     else
 diff --git a/test/recipes/25-test_verify.t b/test/recipes/25-test_verify.t
 index 700bbd849c..2de1d76b5e 100644
 --- a/test/recipes/25-test_verify.t
@@ -163,8 +128,8 @@ index 700bbd849c..2de1d76b5e 100644
      run(app([@args]));
  }
  
--plan tests => 203;
-+plan tests => 202;
+-plan tests => 206;
++plan tests => 205;
  
  # Canonical success
  ok(verify("ee-cert", "sslserver", ["root-cert"], ["ca-cert"]),

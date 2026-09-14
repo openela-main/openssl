@@ -1,4 +1,4 @@
-From 2cda3e9adf5534d6be689cff5eeb81459061f52b Mon Sep 17 00:00:00 2001
+From fc9f1fdf78d78e2628e1a407a11dfdc4535e80f4 Mon Sep 17 00:00:00 2001
 From: Simo Sorce <simo@redhat.com>
 Date: Fri, 7 Mar 2025 18:06:36 -0500
 Subject: [PATCH 42/57] FIPS: EC: disable weak curves
@@ -27,5 +27,5 @@ index 017dc7568d..596c31a925 100644
              comment = "CURVE DESCRIPTION NOT AVAILABLE";
          if (sname == NULL)
 -- 
-2.52.0
+2.55.0
 

@@ -1,4 +1,4 @@
-From 60f55f072544cb998c42da41ee33ced2b4428b9f Mon Sep 17 00:00:00 2001
+From 005e6daf6097a420efdb869e641f2708a9d0c551 Mon Sep 17 00:00:00 2001
 From: rpm-build <rpm-build>
 Date: Wed, 6 Mar 2024 19:17:15 +0100
 Subject: [PATCH 07/57] RH: Add FIPS_mode compatibility macro
@@ -79,5 +79,5 @@ index d470731e50..0b044ec853 100644
      ADD_TEST(test_property_list_to_string_bounds);
      return 1;
 -- 
-2.52.0
+2.55.0
 
