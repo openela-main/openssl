@@ -29,7 +29,7 @@ print(string.sub(hash, 0, 16))
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 3.5.8
-Release: 1%{?dist}
+Release: 2%{?dist}
 Epoch: 1
 Source0: openssl-%{version}.tar.gz
 Source1: fips-hmacify.sh
@@ -99,6 +99,7 @@ Patch0054: 0054-Temporarily-disable-SLH-DSA-FIPS-self-tests.patch
 Patch0055: 0055-Add-a-define-to-disable-symver-attributes.patch
 Patch0056: 0056-Add-targets-to-skip-build-of-non-installable-program.patch
 Patch0057: 0057-Disable-RSA-PKCS1.5-FIPS-POST-not-relevant-for-RHEL.patch
+Patch0058: 0058-CVE-2026-84782.patch
 
 License: Apache-2.0
 URL: http://www.openssl.org/
@@ -459,6 +460,10 @@ touch $RPM_BUILD_ROOT/%{_prefix}/include/openssl/engine.h
 %ldconfig_scriptlets libs
 
 %changelog
+* Mon Sep 21 2026 Dmitry Belyavskiy <dbelyavs@redhat.com> - 1:3.5.8-2
+- Fixes DTLS Retransmits Handshake Messages From a Stale Buffer Offset (CVE-2026-84782)
+  Resolves: RHEL-264466
+
 * Tue Aug 25 2026 Dmitry Belyavskiy <dbelyavs@redhat.com> - 1:3.5.8-1
 - Rebase to OpenSSL 3.5.8
   Resolves: RHEL-242944
