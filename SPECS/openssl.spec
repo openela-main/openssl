@@ -22,7 +22,7 @@
 Summary: Utilities from the general purpose cryptography library with TLS implementation
 Name: openssl
 Version: 1.1.1k
-Release: 17%{?dist}
+Release: 18%{?dist}
 Epoch: 1
 # We have to remove certain patented algorithms from the openssl source
 # tarball with the hobble-openssl script which is included below.
@@ -112,6 +112,10 @@ Patch114: openssl-1.1.1-cve-2026-45447.patch
 Patch115: openssl-1.1.1-cve-2024-4741.patch
 # Fix for CVE-2026-28390
 Patch116: openssl-1.1.1-cve-2026-28390.patch
+# Fix for CVE-2026-63072
+Patch117: openssl-1.1.1-cve-2026-63072.patch
+# Fix for CVE-2026-84782
+Patch118: openssl-1.1.1-cve-2026-84782.patch
 
 License: OpenSSL and ASL 2.0
 URL: http://www.openssl.org/
@@ -253,6 +257,8 @@ cp %{SOURCE13} test/
 %patch -P114 -p1 -b .cve-2026-45447
 %patch -P115 -p1 -b .cve-2024-4741
 %patch -P116 -p1 -b .cve-2026-28390
+%patch -P117 -p1 -b .cve-2026-63072
+%patch -P118 -p1 -b .cve-2026-84782
 
 %build
 # Figure out which flags we want to use.
@@ -536,6 +542,12 @@ export LD_LIBRARY_PATH
 %postun libs -p /sbin/ldconfig
 
 %changelog
+* Wed Sep 23 2026 Pavol Žáčik <pzacik@redhat.com> - 1:1.1.1k-18
+- Fix CVE-2026-63072: heap buffer overflow in CMS key unwrapping
+  Resolves: RHEL-246295
+- Fix CVE-2026-84782: DTLS Retransmits Handshake Messages From a Stale Buffer Offset
+  Resolves: RHEL-264420
+
 * Fri Jul 03 2026 Otmar Sabela <osabela@redhat.com> - 1:1.1.1k-17
 - Fixes CVE-2026-28390: Denial of Service due to NULL pointer dereference in CMS EnvelopedData processing
   Resolves: RHEL-165783
