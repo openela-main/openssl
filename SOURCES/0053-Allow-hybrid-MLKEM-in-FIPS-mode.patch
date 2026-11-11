@@ -1,4 +1,4 @@
-From 6bd63b3a1c5267c5c14f57ffecbe7771295dc464 Mon Sep 17 00:00:00 2001
+From d250cafed1094a8f963e99e2e147cf52e47aa2a0 Mon Sep 17 00:00:00 2001
 From: Dmitry Belyavskiy <beldmit@gmail.com>
 Date: Fri, 30 May 2025 16:17:37 +0200
 Subject: [PATCH 53/57] Allow hybrid MLKEM in FIPS mode
@@ -12,7 +12,7 @@ Subject: [PATCH 53/57] Allow hybrid MLKEM in FIPS mode
  5 files changed, 105 insertions(+), 15 deletions(-)
 
 diff --git a/crypto/ml_kem/ml_kem.c b/crypto/ml_kem/ml_kem.c
-index 6c3141ca2d..5a71926c47 100644
+index 6c3141c..5a71926 100644
 --- a/crypto/ml_kem/ml_kem.c
 +++ b/crypto/ml_kem/ml_kem.c
 @@ -1965,6 +1965,7 @@ ML_KEM_KEY *ossl_ml_kem_key_new(OSSL_LIB_CTX *libctx, const char *properties,
@@ -46,7 +46,7 @@ index 6c3141ca2d..5a71926c47 100644
      if (key->shake128_md != NULL
          && key->shake256_md != NULL
 diff --git a/include/crypto/ml_kem.h b/include/crypto/ml_kem.h
-index dbe9192364..35dcbbf32c 100644
+index dbe9192..35dcbbf 100644
 --- a/include/crypto/ml_kem.h
 +++ b/include/crypto/ml_kem.h
 @@ -268,4 +268,5 @@ __owur int ossl_ml_kem_decap(uint8_t *shared_secret, size_t slen,
@@ -56,7 +56,7 @@ index dbe9192364..35dcbbf32c 100644
 +char *get_adjusted_propq(const char *propq);
  #endif /* OPENSSL_HEADER_ML_KEM_H */
 diff --git a/providers/defltprov.c b/providers/defltprov.c
-index de2a46515e..76bba34b79 100644
+index de2a465..76bba34 100644
 --- a/providers/defltprov.c
 +++ b/providers/defltprov.c
 @@ -517,8 +517,8 @@ static const OSSL_ALGORITHM deflt_asym_kem[] = {
@@ -90,18 +90,18 @@ index de2a46515e..76bba34b79 100644
  #endif
  #ifndef OPENSSL_NO_SLH_DSA
 diff --git a/providers/implementations/kem/mlx_kem.c b/providers/implementations/kem/mlx_kem.c
-index a917fa93d5..04429e0926 100644
+index fd4b400..72b1423 100644
 --- a/providers/implementations/kem/mlx_kem.c
 +++ b/providers/implementations/kem/mlx_kem.c
-@@ -19,6 +19,7 @@
- #include "prov/mlx_kem.h"
+@@ -21,6 +21,7 @@
  #include "prov/provider_ctx.h"
  #include "prov/providercommon.h"
+ #include "fips/fipsindicator.h"
 +#include <string.h>
  
  static OSSL_FUNC_kem_newctx_fn mlx_kem_newctx;
  static OSSL_FUNC_kem_freectx_fn mlx_kem_freectx;
-@@ -103,6 +104,28 @@ mlx_kem_set_ctx_params(void *vctx, const OSSL_PARAM params[])
+@@ -105,6 +106,28 @@ mlx_kem_set_ctx_params(void *vctx, const OSSL_PARAM params[])
      return 1;
  }
  
@@ -127,10 +127,10 @@ index a917fa93d5..04429e0926 100644
 +    return adjusted_propq;
 +}
 +
- static int mlx_kem_encapsulate(void *vctx, unsigned char *ctext, size_t *clen,
-     unsigned char *shsec, size_t *slen)
+ #ifdef FIPS_MODULE
+ static int mlx_kem_get_ctx_params(void *vctx, OSSL_PARAM params[])
  {
-@@ -115,6 +138,7 @@ static int mlx_kem_encapsulate(void *vctx, unsigned char *ctext, size_t *clen,
+@@ -136,6 +159,7 @@ static int mlx_kem_encapsulate(void *vctx, unsigned char *ctext, size_t *clen,
      uint8_t *sbuf;
      int ml_kem_slot = key->xinfo->ml_kem_slot;
      int ret = 0;
@@ -138,7 +138,7 @@ index a917fa93d5..04429e0926 100644
  
      if (!mlx_kem_have_pubkey(key)) {
          ERR_raise(ERR_LIB_PROV, PROV_R_MISSING_KEY);
-@@ -167,7 +191,8 @@ static int mlx_kem_encapsulate(void *vctx, unsigned char *ctext, size_t *clen,
+@@ -188,7 +212,8 @@ static int mlx_kem_encapsulate(void *vctx, unsigned char *ctext, size_t *clen,
      encap_slen = ML_KEM_SHARED_SECRET_BYTES;
      cbuf = ctext + ml_kem_slot * key->xinfo->pubkey_bytes;
      sbuf = shsec + ml_kem_slot * key->xinfo->shsec_bytes;
@@ -148,7 +148,7 @@ index a917fa93d5..04429e0926 100644
      if (ctx == NULL
          || EVP_PKEY_encapsulate_init(ctx, NULL) <= 0
          || EVP_PKEY_encapsulate(ctx, cbuf, &encap_clen, sbuf, &encap_slen) <= 0)
-@@ -242,6 +267,7 @@ end:
+@@ -263,6 +288,7 @@ end:
              ML_KEM_SHARED_SECRET_BYTES + key->xinfo->shsec_bytes);
      EVP_PKEY_free(xkey);
      EVP_PKEY_CTX_free(ctx);
@@ -156,7 +156,7 @@ index a917fa93d5..04429e0926 100644
      return ret;
  }
  
-@@ -257,6 +283,7 @@ static int mlx_kem_decapsulate(void *vctx, uint8_t *shsec, size_t *slen,
+@@ -278,6 +304,7 @@ static int mlx_kem_decapsulate(void *vctx, uint8_t *shsec, size_t *slen,
      size_t decap_clen = key->minfo->ctext_bytes + key->xinfo->pubkey_bytes;
      int ml_kem_slot = key->xinfo->ml_kem_slot;
      int ret = 0;
@@ -164,7 +164,7 @@ index a917fa93d5..04429e0926 100644
  
      if (!mlx_kem_have_prvkey(key)) {
          ERR_raise(ERR_LIB_PROV, PROV_R_MISSING_KEY);
-@@ -292,7 +319,8 @@ static int mlx_kem_decapsulate(void *vctx, uint8_t *shsec, size_t *slen,
+@@ -313,7 +340,8 @@ static int mlx_kem_decapsulate(void *vctx, uint8_t *shsec, size_t *slen,
      decap_slen = ML_KEM_SHARED_SECRET_BYTES;
      cbuf = ctext + ml_kem_slot * key->xinfo->pubkey_bytes;
      sbuf = shsec + ml_kem_slot * key->xinfo->shsec_bytes;
@@ -174,7 +174,7 @@ index a917fa93d5..04429e0926 100644
      if (ctx == NULL
          || EVP_PKEY_decapsulate_init(ctx, NULL) <= 0
          || EVP_PKEY_decapsulate(ctx, sbuf, &decap_slen, cbuf, decap_clen) <= 0)
-@@ -334,6 +362,7 @@ end:
+@@ -355,6 +383,7 @@ end:
              ML_KEM_SHARED_SECRET_BYTES + key->xinfo->shsec_bytes);
      EVP_PKEY_CTX_free(ctx);
      EVP_PKEY_free(xkey);
@@ -183,10 +183,10 @@ index a917fa93d5..04429e0926 100644
  }
  
 diff --git a/providers/implementations/keymgmt/mlx_kmgmt.c b/providers/implementations/keymgmt/mlx_kmgmt.c
-index 75267f88e7..7beea2c2f0 100644
+index a36caff..46b067b 100644
 --- a/providers/implementations/keymgmt/mlx_kmgmt.c
 +++ b/providers/implementations/keymgmt/mlx_kmgmt.c
-@@ -155,6 +155,52 @@ typedef struct export_cb_arg_st {
+@@ -157,6 +157,52 @@ typedef struct export_cb_arg_st {
      size_t prvlen;
  } EXPORT_CB_ARG;
  
@@ -239,7 +239,7 @@ index 75267f88e7..7beea2c2f0 100644
  /* Copy any exported key material into its storage slot */
  static int export_sub_cb(const OSSL_PARAM *params, void *varg)
  {
-@@ -175,6 +221,10 @@ static int export_sub_cb(const OSSL_PARAM *params, void *varg)
+@@ -177,6 +223,10 @@ static int export_sub_cb(const OSSL_PARAM *params, void *varg)
  
          if (OSSL_PARAM_get_octet_string(p, &pub, sub_arg->publen, &len) != 1)
              return 0;
@@ -250,7 +250,7 @@ index 75267f88e7..7beea2c2f0 100644
          if (len != sub_arg->publen) {
              ERR_raise_data(ERR_LIB_PROV, ERR_R_INTERNAL_ERROR,
                  "Unexpected %s public key length %lu != %lu",
-@@ -349,12 +399,14 @@ load_slot(OSSL_LIB_CTX *libctx, const char *propq, const char *pname,
+@@ -350,12 +400,14 @@ load_slot(OSSL_LIB_CTX *libctx, const char *propq, const char *pname,
      void *val;
      int ml_kem_slot = key->xinfo->ml_kem_slot;
      int ret = 0;
@@ -265,7 +265,7 @@ index 75267f88e7..7beea2c2f0 100644
      } else {
          alg = key->xinfo->algorithm_name;
          group = (char *)key->xinfo->group_name;
-@@ -364,7 +416,8 @@ load_slot(OSSL_LIB_CTX *libctx, const char *propq, const char *pname,
+@@ -365,7 +417,8 @@ load_slot(OSSL_LIB_CTX *libctx, const char *propq, const char *pname,
      }
      val = (void *)(in + off);
  
@@ -275,7 +275,7 @@ index 75267f88e7..7beea2c2f0 100644
          || EVP_PKEY_fromdata_init(ctx) <= 0)
          goto err;
      parr[0] = OSSL_PARAM_construct_octet_string(pname, val, len);
-@@ -375,6 +428,7 @@ load_slot(OSSL_LIB_CTX *libctx, const char *propq, const char *pname,
+@@ -376,6 +429,7 @@ load_slot(OSSL_LIB_CTX *libctx, const char *propq, const char *pname,
          ret = 1;
  
  err:
@@ -283,7 +283,7 @@ index 75267f88e7..7beea2c2f0 100644
      EVP_PKEY_CTX_free(ctx);
      return ret;
  }
-@@ -697,6 +751,7 @@ static void *mlx_kem_gen(void *vgctx, OSSL_CALLBACK *osslcb, void *cbarg)
+@@ -719,6 +773,7 @@ static void *mlx_kem_gen(void *vgctx, OSSL_CALLBACK *osslcb, void *cbarg)
      PROV_ML_KEM_GEN_CTX *gctx = vgctx;
      MLX_KEY *key;
      char *propq;
@@ -291,7 +291,7 @@ index 75267f88e7..7beea2c2f0 100644
  
      if (gctx == NULL
          || (gctx->selection & OSSL_KEYMGMT_SELECT_KEYPAIR) == OSSL_KEYMGMT_SELECT_PUBLIC_KEY)
-@@ -712,8 +767,10 @@ static void *mlx_kem_gen(void *vgctx, OSSL_CALLBACK *osslcb, void *cbarg)
+@@ -734,8 +789,10 @@ static void *mlx_kem_gen(void *vgctx, OSSL_CALLBACK *osslcb, void *cbarg)
          return key;
  
      /* For now, using the same "propq" for all components */

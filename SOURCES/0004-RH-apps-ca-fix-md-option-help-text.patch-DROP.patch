@@ -1,4 +1,4 @@
-From 398109b4775fc42f1f5d1bdfc34068a51f2b7cc8 Mon Sep 17 00:00:00 2001
+From 373411b5acf0b40d849cb12230ae76dab6d659ff Mon Sep 17 00:00:00 2001
 From: rpm-build <rpm-build>
 Date: Wed, 6 Mar 2024 19:17:14 +0100
 Subject: [PATCH 04/57] RH: apps ca fix md option help text.patch - DROP?
@@ -13,7 +13,7 @@ From-dist-git-commit: 4334bc837fbc64d14890fdc51679a80770d498ce
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/apps/ca.c b/apps/ca.c
-index 02b00c7c03..7f77e069ab 100644
+index 02b00c7..7f77e06 100644
 --- a/apps/ca.c
 +++ b/apps/ca.c
 @@ -261,7 +261,7 @@ const OPTIONS ca_options[] = {

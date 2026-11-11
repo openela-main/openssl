@@ -1,4 +1,4 @@
-From f63ddd633a81a05890989535016f0af692a0c919 Mon Sep 17 00:00:00 2001
+From 328d457055d263b01d97065bf3884855819be87f Mon Sep 17 00:00:00 2001
 From: Simo Sorce <simo@redhat.com>
 Date: Wed, 5 Mar 2025 13:22:03 -0500
 Subject: [PATCH 40/57] FIPS: Fix encoder/decoder negative test
@@ -12,7 +12,7 @@ Signed-off-by: Simo Sorce <simo@redhat.com>
 diff --git a/test/recipes/04-test_encoder_decoder.t b/test/recipes/04-test_encoder_decoder.t
 old mode 100644
 new mode 100755
-index 2acc980e90..660d4e1115
+index 2acc980..660d4e1
 --- a/test/recipes/04-test_encoder_decoder.t
 +++ b/test/recipes/04-test_encoder_decoder.t
 @@ -75,10 +75,10 @@ SKIP: {

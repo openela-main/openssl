@@ -1,4 +1,4 @@
-From c607becfce55f1b62e8afc0ceebeab08e193036f Mon Sep 17 00:00:00 2001
+From 719bd25c93606b617c45e873c1891cdb1fc33288 Mon Sep 17 00:00:00 2001
 From: rpm-build <rpm-build>
 Date: Wed, 6 Mar 2024 19:17:15 +0100
 Subject: [PATCH 11/57] RH: skipped tests EC curves
@@ -16,7 +16,7 @@ From-dist-git-commit: 4334bc837fbc64d14890fdc51679a80770d498ce
  4 files changed, 3 insertions(+), 15 deletions(-)
 
 diff --git a/test/recipes/15-test_ec.t b/test/recipes/15-test_ec.t
-index 9bf946e81b..d6521876e5 100644
+index 9bf946e..d652187 100644
 --- a/test/recipes/15-test_ec.t
 +++ b/test/recipes/15-test_ec.t
 @@ -104,7 +104,7 @@ SKIP: {
@@ -29,7 +29,7 @@ index 9bf946e81b..d6521876e5 100644
      plan tests => 2;
  
 diff --git a/test/recipes/30-test_evp_data/evppkey_ecdsa_sigalg.txt b/test/recipes/30-test_evp_data/evppkey_ecdsa_sigalg.txt
-index 7c339c272b..0ff482e4e8 100644
+index 7c339c2..0ff482e 100644
 --- a/test/recipes/30-test_evp_data/evppkey_ecdsa_sigalg.txt
 +++ b/test/recipes/30-test_evp_data/evppkey_ecdsa_sigalg.txt
 @@ -132,18 +132,6 @@ AAAA//////////+85vqtpxeehPO5ysL8YyVRAgEBBG0wawIBAQQgiUTxtr5vLVjj
@@ -52,7 +52,7 @@ index 7c339c272b..0ff482e4e8 100644
  -----BEGIN PRIVATE KEY-----
  MGMCAQAwEAYHKoZIzj0CAQYFK4EEAA8ETDBKAgEBBBUDnQW0mLiHVha/jqFznX/K
 diff --git a/test/recipes/65-test_cmp_protect.t b/test/recipes/65-test_cmp_protect.t
-index 92c91d8b88..294491fff4 100644
+index 92c91d8..294491f 100644
 --- a/test/recipes/65-test_cmp_protect.t
 +++ b/test/recipes/65-test_cmp_protect.t
 @@ -27,7 +27,7 @@ plan skip_all => "This test is not supported in a no-cmp build"
@@ -65,7 +65,7 @@ index 92c91d8b88..294491fff4 100644
  my @basic_cmd = ("cmp_protect_test",
                   data_file("prot_RSA.pem"),
 diff --git a/test/recipes/65-test_cmp_vfy.t b/test/recipes/65-test_cmp_vfy.t
-index f722800e27..26a01786bb 100644
+index f722800..26a0178 100644
 --- a/test/recipes/65-test_cmp_vfy.t
 +++ b/test/recipes/65-test_cmp_vfy.t
 @@ -27,7 +27,7 @@ plan skip_all => "This test is not supported in a no-cmp build"

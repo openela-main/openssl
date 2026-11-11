@@ -1,4 +1,4 @@
-From dc4488c19469cb95d7bb1c4f7ff62a5d57cdde95 Mon Sep 17 00:00:00 2001
+From 71320bbb118ae9b96f4572687f50fbd296ee5d88 Mon Sep 17 00:00:00 2001
 From: Simo Sorce <simo@redhat.com>
 Date: Thu, 6 Mar 2025 08:40:29 -0500
 Subject: [PATCH 02/57] Add a separate config file to use for rpm installs
@@ -24,7 +24,7 @@ Signed-off-by: Simo Sorce <simo@redhat.com>
  create mode 100644 rh-openssl.cnf
 
 diff --git a/doc/man5/config.pod b/doc/man5/config.pod
-index e24ea0c595..39fa468320 100644
+index e24ea0c..39fa468 100644
 --- a/doc/man5/config.pod
 +++ b/doc/man5/config.pod
 @@ -284,6 +284,14 @@ Note this setting defaults to off if not provided
@@ -44,7 +44,7 @@ index e24ea0c595..39fa468320 100644
  If no providers are activated explicitly, the default one is activated implicitly.
 diff --git a/rh-openssl.cnf b/rh-openssl.cnf
 new file mode 100644
-index 0000000000..fe2346eb2b
+index 0000000..fe2346e
 --- /dev/null
 +++ b/rh-openssl.cnf
 @@ -0,0 +1,403 @@

@@ -1,4 +1,4 @@
-From 365f4de8ff84e3dc77551a0038652bb7973a18f2 Mon Sep 17 00:00:00 2001
+From 6edf17d9116bc6aeca97db3cdd432c980964a6ba Mon Sep 17 00:00:00 2001
 From: Simo Sorce <simo@redhat.com>
 Date: Thu, 13 Feb 2025 16:09:09 -0500
 Subject: [PATCH 14/57] RH: Export two symbols for OPENSSL_str[n]casecmp
@@ -17,7 +17,7 @@ with upstream.
  mode change 100644 => 100755 test/recipes/01-test_symbol_presence.t
 
 diff --git a/crypto/evp/digest.c b/crypto/evp/digest.c
-index 7f0d77ab69..101f49862c 100644
+index 7f0d77a..101f498 100644
 --- a/crypto/evp/digest.c
 +++ b/crypto/evp/digest.c
 @@ -573,7 +573,7 @@ int EVP_DigestSqueeze(EVP_MD_CTX *ctx, unsigned char *md, size_t size)
@@ -30,7 +30,7 @@ index 7f0d77ab69..101f49862c 100644
                      symver ("EVP_MD_CTX_dup@OPENSSL_3.2.0")))
  #endif
 diff --git a/crypto/evp/evp_enc.c b/crypto/evp/evp_enc.c
-index b4cfe2b809..30c2ec56dc 100644
+index b4cfe2b..30c2ec5 100644
 --- a/crypto/evp/evp_enc.c
 +++ b/crypto/evp/evp_enc.c
 @@ -1767,7 +1767,7 @@ int EVP_CIPHER_CTX_rand_key(EVP_CIPHER_CTX *ctx, unsigned char *key)
@@ -43,7 +43,7 @@ index b4cfe2b809..30c2ec56dc 100644
                      symver ("EVP_CIPHER_CTX_dup@OPENSSL_3.2.0")))
  #endif
 diff --git a/crypto/o_str.c b/crypto/o_str.c
-index 154393c7b3..b221ba789e 100644
+index 154393c..b221ba7 100644
 --- a/crypto/o_str.c
 +++ b/crypto/o_str.c
 @@ -417,7 +417,12 @@ int openssl_strerror_r(int errnum, char *buf, size_t buflen)
@@ -77,10 +77,10 @@ index 154393c7b3..b221ba789e 100644
 diff --git a/test/recipes/01-test_symbol_presence.t b/test/recipes/01-test_symbol_presence.t
 old mode 100644
 new mode 100755
-index a70ebef431..a095239652
+index 3a6ef96..357f1a0
 --- a/test/recipes/01-test_symbol_presence.t
 +++ b/test/recipes/01-test_symbol_presence.t
-@@ -188,7 +188,7 @@ foreach (sort keys %stlibname) {
+@@ -191,7 +191,7 @@ foreach (sort keys %stlibname) {
      }
  }
  my @duplicates = sort grep { $symbols{$_} > 1 } keys %symbols;
@@ -90,7 +90,7 @@ index a70ebef431..a095239652
      note "Duplicates:";
      note join('\n', @duplicates);
 diff --git a/util/libcrypto.num b/util/libcrypto.num
-index eab3987a6b..d377d542db 100644
+index eab3987..d377d54 100644
 --- a/util/libcrypto.num
 +++ b/util/libcrypto.num
 @@ -5426,7 +5426,9 @@ ASN1_TIME_print_ex                      5553	3_0_0	EXIST::FUNCTION:

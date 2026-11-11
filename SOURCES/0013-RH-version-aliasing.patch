@@ -1,4 +1,4 @@
-From af4e864805feef1a6431bde880ddb6b09c5f1a1f Mon Sep 17 00:00:00 2001
+From 7a814b99018e2f12bf5cf4c7e8f7ccc02566fd37 Mon Sep 17 00:00:00 2001
 From: rpm-build <rpm-build>
 Date: Wed, 6 Mar 2024 19:17:17 +0100
 Subject: [PATCH 13/57] RH: version aliasing
@@ -17,7 +17,7 @@ From-dist-git-commit: 4334bc837fbc64d14890fdc51679a80770d498ce
  4 files changed, 15 insertions(+), 2 deletions(-)
 
 diff --git a/crypto/evp/digest.c b/crypto/evp/digest.c
-index 224f3000ce..7f0d77ab69 100644
+index 224f300..7f0d77a 100644
 --- a/crypto/evp/digest.c
 +++ b/crypto/evp/digest.c
 @@ -572,7 +572,12 @@ int EVP_DigestSqueeze(EVP_MD_CTX *ctx, unsigned char *md, size_t size)
@@ -35,7 +35,7 @@ index 224f3000ce..7f0d77ab69 100644
      EVP_MD_CTX *out = EVP_MD_CTX_new();
  
 diff --git a/crypto/evp/evp_enc.c b/crypto/evp/evp_enc.c
-index 109412b342..b4cfe2b809 100644
+index 109412b..b4cfe2b 100644
 --- a/crypto/evp/evp_enc.c
 +++ b/crypto/evp/evp_enc.c
 @@ -1766,7 +1766,12 @@ int EVP_CIPHER_CTX_rand_key(EVP_CIPHER_CTX *ctx, unsigned char *key)
@@ -53,10 +53,10 @@ index 109412b342..b4cfe2b809 100644
      EVP_CIPHER_CTX *out = EVP_CIPHER_CTX_new();
  
 diff --git a/test/recipes/01-test_symbol_presence.t b/test/recipes/01-test_symbol_presence.t
-index 79a5584099..a70ebef431 100644
+index 46a55c6..3a6ef96 100644
 --- a/test/recipes/01-test_symbol_presence.t
 +++ b/test/recipes/01-test_symbol_presence.t
-@@ -133,6 +133,7 @@ foreach (sort keys %stlibname) {
+@@ -136,6 +136,7 @@ foreach (sort keys %stlibname) {
                    s| .*||;
                    # Drop OpenSSL dynamic version information if there is any
                    s|\@\@.+$||;
@@ -65,7 +65,7 @@ index 79a5584099..a70ebef431 100644
                    $_
                }
 diff --git a/util/libcrypto.num b/util/libcrypto.num
-index ceb4948839..eab3987a6b 100644
+index ceb4948..eab3987 100644
 --- a/util/libcrypto.num
 +++ b/util/libcrypto.num
 @@ -5435,7 +5435,9 @@ X509_PUBKEY_set0_public_key             5562	3_2_0	EXIST::FUNCTION:

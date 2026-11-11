@@ -1,4 +1,4 @@
-From 5e3401812508f7595b5864770bad94644cbba496 Mon Sep 17 00:00:00 2001
+From 6cb301371405c49c969a5b581aab9a2b0022c35b Mon Sep 17 00:00:00 2001
 From: Simo Sorce <simo@redhat.com>
 Date: Mon, 10 Mar 2025 13:52:50 -0400
 Subject: [PATCH 46/57] FIPS: Fix some tests due to our versioning change
@@ -13,7 +13,7 @@ Signed-off-by: Simo Sorce <simo@redhat.com>
  5 files changed, 9 insertions(+), 9 deletions(-)
 
 diff --git a/test/ssl-tests/13-fragmentation.cnf.in b/test/ssl-tests/13-fragmentation.cnf.in
-index 318fd65960..87ec08ee5b 100644
+index 318fd65..87ec08e 100644
 --- a/test/ssl-tests/13-fragmentation.cnf.in
 +++ b/test/ssl-tests/13-fragmentation.cnf.in
 @@ -14,7 +14,7 @@ use warnings;
@@ -32,7 +32,7 @@ index 318fd65960..87ec08ee5b 100644
 -    unless $fips_3_4;
 +    unless $fips_mode;
 diff --git a/test/ssl-tests/17-renegotiate.cnf.in b/test/ssl-tests/17-renegotiate.cnf.in
-index 2812e4c38b..9cbd972eba 100644
+index 2812e4c..9cbd972 100644
 --- a/test/ssl-tests/17-renegotiate.cnf.in
 +++ b/test/ssl-tests/17-renegotiate.cnf.in
 @@ -15,7 +15,7 @@ use warnings;
@@ -52,7 +52,7 @@ index 2812e4c38b..9cbd972eba 100644
 +push @tests, @tests_tls1_2_rsa unless disabled("tls1_2") or $fips_mode;
  push @tests, @tests_tls1_2 unless disabled("tls1_2");
 diff --git a/test/ssl-tests/18-dtls-renegotiate.cnf.in b/test/ssl-tests/18-dtls-renegotiate.cnf.in
-index 8996849a2c..415dc2978d 100644
+index 8996849..415dc29 100644
 --- a/test/ssl-tests/18-dtls-renegotiate.cnf.in
 +++ b/test/ssl-tests/18-dtls-renegotiate.cnf.in
 @@ -133,7 +133,7 @@ foreach my $sctp ("No", "Yes")
@@ -65,7 +65,7 @@ index 8996849a2c..415dc2978d 100644
          {
              name => "renegotiate-aead-to-non-aead".$suffix,
 diff --git a/test/ssl-tests/19-mac-then-encrypt.cnf.in b/test/ssl-tests/19-mac-then-encrypt.cnf.in
-index 32bcec4be4..2f8a123c20 100644
+index 32bcec4..2f8a123 100644
 --- a/test/ssl-tests/19-mac-then-encrypt.cnf.in
 +++ b/test/ssl-tests/19-mac-then-encrypt.cnf.in
 @@ -17,7 +17,7 @@ our $fips_mode;
@@ -78,7 +78,7 @@ index 32bcec4be4..2f8a123c20 100644
  our @tests = (
      {
 diff --git a/test/ssl-tests/20-cert-select.cnf.in b/test/ssl-tests/20-cert-select.cnf.in
-index af47842fd8..21c75033e8 100644
+index af47842..21c7503 100644
 --- a/test/ssl-tests/20-cert-select.cnf.in
 +++ b/test/ssl-tests/20-cert-select.cnf.in
 @@ -266,7 +266,7 @@ our @tests = (

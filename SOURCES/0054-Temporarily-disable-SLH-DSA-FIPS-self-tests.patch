@@ -1,4 +1,4 @@
-From 6f965e9d16680ebe78fc855f91a0019878bbba0c Mon Sep 17 00:00:00 2001
+From 8563f93acfc295f00d273716c3b18ed942b89103 Mon Sep 17 00:00:00 2001
 From: Simo Sorce <simo@redhat.com>
 Date: Tue, 15 Jul 2025 12:32:14 -0400
 Subject: [PATCH 54/57] Temporarily disable SLH-DSA FIPS self-tests
@@ -9,7 +9,7 @@ Signed-off-by: Simo Sorce <simo@redhat.com>
  1 file changed, 6 insertions(+)
 
 diff --git a/providers/fips/self_test_data.inc b/providers/fips/self_test_data.inc
-index 675789a87d..b83528a7f3 100644
+index 675789a..b83528a 100644
 --- a/providers/fips/self_test_data.inc
 +++ b/providers/fips/self_test_data.inc
 @@ -2885,6 +2885,7 @@ static const ST_KAT_PARAM ml_dsa_sig_init[] = {

@@ -1,4 +1,4 @@
-From 4a470b2effd2473d876a85941b13a6318a500c4e Mon Sep 17 00:00:00 2001
+From 44077cdde8b847a3d549912c3b2306d928f83ef4 Mon Sep 17 00:00:00 2001
 From: rpm-build <rpm-build>
 Date: Wed, 6 Mar 2024 19:17:15 +0100
 Subject: [PATCH 18/57] FIPS: disable fipsinstall
@@ -24,7 +24,7 @@ From-dist-git-commit: 4334bc837fbc64d14890fdc51679a80770d498ce
  mode change 100644 => 100755 test/recipes/03-test_fipsinstall.t
 
 diff --git a/apps/fipsinstall.c b/apps/fipsinstall.c
-index dcc09a5ed7..e3d5f6e86d 100644
+index dcc09a5..e3d5f6e 100644
 --- a/apps/fipsinstall.c
 +++ b/apps/fipsinstall.c
 @@ -636,6 +636,9 @@ int fipsinstall_main(int argc, char **argv)
@@ -38,7 +38,7 @@ index dcc09a5ed7..e3d5f6e86d 100644
          goto end;
  
 diff --git a/doc/man1/openssl-fipsinstall.pod.in b/doc/man1/openssl-fipsinstall.pod.in
-index 2db5acd242..1c6b783413 100644
+index 2db5acd..1c6b783 100644
 --- a/doc/man1/openssl-fipsinstall.pod.in
 +++ b/doc/man1/openssl-fipsinstall.pod.in
 @@ -8,484 +8,9 @@ openssl-fipsinstall - perform FIPS configuration installation
@@ -530,7 +530,7 @@ index 2db5acd242..1c6b783413 100644
  =head1 COPYRIGHT
  
 diff --git a/doc/man1/openssl.pod b/doc/man1/openssl.pod
-index 1963715f38..0f8c415096 100644
+index 1963715..0f8c415 100644
 --- a/doc/man1/openssl.pod
 +++ b/doc/man1/openssl.pod
 @@ -139,10 +139,6 @@ Engine (loadable module) information and manipulation.
@@ -545,7 +545,7 @@ index 1963715f38..0f8c415096 100644
  
  Generation of DSA Private Key from Parameters. Superseded by
 diff --git a/doc/man5/config.pod b/doc/man5/config.pod
-index b994081924..7a6d7fab4a 100644
+index b994081..7a6d7fa 100644
 --- a/doc/man5/config.pod
 +++ b/doc/man5/config.pod
 @@ -603,7 +603,6 @@ configuration files using that syntax will have to be modified.
@@ -557,7 +557,7 @@ index b994081924..7a6d7fab4a 100644
  L<EVP_set_default_properties(3)>,
  L<CONF_modules_load(3)>,
 diff --git a/doc/man5/fips_config.pod b/doc/man5/fips_config.pod
-index c3f7b8f3ab..2505938c13 100644
+index c3f7b8f..2505938 100644
 --- a/doc/man5/fips_config.pod
 +++ b/doc/man5/fips_config.pod
 @@ -6,224 +6,10 @@ fips_config - OpenSSL FIPS configuration
@@ -790,10 +790,10 @@ index c3f7b8f3ab..2505938c13 100644
  =head1 COPYRIGHT
  
 diff --git a/doc/man7/OSSL_PROVIDER-FIPS.pod b/doc/man7/OSSL_PROVIDER-FIPS.pod
-index d14005a89a..c3797f5682 100644
+index eb762fb..c4891cb 100644
 --- a/doc/man7/OSSL_PROVIDER-FIPS.pod
 +++ b/doc/man7/OSSL_PROVIDER-FIPS.pod
-@@ -574,7 +574,6 @@ process.
+@@ -577,7 +577,6 @@ process.
  
  =head1 SEE ALSO
  
@@ -804,7 +804,7 @@ index d14005a89a..c3797f5682 100644
 diff --git a/test/recipes/00-prep_fipsmodule_cnf.t b/test/recipes/00-prep_fipsmodule_cnf.t
 old mode 100644
 new mode 100755
-index 4e3a6d85e8..48869b2568
+index 4e3a6d8..48869b2
 --- a/test/recipes/00-prep_fipsmodule_cnf.t
 +++ b/test/recipes/00-prep_fipsmodule_cnf.t
 @@ -29,8 +29,10 @@ my $fipsmoduleconf = bldtop_file('test', 'fipsmodule.cnf');
@@ -825,7 +825,7 @@ index 4e3a6d85e8..48869b2568
 diff --git a/test/recipes/01-test_fipsmodule_cnf.t b/test/recipes/01-test_fipsmodule_cnf.t
 old mode 100644
 new mode 100755
-index ce594817d5..4530a46dd0
+index ce59481..4530a46
 --- a/test/recipes/01-test_fipsmodule_cnf.t
 +++ b/test/recipes/01-test_fipsmodule_cnf.t
 @@ -31,7 +31,8 @@ plan tests => 1;
@@ -843,7 +843,7 @@ index ce594817d5..4530a46dd0
 diff --git a/test/recipes/03-test_fipsinstall.t b/test/recipes/03-test_fipsinstall.t
 old mode 100644
 new mode 100755
-index 3dcbe67c6d..1a5a475d91
+index 3dcbe67..1a5a475
 --- a/test/recipes/03-test_fipsinstall.t
 +++ b/test/recipes/03-test_fipsinstall.t
 @@ -22,6 +22,8 @@ use lib srctop_dir('Configurations');

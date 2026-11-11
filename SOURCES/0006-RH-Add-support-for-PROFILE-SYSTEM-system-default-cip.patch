@@ -1,4 +1,4 @@
-From 80977968258324654798a2cc7be3e8c56407004a Mon Sep 17 00:00:00 2001
+From 52590d5f2393223220a98a0ad694d4248fcb64d9 Mon Sep 17 00:00:00 2001
 From: rpm-build <rpm-build>
 Date: Wed, 6 Mar 2024 19:17:14 +0100
 Subject: [PATCH 06/57] RH: Add support for PROFILE SYSTEM system default
@@ -20,7 +20,7 @@ From-dist-git-commit: 4334bc837fbc64d14890fdc51679a80770d498ce
  7 files changed, 106 insertions(+), 15 deletions(-)
 
 diff --git a/Configurations/unix-Makefile.tmpl b/Configurations/unix-Makefile.tmpl
-index 9a7d51ac1f..dc5811f639 100644
+index 9a7d51a..dc5811f 100644
 --- a/Configurations/unix-Makefile.tmpl
 +++ b/Configurations/unix-Makefile.tmpl
 @@ -356,6 +356,10 @@ MANDIR=$(INSTALLTOP)/share/man
@@ -43,7 +43,7 @@ index 9a7d51ac1f..dc5811f639 100644
                                    @{$config{CPPFLAGS}}) -}
  CFLAGS={- join(' ', @{$config{CFLAGS}}) -}
 diff --git a/Configure b/Configure
-index 1b020faadb..407cca1656 100755
+index 1b020fa..407cca1 100755
 --- a/Configure
 +++ b/Configure
 @@ -27,7 +27,7 @@ use OpenSSL::config;
@@ -86,7 +86,7 @@ index 1b020faadb..407cca1656 100755
                          {
                          $banner = $1 . "\n";
 diff --git a/doc/man1/openssl-ciphers.pod.in b/doc/man1/openssl-ciphers.pod.in
-index e1f9845cee..2496d011aa 100644
+index e1f9845..2496d01 100644
 --- a/doc/man1/openssl-ciphers.pod.in
 +++ b/doc/man1/openssl-ciphers.pod.in
 @@ -190,6 +190,15 @@ As of OpenSSL 1.0.0, the B<ALL> cipher suites are sensibly ordered by default.
@@ -106,7 +106,7 @@ index e1f9845cee..2496d011aa 100644
  
  "High" encryption cipher suites. This currently means those with key lengths
 diff --git a/include/openssl/ssl.h.in b/include/openssl/ssl.h.in
-index 90be33cb4f..81f6a19ce7 100644
+index 90be33c..81f6a19 100644
 --- a/include/openssl/ssl.h.in
 +++ b/include/openssl/ssl.h.in
 @@ -211,6 +211,11 @@ extern "C" {
@@ -122,7 +122,7 @@ index 90be33cb4f..81f6a19ce7 100644
  /* Used in SSL_set_shutdown()/SSL_get_shutdown(); */
  #define SSL_SENT_SHUTDOWN 1
 diff --git a/ssl/ssl_ciph.c b/ssl/ssl_ciph.c
-index fd2c4b0833..cce1dde0dc 100644
+index fd2c4b0..cce1dde 100644
 --- a/ssl/ssl_ciph.c
 +++ b/ssl/ssl_ciph.c
 @@ -9,6 +9,7 @@
@@ -283,7 +283,7 @@ index fd2c4b0833..cce1dde0dc 100644
  
  char *SSL_CIPHER_description(const SSL_CIPHER *cipher, char *buf, int len)
 diff --git a/ssl/ssl_lib.c b/ssl/ssl_lib.c
-index ba494f5fc0..e8207e1ee9 100644
+index b1b36c8..672c30f 100644
 --- a/ssl/ssl_lib.c
 +++ b/ssl/ssl_lib.c
 @@ -678,7 +678,7 @@ int SSL_CTX_set_ssl_version(SSL_CTX *ctx, const SSL_METHOD *meth)
@@ -305,7 +305,7 @@ index ba494f5fc0..e8207e1ee9 100644
          ERR_raise(ERR_LIB_SSL, SSL_R_LIBRARY_HAS_NO_CIPHERS);
          goto err;
 diff --git a/test/cipherlist_test.c b/test/cipherlist_test.c
-index 921afe6234..be2c382f85 100644
+index 921afe6..be2c382 100644
 --- a/test/cipherlist_test.c
 +++ b/test/cipherlist_test.c
 @@ -312,7 +312,9 @@ end:

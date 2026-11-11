@@ -1,4 +1,4 @@
-From 9caf14916de441e5187e2bc7be6bfb638e784c29 Mon Sep 17 00:00:00 2001
+From 82408ad4a0eb958dde20a22cce0ecb6e03340eb6 Mon Sep 17 00:00:00 2001
 From: Simo Sorce <simo@redhat.com>
 Date: Fri, 7 Mar 2025 18:12:33 -0500
 Subject: [PATCH 17/57] FIPS: Red Hat's FIPS module name and version
@@ -9,7 +9,7 @@ Signed-off-by: Simo Sorce <simo@redhat.com>
  1 file changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/providers/fips/fipsprov.c b/providers/fips/fipsprov.c
-index 3c749018bc..7928bd0e55 100644
+index 3c74901..7928bd0 100644
 --- a/providers/fips/fipsprov.c
 +++ b/providers/fips/fipsprov.c
 @@ -200,13 +200,13 @@ static int fips_get_params(void *provctx, OSSL_PARAM params[])

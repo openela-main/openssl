@@ -1,20 +1,20 @@
-From 25a7a2d914f588d87885e4cff06bb693f5d4b994 Mon Sep 17 00:00:00 2001
+From f40ea744acc98b109f38513d5391e83a36c5f83c Mon Sep 17 00:00:00 2001
 From: Simo Sorce <simo@redhat.com>
 Date: Fri, 7 Mar 2025 18:15:13 -0500
 Subject: [PATCH 44/57] FIPS: NO DES support
 
 Signed-off-by: Simo Sorce <simo@redhat.com>
 ---
- providers/fips/fipsprov.c                           |  4 ----
- providers/fips/self_test_data.inc                   |  2 ++
- test/evp_libctx_test.c                              |  4 +++-
- .../30-test_evp_data/evpciph_des3_common.txt        | 13 ++++---------
- test/recipes/30-test_evp_data/evpmac_cmac_des.txt   | 10 ----------
- test/recipes/80-test_cms.t                          |  2 +-
- 6 files changed, 10 insertions(+), 25 deletions(-)
+ providers/fips/fipsprov.c                     |  4 ---
+ providers/fips/self_test_data.inc             |  2 ++
+ test/evp_libctx_test.c                        |  4 ++-
+ .../30-test_evp_data/evpciph_des3_common.txt  | 13 +++------
+ .../30-test_evp_data/evpmac_cmac_des.txt      | 29 -------------------
+ test/recipes/80-test_cms.t                    |  2 +-
+ 6 files changed, 10 insertions(+), 44 deletions(-)
 
 diff --git a/providers/fips/fipsprov.c b/providers/fips/fipsprov.c
-index f16960b77b..16ed6a4a0c 100644
+index f16960b..16ed6a4 100644
 --- a/providers/fips/fipsprov.c
 +++ b/providers/fips/fipsprov.c
 @@ -354,10 +354,6 @@ static const OSSL_ALGORITHM_CAPABLE fips_ciphers[] = {
@@ -29,7 +29,7 @@ index f16960b77b..16ed6a4a0c 100644
  };
  static OSSL_ALGORITHM exported_fips_ciphers[OSSL_NELEM(fips_ciphers)];
 diff --git a/providers/fips/self_test_data.inc b/providers/fips/self_test_data.inc
-index 84b0b1c5c1..c92e8541a9 100644
+index 84b0b1c..c92e854 100644
 --- a/providers/fips/self_test_data.inc
 +++ b/providers/fips/self_test_data.inc
 @@ -305,6 +305,7 @@ static const ST_KAT_CIPHER st_kat_cipher_tests[] = {
@@ -49,7 +49,7 @@ index 84b0b1c5c1..c92e8541a9 100644
  
  static const char hkdf_digest[] = "SHA256";
 diff --git a/test/evp_libctx_test.c b/test/evp_libctx_test.c
-index 57ca0e07b4..d4da35ae2d 100644
+index 57ca0e0..d4da35a 100644
 --- a/test/evp_libctx_test.c
 +++ b/test/evp_libctx_test.c
 @@ -842,7 +842,9 @@ int setup_tests(void)
@@ -64,7 +64,7 @@ index 57ca0e07b4..d4da35ae2d 100644
      return 1;
  }
 diff --git a/test/recipes/30-test_evp_data/evpciph_des3_common.txt b/test/recipes/30-test_evp_data/evpciph_des3_common.txt
-index 6c74b65cef..8bcb78cd2d 100644
+index 6c74b65..8bcb78c 100644
 --- a/test/recipes/30-test_evp_data/evpciph_des3_common.txt
 +++ b/test/recipes/30-test_evp_data/evpciph_des3_common.txt
 @@ -14,7 +14,7 @@
@@ -123,13 +123,21 @@ index 6c74b65cef..8bcb78cd2d 100644
  Operation = ENCRYPT
  Unapproved = 1
 diff --git a/test/recipes/30-test_evp_data/evpmac_cmac_des.txt b/test/recipes/30-test_evp_data/evpmac_cmac_des.txt
-index a11e5ffe54..e4a7cbe75e 100644
+index a3de7c8..8cfc34d 100644
 --- a/test/recipes/30-test_evp_data/evpmac_cmac_des.txt
 +++ b/test/recipes/30-test_evp_data/evpmac_cmac_des.txt
-@@ -35,13 +35,3 @@ Algorithm = DES-EDE3-CBC
+@@ -35,32 +35,3 @@ Algorithm = DES-EDE3-CBC
  Key = 89BCD952A8C8AB371AF48AC7D07085D5EFF702E6D62CDC23
  Input = FA620C1BBE97319E9A0CF0492121F7A20EB08A6A709DCBD00AAF38E4F99E754E
  Result = MAC_INIT_ERROR
+-
+-Availablein = fips
+-FIPSversion = >=3.4.0
+-MAC = CMAC by EVP_PKEY
+-Algorithm = DES-EDE3-CBC
+-Key = 89BCD952A8C8AB371AF48AC7D07085D5EFF702E6D62CDC23
+-Input = FA620C1BBE97319E9A0CF0492121F7A20EB08A6A709DCBD00AAF38E4F99E754E
+-Result = DIGESTSIGNINIT_ERROR
 -
 -Availablein = fips
 -FIPSversion = >=3.4.0
@@ -140,8 +148,19 @@ index a11e5ffe54..e4a7cbe75e 100644
 -Key = 89BCD952A8C8AB371AF48AC7D07085D5EFF702E6D62CDC23
 -Input = FA620C1BBE97319E9A0CF0492121F7A20EB08A6A709DCBD00AAF38E4F99E754E
 -Output = 8F49A1B7D6AA2258
+-
+-# Test that the legacy bridge propagates the unapproved TDES-CMAC indicator
+-Availablein = fips
+-FIPSversion = >=3.5.0
+-MAC = CMAC by EVP_PKEY
+-Unapproved = 1
+-CtrlInit = encrypt-check:0
+-Algorithm = DES-EDE3-CBC
+-Key = 89BCD952A8C8AB371AF48AC7D07085D5EFF702E6D62CDC23
+-Input = FA620C1BBE97319E9A0CF0492121F7A20EB08A6A709DCBD00AAF38E4F99E754E
+-Output = 8F49A1B7D6AA2258
 diff --git a/test/recipes/80-test_cms.t b/test/recipes/80-test_cms.t
-index d1462a75c9..8fd99909a5 100644
+index d1462a7..8fd9990 100644
 --- a/test/recipes/80-test_cms.t
 +++ b/test/recipes/80-test_cms.t
 @@ -415,7 +415,7 @@ my @smime_cms_tests = (

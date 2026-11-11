@@ -1,4 +1,4 @@
-From df6335c8de7d4a81ac2a6d3c721d6236f11eb300 Mon Sep 17 00:00:00 2001
+From 90784f2a971278587a31fefcc10b0d01a10af525 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Pavol=20=C5=BD=C3=A1=C4=8Dik?= <zacik.pa@gmail.com>
 Date: Tue, 19 Aug 2025 14:26:07 +0200
 Subject: [PATCH 56/57] Add targets to skip build of non-installable programs
@@ -21,7 +21,7 @@ Reviewed-by: Neil Horman <nhorman@openssl.org>
  4 files changed, 18 insertions(+), 8 deletions(-)
 
 diff --git a/Configurations/descrip.mms.tmpl b/Configurations/descrip.mms.tmpl
-index db6a1b1799..bc7fc36b46 100644
+index db6a1b1..bc7fc36 100644
 --- a/Configurations/descrip.mms.tmpl
 +++ b/Configurations/descrip.mms.tmpl
 @@ -491,6 +491,8 @@ NODEBUG=@
@@ -60,7 +60,7 @@ index db6a1b1799..bc7fc36b46 100644
          @ ! Install the main program
          - CREATE/DIR ossl_installroot:[EXE.'arch']
 diff --git a/Configurations/unix-Makefile.tmpl b/Configurations/unix-Makefile.tmpl
-index dc5811f639..f905313d7d 100644
+index dc5811f..f905313 100644
 --- a/Configurations/unix-Makefile.tmpl
 +++ b/Configurations/unix-Makefile.tmpl
 @@ -548,7 +548,9 @@ LANG=C
@@ -101,7 +101,7 @@ index dc5811f639..f905313d7d 100644
  	@$(PERL) $(SRCDIR)/util/mkdir-p.pl "$(DESTDIR)$(bindir)"
  	@$(ECHO) "*** Installing runtime programs"
 diff --git a/Configurations/windows-makefile.tmpl b/Configurations/windows-makefile.tmpl
-index e553e8f9fe..f5ec2a726b 100644
+index e553e8f..f5ec2a7 100644
 --- a/Configurations/windows-makefile.tmpl
 +++ b/Configurations/windows-makefile.tmpl
 @@ -419,6 +419,8 @@ PROCESSOR= {- $config{processor} -}
@@ -141,7 +141,7 @@ index e553e8f9fe..f5ec2a726b 100644
  	@$(ECHO) "*** Installing runtime programs"
  	@if not "$(INSTALL_PROGRAMS)"=="" \
 diff --git a/util/help.pl b/util/help.pl
-index a1614fe8a9..e88ff4bae1 100755
+index a1614fe..e88ff4b 100755
 --- a/util/help.pl
 +++ b/util/help.pl
 @@ -14,7 +14,7 @@ while (<>) {
