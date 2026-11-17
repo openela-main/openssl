@@ -1,4 +1,4 @@
-From fc9f1fdf78d78e2628e1a407a11dfdc4535e80f4 Mon Sep 17 00:00:00 2001
+From 2c2fb6514d4fa8b7619de199207ca0af82158da2 Mon Sep 17 00:00:00 2001
 From: Simo Sorce <simo@redhat.com>
 Date: Fri, 7 Mar 2025 18:06:36 -0500
 Subject: [PATCH 42/57] FIPS: EC: disable weak curves
@@ -9,7 +9,7 @@ Signed-off-by: Simo Sorce <simo@redhat.com>
  1 file changed, 7 insertions(+)
 
 diff --git a/apps/ecparam.c b/apps/ecparam.c
-index 017dc7568d..596c31a925 100644
+index 017dc75..596c31a 100644
 --- a/apps/ecparam.c
 +++ b/apps/ecparam.c
 @@ -90,6 +90,13 @@ static int list_builtin_curves(BIO *out)

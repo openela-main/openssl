@@ -1,4 +1,4 @@
-From 7db8402c2c44c585ee7e005d96cb715c144c6663 Mon Sep 17 00:00:00 2001
+From 677d5a84e9104a46f63d25b96c5965f146e0b630 Mon Sep 17 00:00:00 2001
 From: Simo Sorce <simo@redhat.com>
 Date: Thu, 13 Feb 2025 18:11:19 -0500
 Subject: [PATCH 15/57] RH: TMP KTLS test skip
@@ -9,7 +9,7 @@ From-dist-git-commit: 83382cc2a09dfcc55d5740fd08fd95c2333a56c9
  1 file changed, 3 insertions(+), 2 deletions(-)
 
 diff --git a/test/sslapitest.c b/test/sslapitest.c
-index ece9a59c82..f0aeaf8b89 100644
+index 79d9d8b..856a465 100644
 --- a/test/sslapitest.c
 +++ b/test/sslapitest.c
 @@ -1029,9 +1029,10 @@ end:

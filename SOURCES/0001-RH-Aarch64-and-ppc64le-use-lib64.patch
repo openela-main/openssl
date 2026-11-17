@@ -1,4 +1,4 @@
-From be9aad001bf7a45264a88f0f0f6504944369490b Mon Sep 17 00:00:00 2001
+From 9d6cf74a9528195d4f9e43650fc687d608294428 Mon Sep 17 00:00:00 2001
 From: rpm-build <rpm-build>
 Date: Wed, 6 Mar 2024 19:17:14 +0100
 Subject: [PATCH 01/57] RH: Aarch64 and ppc64le use lib64
@@ -14,7 +14,7 @@ From-dist-git-commit: 4334bc837fbc64d14890fdc51679a80770d498ce
  1 file changed, 2 insertions(+)
 
 diff --git a/Configurations/10-main.conf b/Configurations/10-main.conf
-index 692eccbfa1..08918399e4 100644
+index 389b4a8..c05a806 100644
 --- a/Configurations/10-main.conf
 +++ b/Configurations/10-main.conf
 @@ -727,6 +727,7 @@ my %targets = (

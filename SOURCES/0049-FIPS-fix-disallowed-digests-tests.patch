@@ -1,4 +1,4 @@
-From 54d48627806bd48d94e06b37917c415921b110f8 Mon Sep 17 00:00:00 2001
+From 009bf54ba760e62c60df9d121fcb71801cff4fcf Mon Sep 17 00:00:00 2001
 From: Simo Sorce <simo@redhat.com>
 Date: Tue, 15 Apr 2025 13:41:42 -0400
 Subject: [PATCH 49/57] FIPS: fix disallowed digests tests
@@ -9,7 +9,7 @@ Signed-off-by: Simo Sorce <simo@redhat.com>
  1 file changed, 6 insertions(+), 4 deletions(-)
 
 diff --git a/test/recipes/30-test_evp_data/evpkdf_ssh.txt b/test/recipes/30-test_evp_data/evpkdf_ssh.txt
-index 6688c217aa..8347f773e6 100644
+index 6688c21..8347f77 100644
 --- a/test/recipes/30-test_evp_data/evpkdf_ssh.txt
 +++ b/test/recipes/30-test_evp_data/evpkdf_ssh.txt
 @@ -4894,13 +4894,14 @@ Title = FIPS indicator tests

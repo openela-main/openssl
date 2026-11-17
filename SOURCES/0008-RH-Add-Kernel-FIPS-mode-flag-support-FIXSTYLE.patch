@@ -1,4 +1,4 @@
-From d3013b93461e421ac5d13b1bd74dc8478d84cd94 Mon Sep 17 00:00:00 2001
+From 64d08ea3f0b10fc10cb0083d91a5fa125c86c8af Mon Sep 17 00:00:00 2001
 From: rpm-build <rpm-build>
 Date: Wed, 6 Mar 2024 19:17:15 +0100
 Subject: [PATCH 08/57] RH: Add Kernel FIPS mode flag support - FIXSTYLE
@@ -14,7 +14,7 @@ From-dist-git-commit: 4334bc837fbc64d14890fdc51679a80770d498ce
  2 files changed, 39 insertions(+), 1 deletion(-)
 
 diff --git a/crypto/context.c b/crypto/context.c
-index 1ae88e42aa..62e60f3620 100644
+index 1ae88e4..62e60f3 100644
 --- a/crypto/context.c
 +++ b/crypto/context.c
 @@ -7,6 +7,7 @@
@@ -74,7 +74,7 @@ index 1ae88e42aa..62e60f3620 100644
          goto err;
  
 diff --git a/include/internal/provider.h b/include/internal/provider.h
-index 1b4050a81f..eb7f409af0 100644
+index 1b4050a..eb7f409 100644
 --- a/include/internal/provider.h
 +++ b/include/internal/provider.h
 @@ -114,7 +114,10 @@ int ossl_provider_init_as_child(OSSL_LIB_CTX *ctx,

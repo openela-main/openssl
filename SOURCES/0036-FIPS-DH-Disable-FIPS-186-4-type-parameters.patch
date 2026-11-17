@@ -1,4 +1,4 @@
-From 0f6a3214e4eecd4de0bac7b44e39f5293bc26f19 Mon Sep 17 00:00:00 2001
+From b1ddca6a49608cd0bbd3506d65f8c2e040408c1d Mon Sep 17 00:00:00 2001
 From: rpm-build <rpm-build>
 Date: Wed, 6 Mar 2024 19:17:17 +0100
 Subject: [PATCH 36/57] FIPS: DH: Disable FIPS 186-4 type parameters
@@ -39,7 +39,7 @@ NOTE: Dropped changes in test/recipes/80-test_cms.t
  11 files changed, 119 insertions(+), 21 deletions(-)
 
 diff --git a/crypto/dh/dh_backend.c b/crypto/dh/dh_backend.c
-index 77b0b3257f..911f602938 100644
+index 77b0b32..911f602 100644
 --- a/crypto/dh/dh_backend.c
 +++ b/crypto/dh/dh_backend.c
 @@ -47,6 +47,16 @@ int ossl_dh_params_fromdata(DH *dh, const OSSL_PARAM params[])
@@ -60,7 +60,7 @@ index 77b0b3257f..911f602938 100644
      if (param_priv_len != NULL
          && (!OSSL_PARAM_get_long(param_priv_len, &priv_len)
 diff --git a/crypto/dh/dh_check.c b/crypto/dh/dh_check.c
-index 8787945f8a..8122916f74 100644
+index 8787945..8122916 100644
 --- a/crypto/dh/dh_check.c
 +++ b/crypto/dh/dh_check.c
 @@ -58,13 +58,15 @@ int DH_check_params(const DH *dh, int *ret)
@@ -85,7 +85,7 @@ index 8787945f8a..8122916f74 100644
  #else
  int DH_check_params(const DH *dh, int *ret)
 diff --git a/crypto/dh/dh_gen.c b/crypto/dh/dh_gen.c
-index 094b6e70c7..d0c1fc5367 100644
+index 094b6e7..d0c1fc5 100644
 --- a/crypto/dh/dh_gen.c
 +++ b/crypto/dh/dh_gen.c
 @@ -39,18 +39,26 @@ static int dh_builtin_genparams(DH *ret, int prime_len, int generator,
@@ -118,7 +118,7 @@ index 094b6e70c7..d0c1fc5367 100644
          dh->dirty_cnt++;
      return ret;
 diff --git a/crypto/dh/dh_key.c b/crypto/dh/dh_key.c
-index ae47dc2cd9..4ddc1b83c7 100644
+index ae47dc2..4ddc1b8 100644
 --- a/crypto/dh/dh_key.c
 +++ b/crypto/dh/dh_key.c
 @@ -335,8 +335,12 @@ static int generate_key(DH *dh)
@@ -156,7 +156,7 @@ index ae47dc2cd9..4ddc1b83c7 100644
      }
  
 diff --git a/crypto/dh/dh_pmeth.c b/crypto/dh/dh_pmeth.c
-index dd36dce281..21ac48c1de 100644
+index dd36dce..21ac48c 100644
 --- a/crypto/dh/dh_pmeth.c
 +++ b/crypto/dh/dh_pmeth.c
 @@ -301,13 +301,17 @@ static DH *ffc_params_generate(OSSL_LIB_CTX *libctx, DH_PKEY_CTX *dctx,
@@ -184,10 +184,10 @@ index dd36dce281..21ac48c1de 100644
          DH_free(ret);
          return NULL;
 diff --git a/providers/implementations/keymgmt/dh_kmgmt.c b/providers/implementations/keymgmt/dh_kmgmt.c
-index eac99a4fed..46a8e8066d 100644
+index 54c31e2..ed5e1f9 100644
 --- a/providers/implementations/keymgmt/dh_kmgmt.c
 +++ b/providers/implementations/keymgmt/dh_kmgmt.c
-@@ -420,6 +420,11 @@ static int dh_validate(const void *keydata, int selection, int checktype)
+@@ -421,6 +421,11 @@ static int dh_validate(const void *keydata, int selection, int checktype)
      if ((selection & DH_POSSIBLE_SELECTIONS) == 0)
          return 1; /* nothing to validate */
  
@@ -200,7 +200,7 @@ index eac99a4fed..46a8e8066d 100644
          /*
           * Both of these functions check parameters. DH_check_params_ex()
 diff --git a/test/endecode_test.c b/test/endecode_test.c
-index 93347bed40..3dfb1cb56f 100644
+index 93347be..3dfb1cb 100644
 --- a/test/endecode_test.c
 +++ b/test/endecode_test.c
 @@ -87,10 +87,10 @@ static EVP_PKEY *make_template(const char *type, OSSL_PARAM *genparams)
@@ -217,7 +217,7 @@ index 93347bed40..3dfb1cb56f 100644
  
      /*
 diff --git a/test/evp_libctx_test.c b/test/evp_libctx_test.c
-index 0c96f735ad..57ca0e07b4 100644
+index 0c96f73..57ca0e0 100644
 --- a/test/evp_libctx_test.c
 +++ b/test/evp_libctx_test.c
 @@ -222,7 +222,7 @@ static int do_dh_param_keygen(int tstid, const BIGNUM **bn)
@@ -230,7 +230,7 @@ index 0c96f735ad..57ca0e07b4 100644
  
      if (expected) {
 diff --git a/test/helpers/predefined_dhparams.c b/test/helpers/predefined_dhparams.c
-index ef71b4498d..59c7776c38 100644
+index ef71b44..59c7776 100644
 --- a/test/helpers/predefined_dhparams.c
 +++ b/test/helpers/predefined_dhparams.c
 @@ -120,6 +120,68 @@ EVP_PKEY *get_dhx512(OSSL_LIB_CTX *libctx)
@@ -303,7 +303,7 @@ index ef71b4498d..59c7776c38 100644
  {
      static unsigned char dh1024_p[] = {
 diff --git a/test/helpers/predefined_dhparams.h b/test/helpers/predefined_dhparams.h
-index f0e8709062..2ff6d6e721 100644
+index f0e8709..2ff6d6e 100644
 --- a/test/helpers/predefined_dhparams.h
 +++ b/test/helpers/predefined_dhparams.h
 @@ -12,6 +12,7 @@
@@ -315,7 +315,7 @@ index f0e8709062..2ff6d6e721 100644
  EVP_PKEY *get_dh2048(OSSL_LIB_CTX *libctx);
  EVP_PKEY *get_dh4096(OSSL_LIB_CTX *libctx);
 diff --git a/test/recipes/80-test_ssl_old.t b/test/recipes/80-test_ssl_old.t
-index 6332aaec4b..4d8c900c00 100755
+index 6332aae..4d8c900 100755
 --- a/test/recipes/80-test_ssl_old.t
 +++ b/test/recipes/80-test_ssl_old.t
 @@ -458,6 +458,9 @@ sub testssl {

@@ -28,8 +28,8 @@ print(string.sub(hash, 0, 16))
 
 Summary:              Utilities from the general purpose cryptography library with TLS implementation
 Name:                 openssl
-Version:              3.5.8
-Release:              2%{?dist}.openela.0.1
+Version:              3.5.9
+Release:              1%{?dist}.openela.0.1
 Epoch:                1
 Source0:              openssl-%{version}.tar.gz
 Source1:              fips-hmacify.sh
@@ -98,7 +98,7 @@ Patch0054:            0054-Temporarily-disable-SLH-DSA-FIPS-self-tests.patch
 Patch0055:            0055-Add-a-define-to-disable-symver-attributes.patch
 Patch0056:            0056-Add-targets-to-skip-build-of-non-installable-program.patch
 Patch0057:            0057-Disable-RSA-PKCS1.5-FIPS-POST-not-relevant-for-RHEL.patch
-Patch0058:            0058-CVE-2026-84782.patch
+Patch0058:            0058-Skip-tests-not-matching-Fedora-RHEL-FIPS-changes.patch
 
 #The patches that are different for RHEL9 and 10 start here
 Patch0100:            0100-RHEL9-Allow-SHA1-in-seclevel-2-if-rh-allow-sha1-signatures.patch
@@ -458,57 +458,63 @@ ln -s /etc/crypto-policies/back-ends/openssl_fips.config $RPM_BUILD_ROOT%{_sysco
 %ldconfig_scriptlets libs
 
 %changelog
-* Thu Oct 08 2026 Release Engineering <releng@openela.org> - 3.5.8.openela.0.1
+* Tue Nov 17 2026 Release Engineering <releng@openela.org> - 3.5.9.openela.0.1
 - Add OpenELA specific changes
 
-* Mon Sep 21 2026 Dmitry Belyavskiy <dbelyavs@redhat.com> - 1:3.5.8-2
-- Fixed DTLS Retransmits Handshake Messages From a Stale Buffer Offset (CVE-2026-84782)
-  Resolves: RHEL-264479
+* Fri Oct 09 2026 Pavol Zacik <pzacik@redhat.com> - 1:3.5.9-1
+- Rebase to OpenSSL 3.5.9
+  Resolves: RHEL-239862
+  Resolves: RHEL-256385
+  Resolves: RHEL-272641
+  Resolves: RHEL-272645
+  Resolves: RHEL-272651
+  Resolves: RHEL-272657
+  Resolves: RHEL-272703
+  Resolves: RHEL-272751
+  Resolves: RHEL-272755
+  Resolves: RHEL-272762
+  Resolves: RHEL-272763
+  Resolves: RHEL-272767
+  Resolves: RHEL-272770
+  Resolves: RHEL-280129
 
 * Tue Aug 25 2026 Dmitry Belyavskiy <dbelyavs@redhat.com> - 1:3.5.8-1
 - Rebase to OpenSSL 3.5.8
-  Resolves: RHEL-242945
-  Resolves: RHEL-246260
-  Resolves: RHEL-246284
-  Resolves: RHEL-246319
-  Resolves: RHEL-246439
-  Resolves: RHEL-246443
-  Resolves: RHEL-246447
-  Resolves: RHEL-246451
-  Resolves: RHEL-246455
+  Resolves: RHEL-242942
+  Resolves: RHEL-246259
+  Resolves: RHEL-246288
+  Resolves: RHEL-246320
+  Resolves: RHEL-246440
+  Resolves: RHEL-246444
+  Resolves: RHEL-246448
+  Resolves: RHEL-246452
+  Resolves: RHEL-246456
 
-* Thu Aug 06 2026 Pavol Žáčik <pzacik@redhat.com> - 1:3.5.5-7
-- Backport the "HollowByte" hardening patch
-  Resolves: RHEL-232828
+* Thu Aug 13 2026 Dmitry Belyavskiy <dbelyavs@redhat.com> - 1:3.5.7-3
+- In FIPS mode when neither FIPS provider nor FIPS provider configuration is
+  present, OpenSSL silently falls back to the default provider.
+  Resolves: RHEL-239862
 
-* Wed Jul 15 2026 Pavol Žáčik <pzacik@redhat.com> - 1:3.5.5-6
-- Patch asn1_d2i_read_bio to not raise NOT_ENOUGH_DATA at object boundary
-  Resolves: RHEL-210862
+* Tue Jul 07 2026 Pavol Žáčik <pzacik@redhat.com> - 1:3.5.7-2
+- Backport https://github.com/openssl/openssl/pull/31818
+  Resolves: RHEL-192424
 
-* Thu Jun 25 2026 Pavol Žáčik <pzacik@redhat.com> - 1:3.5.5-5
-- Patch asn1_d2i_read_bio to read headers without blocking
-  Resolves: RHEL-178642
-
-* Mon Jun 01 2026 Dmitry Belyavskiy <dbelyavs@redhat.com> - 1:3.5.5-4
-Fix CVE-2026-7383, CVE-2026-9076, CVE-2026-34180, CVE-2026-34181,
-CVE-2026-34183, CVE-2026-42764, CVE-2026-42766, CVE-2026-42767, CVE-2026-42768,
-CVE-2026-42769, CVE-2026-42770, CVE-2026-45445, CVE-2026-45446, CVE-2026-45447,
-CVE-2026-34182.
-Resolves:             RHEL-179274
-Resolves:             RHEL-179287
-Resolves:             RHEL-179539
-Resolves:             RHEL-179544
-Resolves:             RHEL-179547
-Resolves:             RHEL-179552
-Resolves:             RHEL-179556
-Resolves:             RHEL-179633
-Resolves:             RHEL-179661
-Resolves:             RHEL-179678
-Resolves:             RHEL-179684
-Resolves:             RHEL-179688
-Resolves:             RHEL-179691
-Resolves:             RHEL-179696
-Resolves:             RHEL-179699
+* Fri Jun 12 2026 Pavol Žáčik <pzacik@redhat.com> - 1:3.5.7-1
+- Rebase to OpenSSL 3.5.7
+  Resolves: RHEL-179700
+  Resolves: RHEL-179695
+  Resolves: RHEL-179692
+  Resolves: RHEL-179687
+  Resolves: RHEL-179677
+  Resolves: RHEL-179660
+  Resolves: RHEL-179634
+  Resolves: RHEL-179555
+  Resolves: RHEL-179551
+  Resolves: RHEL-179548
+  Resolves: RHEL-179543
+  Resolves: RHEL-179540
+  Resolves: RHEL-179284
+  Resolves: RHEL-179275
 
 * Wed May 13 2026 Pavol Žáčik <pzacik@redhat.com> - 1:3.5.5-3
 - Fix CVE-2026-28390

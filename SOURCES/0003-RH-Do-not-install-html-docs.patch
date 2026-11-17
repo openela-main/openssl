@@ -1,4 +1,4 @@
-From 7f7ac4e921f70a9cad079ca9475561f355c085bf Mon Sep 17 00:00:00 2001
+From dcb3c66a7629b2be510df567c3f45a6e1ccb1e25 Mon Sep 17 00:00:00 2001
 From: rpm-build <rpm-build>
 Date: Wed, 6 Mar 2024 19:17:14 +0100
 Subject: [PATCH 03/57] RH: Do not install html docs
@@ -13,7 +13,7 @@ From-dist-git-commit: 4334bc837fbc64d14890fdc51679a80770d498ce
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/Configurations/unix-Makefile.tmpl b/Configurations/unix-Makefile.tmpl
-index 5bf397eba0..9a7d51ac1f 100644
+index 5bf397e..9a7d51a 100644
 --- a/Configurations/unix-Makefile.tmpl
 +++ b/Configurations/unix-Makefile.tmpl
 @@ -670,7 +670,7 @@ install_sw: install_dev install_engines install_modules install_runtime ## Insta

@@ -1,4 +1,4 @@
-From e05d344de7e39e184823b99cfa641737c9d8f940 Mon Sep 17 00:00:00 2001
+From 47064da42d834118650bdf7a9f412e196dcd1dec Mon Sep 17 00:00:00 2001
 From: rpm-build <rpm-build>
 Date: Wed, 6 Mar 2024 19:17:15 +0100
 Subject: [PATCH 20/57] FIPS: INTEG-CHECK: Embed hmac in fips.so - NOTE
@@ -20,7 +20,7 @@ From-dist-git-commit: 4334bc837fbc64d14890fdc51679a80770d498ce
  create mode 100644 test/fipsmodule.cnf
 
 diff --git a/providers/fips/self_test.c b/providers/fips/self_test.c
-index aa5a8c7658..34eff75efd 100644
+index aa5a8c7..34eff75 100644
 --- a/providers/fips/self_test.c
 +++ b/providers/fips/self_test.c
 @@ -239,13 +239,137 @@ err:
@@ -254,7 +254,7 @@ index aa5a8c7658..34eff75efd 100644
          (*st->bio_free_cb)(bio_module);
 diff --git a/test/fipsmodule.cnf b/test/fipsmodule.cnf
 new file mode 100644
-index 0000000000..f05d0dedbe
+index 0000000..f05d0de
 --- /dev/null
 +++ b/test/fipsmodule.cnf
 @@ -0,0 +1,2 @@

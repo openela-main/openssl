@@ -1,4 +1,4 @@
-From 965b25cd50def49f4b5160cb2dc39fe270df63c2 Mon Sep 17 00:00:00 2001
+From aafa4f0ba6e9837f4557b62ab628036dbbd159ef Mon Sep 17 00:00:00 2001
 From: Simo Sorce <simo@redhat.com>
 Date: Mon, 24 Mar 2025 11:03:45 -0400
 Subject: [PATCH 28/57] FIPS: RSA: Mark x931 as not approved by default
@@ -9,7 +9,7 @@ Signed-off-by: Simo Sorce <simo@redhat.com>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/providers/fips/include/fips_indicator_params.inc b/providers/fips/include/fips_indicator_params.inc
-index 6bd783eb0a..c1b029de86 100644
+index 6bd783e..c1b029d 100644
 --- a/providers/fips/include/fips_indicator_params.inc
 +++ b/providers/fips/include/fips_indicator_params.inc
 @@ -15,7 +15,7 @@ OSSL_FIPS_PARAM(dsa_sign_disallowed, DSA_SIGN_DISABLED, 0)

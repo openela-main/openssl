@@ -1,4 +1,4 @@
-From 9c744fee11aee9290b471b671f1205331928bc33 Mon Sep 17 00:00:00 2001
+From 2894af4bd46c765a63489435db4351931d79c02a Mon Sep 17 00:00:00 2001
 From: Dmitry Belyavskiy <beldmit@gmail.com>
 Date: Wed, 21 Jan 2026 18:13:43 +0100
 Subject: [PATCH 57/57] Disable RSA-PKCS1.5 FIPS POST, not relevant for RHEL
@@ -8,7 +8,7 @@ Subject: [PATCH 57/57] Disable RSA-PKCS1.5 FIPS POST, not relevant for RHEL
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/providers/fips/self_test_kats.c b/providers/fips/self_test_kats.c
-index 0559a30cd6..496c5eaa39 100644
+index 0559a30..496c5ea 100644
 --- a/providers/fips/self_test_kats.c
 +++ b/providers/fips/self_test_kats.c
 @@ -1197,8 +1197,8 @@ int SELF_TEST_kats(OSSL_SELF_TEST *st, OSSL_LIB_CTX *libctx)

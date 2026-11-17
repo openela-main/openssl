@@ -1,4 +1,4 @@
-From f56be05d41df23c0d87b4090730f9acbd12829db Mon Sep 17 00:00:00 2001
+From e7ad2ebe8e32fa9f581eda839b871cea26cb8354 Mon Sep 17 00:00:00 2001
 From: Simo Sorce <simo@redhat.com>
 Date: Fri, 7 Mar 2025 18:10:52 -0500
 Subject: [PATCH 43/57] FIPS: NO DSA Support
@@ -18,7 +18,7 @@ Signed-off-by: Simo Sorce <simo@redhat.com>
  mode change 100644 => 100755 test/recipes/30-test_evp.t
 
 diff --git a/providers/fips/fipsprov.c b/providers/fips/fipsprov.c
-index 7928bd0e55..f16960b77b 100644
+index 7928bd0..f16960b 100644
 --- a/providers/fips/fipsprov.c
 +++ b/providers/fips/fipsprov.c
 @@ -430,7 +430,8 @@ static const OSSL_ALGORITHM fips_keyexch[] = {
@@ -44,7 +44,7 @@ index 7928bd0e55..f16960b77b 100644
      { PROV_NAMES_RSA, FIPS_DEFAULT_PROPERTIES, ossl_rsa_keymgmt_functions,
          PROV_DESCS_RSA },
 diff --git a/providers/fips/self_test_data.inc b/providers/fips/self_test_data.inc
-index 4a0ce24cbb..84b0b1c5c1 100644
+index 4a0ce24..84b0b1c 100644
 --- a/providers/fips/self_test_data.inc
 +++ b/providers/fips/self_test_data.inc
 @@ -1546,8 +1546,9 @@ static const unsigned char ed448_expected_sig[] = {
@@ -83,10 +83,10 @@ index 4a0ce24cbb..84b0b1c5c1 100644
  #ifndef OPENSSL_NO_ML_DSA
      {
 diff --git a/test/acvp_test.c b/test/acvp_test.c
-index 15c87c57a7..e3321874c2 100644
+index 8e6a8b4..1224d5a 100644
 --- a/test/acvp_test.c
 +++ b/test/acvp_test.c
-@@ -1749,6 +1749,7 @@ int setup_tests(void)
+@@ -1808,6 +1808,7 @@ int setup_tests(void)
          OSSL_NELEM(dh_safe_prime_keyver_data));
  #endif /* OPENSSL_NO_DH */
  
@@ -94,7 +94,7 @@ index 15c87c57a7..e3321874c2 100644
  #ifndef OPENSSL_NO_DSA
      dsasign_allowed = fips_provider_version_lt(libctx, 3, 4, 0);
      ADD_ALL_TESTS(dsa_keygen_test, OSSL_NELEM(dsa_keygen_data));
-@@ -1757,6 +1758,7 @@ int setup_tests(void)
+@@ -1816,6 +1817,7 @@ int setup_tests(void)
      ADD_ALL_TESTS(dsa_siggen_test, OSSL_NELEM(dsa_siggen_data));
      ADD_ALL_TESTS(dsa_sigver_test, OSSL_NELEM(dsa_sigver_data));
  #endif /* OPENSSL_NO_DSA */
@@ -103,7 +103,7 @@ index 15c87c57a7..e3321874c2 100644
  #ifndef OPENSSL_NO_EC
      ec_cofactors = fips_provider_version_ge(libctx, 3, 4, 0);
 diff --git a/test/endecode_test.c b/test/endecode_test.c
-index 3dfb1cb56f..634072de68 100644
+index 3dfb1cb..634072d 100644
 --- a/test/endecode_test.c
 +++ b/test/endecode_test.c
 @@ -1952,6 +1952,7 @@ int setup_tests(void)
@@ -123,7 +123,7 @@ index 3dfb1cb56f..634072de68 100644
          ADD_TEST(ec_encode_to_data_multi);
          ADD_TEST_SUITE(EC);
 diff --git a/test/recipes/15-test_gendsa.t b/test/recipes/15-test_gendsa.t
-index cd331c4cfc..e21d6acda4 100644
+index cd331c4..e21d6ac 100644
 --- a/test/recipes/15-test_gendsa.t
 +++ b/test/recipes/15-test_gendsa.t
 @@ -24,7 +24,7 @@ use lib bldtop_dir('.');
@@ -136,7 +136,7 @@ index cd331c4cfc..e21d6acda4 100644
  plan tests =>
      ($no_fips ? 0 : 2)          # FIPS related tests
 diff --git a/test/recipes/20-test_cli_fips.t b/test/recipes/20-test_cli_fips.t
-index fd8842b867..64935ca824 100644
+index fd8842b..64935ca 100644
 --- a/test/recipes/20-test_cli_fips.t
 +++ b/test/recipes/20-test_cli_fips.t
 @@ -321,8 +321,7 @@ SKIP: {
@@ -152,10 +152,10 @@ index fd8842b867..64935ca824 100644
 diff --git a/test/recipes/30-test_evp.t b/test/recipes/30-test_evp.t
 old mode 100644
 new mode 100755
-index a86456157b..05a61c8abe
+index 474a9f8..51764cc
 --- a/test/recipes/30-test_evp.t
 +++ b/test/recipes/30-test_evp.t
-@@ -83,10 +83,6 @@ push @files, qw(
+@@ -85,10 +85,6 @@ push @files, qw(
                  evppkey_slh_dsa_siggen.txt
                  evppkey_slh_dsa_sigver.txt
                 ) unless $no_slh_dsa;
@@ -166,7 +166,7 @@ index a86456157b..05a61c8abe
  push @files, qw(
                  evppkey_ecx.txt
                  evppkey_ecx_sigalg.txt
-@@ -166,11 +162,12 @@ my @defltfiles = qw(
+@@ -170,11 +166,12 @@ my @defltfiles = qw(
  push @defltfiles, qw(evppkey_brainpool.txt) unless $no_ec;
  push @defltfiles, qw(evppkey_ecdsa_rfc6979.txt) unless $no_ec;
  push @defltfiles, qw(evppkey_ecx_kem.txt) unless $no_ecx;
@@ -181,7 +181,7 @@ index a86456157b..05a61c8abe
  plan tests =>
      + (scalar(@configs) * scalar(@files))
 diff --git a/test/recipes/30-test_evp_data/evppkey_dsa.txt b/test/recipes/30-test_evp_data/evppkey_dsa.txt
-index 5e5315a5b9..660d1db149 100644
+index 5e5315a..660d1db 100644
 --- a/test/recipes/30-test_evp_data/evppkey_dsa.txt
 +++ b/test/recipes/30-test_evp_data/evppkey_dsa.txt
 @@ -44,17 +44,22 @@ PrivPubKeyPair = DSA-1024:DSA-1024-PUBLIC
@@ -302,7 +302,7 @@ index 5e5315a5b9..660d1db149 100644
  Key = DSA-2048-160
  Input = "Hello"
 diff --git a/test/recipes/80-test_cms.t b/test/recipes/80-test_cms.t
-index 985c08b9ae..d1462a75c9 100644
+index 985c08b..d1462a7 100644
 --- a/test/recipes/80-test_cms.t
 +++ b/test/recipes/80-test_cms.t
 @@ -116,7 +116,7 @@ my @smime_pkcs7_tests = (

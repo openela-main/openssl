@@ -1,4 +1,4 @@
-From a0493c058ee5d891f7d61b35b131f722c5d81d87 Mon Sep 17 00:00:00 2001
+From ea538d3d58d13aa79b1c0baa34d2293c6aaa275b Mon Sep 17 00:00:00 2001
 From: rpm-build <rpm-build>
 Date: Wed, 6 Mar 2024 19:17:16 +0100
 Subject: [PATCH 32/57] FIPS: RAND: FIPS-140-3 DRBG - NEEDS REVIEW
@@ -18,7 +18,7 @@ From-dist-git-commit: 4334bc837fbc64d14890fdc51679a80770d498ce
  3 files changed, 23 insertions(+), 67 deletions(-)
 
 diff --git a/crypto/rand/prov_seed.c b/crypto/rand/prov_seed.c
-index 8466ded8ab..24feab20e5 100644
+index 8466ded..24feab2 100644
 --- a/crypto/rand/prov_seed.c
 +++ b/crypto/rand/prov_seed.c
 @@ -23,7 +23,14 @@ size_t ossl_rand_get_entropy(ossl_unused OSSL_LIB_CTX *ctx,
@@ -38,7 +38,7 @@ index 8466ded8ab..24feab20e5 100644
          ERR_raise(ERR_LIB_RAND, ERR_R_RAND_LIB);
          return 0;
 diff --git a/providers/implementations/rands/drbg.c b/providers/implementations/rands/drbg.c
-index f9d90d5d43..6b23d55cf5 100644
+index f9d90d5..6b23d55 100644
 --- a/providers/implementations/rands/drbg.c
 +++ b/providers/implementations/rands/drbg.c
 @@ -556,6 +556,9 @@ static int ossl_prov_drbg_reseed_unlocked(PROV_DRBG *drbg,
@@ -68,7 +68,7 @@ index f9d90d5d43..6b23d55cf5 100644
      if (reseed_required || prediction_resistance) {
          if (!ossl_prov_drbg_reseed_unlocked(drbg, prediction_resistance, NULL,
 diff --git a/providers/implementations/rands/seeding/rand_unix.c b/providers/implementations/rands/seeding/rand_unix.c
-index 0b8a9ec341..5af3c76d64 100644
+index 0b8a9ec..5af3c76 100644
 --- a/providers/implementations/rands/seeding/rand_unix.c
 +++ b/providers/implementations/rands/seeding/rand_unix.c
 @@ -47,12 +47,14 @@

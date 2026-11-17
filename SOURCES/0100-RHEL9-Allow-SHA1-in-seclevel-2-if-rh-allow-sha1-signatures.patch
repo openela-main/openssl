@@ -1,4 +1,4 @@
-From c63599ee9708d543205a9173207ee7167315c624 Mon Sep 17 00:00:00 2001
+From d0f984a8c5d943402f38043ff6898b1b06364bc5 Mon Sep 17 00:00:00 2001
 From: Clemens Lang <cllang@redhat.com>
 Date: Tue, 1 Mar 2022 15:44:18 +0100
 Subject: [PATCH] Allow SHA1 in seclevel 2 if rh-allow-sha1-signatures = yes
@@ -121,10 +121,10 @@ index 4b74ee1a34..5f089de107 100644
      secbits = sigalg_security_bits(SSL_CONNECTION_GET_CTX(s), lu);
      sigalgstr[0] = (lu->sigalg >> 8) & 0xff;
 diff --git a/test/recipes/25-test_verify.t b/test/recipes/25-test_verify.t
-index 700bbd849c..2de1d76b5e 100644
+index ab8cdff..84421cc 100644
 --- a/test/recipes/25-test_verify.t
 +++ b/test/recipes/25-test_verify.t
-@@ -29,7 +29,7 @@ sub verify {
+@@ -30,7 +30,7 @@ sub verify {
      run(app([@args]));
  }
  
@@ -133,7 +133,7 @@ index 700bbd849c..2de1d76b5e 100644
  
  # Canonical success
  ok(verify("ee-cert", "sslserver", ["root-cert"], ["ca-cert"]),
-@@ -387,8 +387,9 @@ ok(verify("ee-pss-sha1-cert", "", ["root-cert"], ["ca-cert"], "-auth_level", "0"
+@@ -485,8 +485,9 @@ ok(verify("ee-pss-sha1-cert", "", ["root-cert"], ["ca-cert"], "-auth_level", "0"
  ok(verify("ee-pss-sha256-cert", "", ["root-cert"], ["ca-cert"], ),
      "CA with PSS signature using SHA256");
  
@@ -146,4 +146,4 @@ index 700bbd849c..2de1d76b5e 100644
  ok(verify("ee-pss-sha256-cert", "", ["root-cert"], ["ca-cert"], "-auth_level", "2"),
      "PSS signature using SHA256 and auth level 2");
 -- 
-2.35.1
+2.54.0

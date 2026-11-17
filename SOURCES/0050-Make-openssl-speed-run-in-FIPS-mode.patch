@@ -1,4 +1,4 @@
-From ac6d6209d562fe7f4845b8d685336fc027635bb6 Mon Sep 17 00:00:00 2001
+From 95e5180977bd0c1c3cf064b9c54c616224306594 Mon Sep 17 00:00:00 2001
 From: Dmitry Belyavskiy <beldmit@gmail.com>
 Date: Fri, 9 May 2025 15:09:46 +0200
 Subject: [PATCH 50/57] Make `openssl speed` run in FIPS mode
@@ -8,7 +8,7 @@ Subject: [PATCH 50/57] Make `openssl speed` run in FIPS mode
  1 file changed, 22 insertions(+), 22 deletions(-)
 
 diff --git a/apps/speed.c b/apps/speed.c
-index a36faa686d..5b2fe33b59 100644
+index a36faa6..5b2fe33 100644
 --- a/apps/speed.c
 +++ b/apps/speed.c
 @@ -3232,18 +3232,18 @@ int speed_main(int argc, char **argv)

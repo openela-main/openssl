@@ -1,4 +1,4 @@
-From bd52fecf953030fd8c706bbb1969cf3746ba42e9 Mon Sep 17 00:00:00 2001
+From 9f8025077d7925bec9aef969365381eaaf10264c Mon Sep 17 00:00:00 2001
 From: rpm-build <rpm-build>
 Date: Wed, 6 Mar 2024 19:17:16 +0100
 Subject: [PATCH 33/57] FIPS: RAND: Forbid truncated hashes & SHA-3
@@ -30,7 +30,7 @@ From-dist-git-commit: 4334bc837fbc64d14890fdc51679a80770d498ce
  3 files changed, 187 insertions(+), 34 deletions(-)
 
 diff --git a/providers/implementations/rands/drbg_hash.c b/providers/implementations/rands/drbg_hash.c
-index 504af87d5e..f95226b6ff 100644
+index 504af87..f95226b 100644
 --- a/providers/implementations/rands/drbg_hash.c
 +++ b/providers/implementations/rands/drbg_hash.c
 @@ -585,6 +585,18 @@ static int drbg_hash_set_ctx_params_locked(void *vctx, const OSSL_PARAM params[]
@@ -53,7 +53,7 @@ index 504af87d5e..f95226b6ff 100644
          md_size = EVP_MD_get_size(md);
          if (md_size <= 0)
 diff --git a/providers/implementations/rands/drbg_hmac.c b/providers/implementations/rands/drbg_hmac.c
-index 87050764fe..55e9a7b5f7 100644
+index 8705076..55e9a7b 100644
 --- a/providers/implementations/rands/drbg_hmac.c
 +++ b/providers/implementations/rands/drbg_hmac.c
 @@ -529,6 +529,18 @@ static int drbg_hmac_set_ctx_params_locked(void *vctx, const OSSL_PARAM params[]
@@ -76,7 +76,7 @@ index 87050764fe..55e9a7b5f7 100644
          /* These are taken from SP 800-90 10.1 Table 2 */
          md_size = EVP_MD_get_size(md);
 diff --git a/test/recipes/30-test_evp_data/evprand.txt b/test/recipes/30-test_evp_data/evprand.txt
-index 6f12c73c26..2588ce57a3 100644
+index 6f12c73..2588ce5 100644
 --- a/test/recipes/30-test_evp_data/evprand.txt
 +++ b/test/recipes/30-test_evp_data/evprand.txt
 @@ -7435,6 +7435,7 @@ Nonce.14 = 7239f92b63fb3dbe

@@ -1,4 +1,4 @@
-From 8a8136eaa70356abf2ea095e10dfb4f0ed6ea2d6 Mon Sep 17 00:00:00 2001
+From 29ff902aff7becddfefdcb1c2a9c88d1acd1164e Mon Sep 17 00:00:00 2001
 From: rpm-build <rpm-build>
 Date: Wed, 6 Mar 2024 19:17:17 +0100
 Subject: [PATCH 37/57] FIPS: TLS: Enforce EMS in TLS 1.2 - NOTE
@@ -25,7 +25,7 @@ From-dist-git-commit: 4334bc837fbc64d14890fdc51679a80770d498ce
  9 files changed, 47 insertions(+), 6 deletions(-)
 
 diff --git a/doc/man3/SSL_CONF_cmd.pod b/doc/man3/SSL_CONF_cmd.pod
-index e78a2231da..60ed79f410 100644
+index e78a223..60ed79f 100644
 --- a/doc/man3/SSL_CONF_cmd.pod
 +++ b/doc/man3/SSL_CONF_cmd.pod
 @@ -624,6 +624,9 @@ B<ExtendedMasterSecret>: use extended master secret extension, enabled by
@@ -39,7 +39,7 @@ index e78a2231da..60ed79f410 100644
  default. Inverse of B<SSL_OP_DISABLE_TLSEXT_CA_NAMES>: that is,
  B<-CANames> is the same as setting B<SSL_OP_DISABLE_TLSEXT_CA_NAMES>.
 diff --git a/doc/man5/fips_config.pod b/doc/man5/fips_config.pod
-index 2505938c13..3887c54f0e 100644
+index 2505938..3887c54 100644
 --- a/doc/man5/fips_config.pod
 +++ b/doc/man5/fips_config.pod
 @@ -11,6 +11,19 @@ automatically loaded when the system is booted in FIPS mode, or when the
@@ -63,7 +63,7 @@ index 2505938c13..3887c54f0e 100644
  
  Copyright 2019-2025 The OpenSSL Project Authors. All Rights Reserved.
 diff --git a/include/openssl/ssl.h.in b/include/openssl/ssl.h.in
-index 81f6a19ce7..fbe9f1dda3 100644
+index 81f6a19..fbe9f1d 100644
 --- a/include/openssl/ssl.h.in
 +++ b/include/openssl/ssl.h.in
 @@ -432,6 +432,7 @@ typedef int (*SSL_async_callback_fn)(SSL *s, void *arg);
@@ -75,7 +75,7 @@ index 81f6a19ce7..fbe9f1dda3 100644
  /*
   * Option "collections."
 diff --git a/providers/fips/include/fips_indicator_params.inc b/providers/fips/include/fips_indicator_params.inc
-index c1b029de86..47d1cf2d01 100644
+index c1b029d..47d1cf2 100644
 --- a/providers/fips/include/fips_indicator_params.inc
 +++ b/providers/fips/include/fips_indicator_params.inc
 @@ -1,5 +1,5 @@
@@ -86,7 +86,7 @@ index c1b029de86..47d1cf2d01 100644
  OSSL_FIPS_PARAM(hmac_key_check, HMAC_KEY_CHECK, 0)
  OSSL_FIPS_PARAM(kmac_key_check, KMAC_KEY_CHECK, 0)
 diff --git a/ssl/ssl_conf.c b/ssl/ssl_conf.c
-index 0d93593880..4361edfa49 100644
+index 0d93593..4361edf 100644
 --- a/ssl/ssl_conf.c
 +++ b/ssl/ssl_conf.c
 @@ -392,6 +392,7 @@ static int cmd_Options(SSL_CONF_CTX *cctx, const char *value)
@@ -98,7 +98,7 @@ index 0d93593880..4361edfa49 100644
          SSL_FLAG_TBL("AllowNoDHEKEX", SSL_OP_ALLOW_NO_DHE_KEX),
          SSL_FLAG_TBL("PreferNoDHEKEX", SSL_OP_PREFER_NO_DHE_KEX),
 diff --git a/ssl/statem/extensions_srvr.c b/ssl/statem/extensions_srvr.c
-index 5218547f59..d5c1b39d1f 100644
+index 5218547..d5c1b39 100644
 --- a/ssl/statem/extensions_srvr.c
 +++ b/ssl/statem/extensions_srvr.c
 @@ -12,6 +12,7 @@
@@ -125,7 +125,7 @@ index 5218547f59..d5c1b39d1f 100644
      if (!WPACKET_put_bytes_u16(pkt, TLSEXT_TYPE_extended_master_secret)
          || !WPACKET_put_bytes_u16(pkt, 0)) {
 diff --git a/ssl/t1_enc.c b/ssl/t1_enc.c
-index 8978e0c630..85d9df0da6 100644
+index 8978e0c..85d9df0 100644
 --- a/ssl/t1_enc.c
 +++ b/ssl/t1_enc.c
 @@ -21,6 +21,7 @@
@@ -156,7 +156,7 @@ index 8978e0c630..85d9df0da6 100644
          ERR_raise(ERR_LIB_SSL, ERR_R_INTERNAL_ERROR);
      EVP_KDF_CTX_free(kctx);
 diff --git a/test/recipes/30-test_evp_data/evpkdf_tls12_prf.txt b/test/recipes/30-test_evp_data/evpkdf_tls12_prf.txt
-index 50944328cb..edb2e81273 100644
+index 5094432..edb2e81 100644
 --- a/test/recipes/30-test_evp_data/evpkdf_tls12_prf.txt
 +++ b/test/recipes/30-test_evp_data/evpkdf_tls12_prf.txt
 @@ -22,6 +22,16 @@ Ctrl.client_random = hexseed:36c129d01a3200894b9179faac589d9835d58775f9b5ea3587c
@@ -177,7 +177,7 @@ index 50944328cb..edb2e81273 100644
  KDF = TLS1-PRF
  Ctrl.digest = digest:SHA256
 diff --git a/test/sslapitest.c b/test/sslapitest.c
-index f0aeaf8b89..1873b4ab83 100644
+index 856a465..7eddb26 100644
 --- a/test/sslapitest.c
 +++ b/test/sslapitest.c
 @@ -582,7 +582,7 @@ static int test_client_cert_verify_cb(void)

@@ -1,4 +1,4 @@
-From 005e6daf6097a420efdb869e641f2708a9d0c551 Mon Sep 17 00:00:00 2001
+From 2b6658493326f6eea87bf2722b4601a77f4b02d2 Mon Sep 17 00:00:00 2001
 From: rpm-build <rpm-build>
 Date: Wed, 6 Mar 2024 19:17:15 +0100
 Subject: [PATCH 07/57] RH: Add FIPS_mode compatibility macro
@@ -16,7 +16,7 @@ From-dist-git-commit: 4334bc837fbc64d14890fdc51679a80770d498ce
 
 diff --git a/include/openssl/fips.h b/include/openssl/fips.h
 new file mode 100644
-index 0000000000..4162cbf88e
+index 0000000..4162cbf
 --- /dev/null
 +++ b/include/openssl/fips.h
 @@ -0,0 +1,26 @@
@@ -47,7 +47,7 @@ index 0000000000..4162cbf88e
 +# endif
 +#endif
 diff --git a/test/property_test.c b/test/property_test.c
-index d470731e50..0b044ec853 100644
+index d470731..0b044ec 100644
 --- a/test/property_test.c
 +++ b/test/property_test.c
 @@ -703,6 +703,19 @@ err:

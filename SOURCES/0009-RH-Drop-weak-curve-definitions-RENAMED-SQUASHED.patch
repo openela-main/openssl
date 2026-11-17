@@ -1,4 +1,4 @@
-From abb90da4c709dab8c919dde2f73d5643da95a332 Mon Sep 17 00:00:00 2001
+From d84a463f300f1ee757cb7045f5fa97f791f90324 Mon Sep 17 00:00:00 2001
 From: rpm-build <rpm-build>
 Date: Wed, 6 Mar 2024 19:17:15 +0100
 Subject: [PATCH 09/57] RH: Drop weak curve definitions - RENAMED/SQUASHED
@@ -28,7 +28,7 @@ From-dist-git-commit: 4334bc837fbc64d14890fdc51679a80770d498ce
  8 files changed, 10 insertions(+), 1083 deletions(-)
 
 diff --git a/apps/speed.c b/apps/speed.c
-index 6cf9748902..a36faa686d 100644
+index 6cf9748..a36faa6 100644
 --- a/apps/speed.c
 +++ b/apps/speed.c
 @@ -458,8 +458,6 @@ static double ffdh_results[FFDH_NUM][1]; /* 1 op: derivation */
@@ -68,7 +68,7 @@ index 6cf9748902..a36faa686d 100644
          { "nistp256", NID_X9_62_prime256v1, 256 },
          { "nistp384", NID_secp384r1, 384 },
 diff --git a/crypto/ec/ec_curve.c b/crypto/ec/ec_curve.c
-index c3bc92fd75..28c83df735 100644
+index c3bc92f..28c83df 100644
 --- a/crypto/ec/ec_curve.c
 +++ b/crypto/ec/ec_curve.c
 @@ -30,34 +30,6 @@ typedef struct {
@@ -911,7 +911,7 @@ index c3bc92fd75..28c83df735 100644
          "RFC 5639 curve over a 256 bit prime field" },
      { NID_brainpoolP256t1, &_EC_brainpoolP256t1.h, 0,
 diff --git a/crypto/evp/ec_support.c b/crypto/evp/ec_support.c
-index 20883c48f1..9715c6280d 100644
+index 20883c4..9715c62 100644
 --- a/crypto/evp/ec_support.c
 +++ b/crypto/evp/ec_support.c
 @@ -20,89 +20,15 @@ typedef struct ec_name2nid_st {
@@ -1032,7 +1032,7 @@ index 20883c48f1..9715c6280d 100644
      { "P-256", NID_X9_62_prime256v1 },
      { "P-384", NID_secp384r1 },
 diff --git a/test/acvp_test.inc b/test/acvp_test.inc
-index 67787f3740..97ec1ff3e5 100644
+index 67787f3..97ec1ff 100644
 --- a/test/acvp_test.inc
 +++ b/test/acvp_test.inc
 @@ -217,15 +217,6 @@ static const unsigned char ecdsa_sigver_s1[] = {
@@ -1052,7 +1052,7 @@ index 67787f3740..97ec1ff3e5 100644
          "SHA2-512",
          "P-521",
 diff --git a/test/ecdsatest.h b/test/ecdsatest.h
-index 700d7b5253..6aa4faa461 100644
+index 700d7b5..6aa4faa 100644
 --- a/test/ecdsatest.h
 +++ b/test/ecdsatest.h
 @@ -32,23 +32,6 @@ typedef struct {
@@ -1080,7 +1080,7 @@ index 700d7b5253..6aa4faa461 100644
      { NID_secp224r1, NID_sha224,
          "699325d6fc8fbbb4981a6ded3c3a54ad2e4e3db8a5669201912064c64e700c139248cdc1"
 diff --git a/test/ectest.c b/test/ectest.c
-index 1e4ae9c63e..56cfc99421 100644
+index 1e4ae9c..56cfc99 100644
 --- a/test/ectest.c
 +++ b/test/ectest.c
 @@ -174,183 +174,26 @@ static int prime_field_tests(void)
@@ -1285,7 +1285,7 @@ index 1e4ae9c63e..56cfc99421 100644
      ADD_TEST(prime_field_tests);
  #ifndef OPENSSL_NO_EC2M
 diff --git a/test/recipes/15-test_genec.t b/test/recipes/15-test_genec.t
-index 4d5090fa39..0a90a602d8 100644
+index 4d5090f..0a90a60 100644
 --- a/test/recipes/15-test_genec.t
 +++ b/test/recipes/15-test_genec.t
 @@ -41,37 +41,11 @@ plan skip_all => "This test is unsupported in a no-ec build"
@@ -1335,7 +1335,7 @@ index 4d5090fa39..0a90a602d8 100644
      P-256
      P-384
 diff --git a/test/recipes/30-test_evp_data/evppkey_ecc.txt b/test/recipes/30-test_evp_data/evppkey_ecc.txt
-index e6a2c9eb59..861c01e177 100644
+index e6a2c9e..861c01e 100644
 --- a/test/recipes/30-test_evp_data/evppkey_ecc.txt
 +++ b/test/recipes/30-test_evp_data/evppkey_ecc.txt
 @@ -4561,3 +4561,4 @@ KeyName = ec3

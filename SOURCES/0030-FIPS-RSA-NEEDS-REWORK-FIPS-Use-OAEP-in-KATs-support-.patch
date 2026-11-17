@@ -1,4 +1,4 @@
-From 350c611443c5242b4f1581c2b7744acc45a13223 Mon Sep 17 00:00:00 2001
+From 89d1a7076da737f48dd614093adabce9fa9b375b Mon Sep 17 00:00:00 2001
 From: Simo Sorce <simo@redhat.com>
 Date: Wed, 12 Feb 2025 17:12:02 -0500
 Subject: [PATCH 30/57] FIPS: RSA: NEEDS-REWORK:
@@ -14,7 +14,7 @@ Signed-off-by: Simo Sorce <simo@redhat.com>
 
 diff --git a/Originally-0073-FIPS-Use-OAEP-in-KATs-support-fixed-OAEP-seed.p.patch b/Originally-0073-FIPS-Use-OAEP-in-KATs-support-fixed-OAEP-seed.p.patch
 new file mode 100644
-index 0000000000..793b8a4dac
+index 0000000..793b8a4
 --- /dev/null
 +++ b/Originally-0073-FIPS-Use-OAEP-in-KATs-support-fixed-OAEP-seed.p.patch
 @@ -0,0 +1,348 @@
@@ -368,7 +368,7 @@ index 0000000000..793b8a4dac
 +
 diff --git a/REBASE.txt b/REBASE.txt
 new file mode 100644
-index 0000000000..2833a383c1
+index 0000000..2833a38
 --- /dev/null
 +++ b/REBASE.txt
 @@ -0,0 +1,10 @@

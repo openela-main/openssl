@@ -1,4 +1,4 @@
-From c98ce75030b35047955a8f531a02eb3efb220b65 Mon Sep 17 00:00:00 2001
+From 0a88731626f6d660c906a03c6ecae00114414567 Mon Sep 17 00:00:00 2001
 From: Simo Sorce <simo@redhat.com>
 Date: Thu, 20 Feb 2025 15:30:32 -0500
 Subject: [PATCH 21/57] FIPS: INTEG-CHECK: Add script to hmac-ify fips.so
@@ -15,7 +15,7 @@ Signed-off-by: Simo Sorce <simo@redhat.com>
 
 diff --git a/fips-hmacify.sh b/fips-hmacify.sh
 new file mode 100755
-index 0000000000..54ae60b07f
+index 0000000..54ae60b
 --- /dev/null
 +++ b/fips-hmacify.sh
 @@ -0,0 +1,8 @@

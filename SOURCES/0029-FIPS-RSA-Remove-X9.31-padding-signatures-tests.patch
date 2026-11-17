@@ -1,4 +1,4 @@
-From a23530098276d2d330d9033ce00920b9b3f364cf Mon Sep 17 00:00:00 2001
+From 515e37b90dd5f4b8b5e23092ee53c63fa1d00045 Mon Sep 17 00:00:00 2001
 From: rpm-build <rpm-build>
 Date: Wed, 6 Mar 2024 19:17:16 +0100
 Subject: [PATCH 29/57] FIPS: RSA: Remove X9.31 padding signatures tests
@@ -28,7 +28,7 @@ From-dist-git-commit: 4334bc837fbc64d14890fdc51679a80770d498ce
  1 file changed, 225 deletions(-)
 
 diff --git a/test/acvp_test.inc b/test/acvp_test.inc
-index 97ec1ff3e5..31fa0eafc6 100644
+index 97ec1ff..31fa0ea 100644
 --- a/test/acvp_test.inc
 +++ b/test/acvp_test.inc
 @@ -1354,13 +1354,6 @@ static const struct rsa_siggen_st rsa_siggen_data[] = {
